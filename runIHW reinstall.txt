@@ -1,0 +1,5 @@
+to add runIHW back
+move the .R file into R folder
+add runIHW.R reference in the collate section of DESCRIPTION
+rebuild
+confirm a referene got added to NAMESPACE

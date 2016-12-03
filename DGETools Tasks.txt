@@ -1,0 +1,27 @@
+DGE Tools Tasks
+
+SLOA replace with generic list structure
+
+runEdgeRQL:  EdgeR QL support
+
+runIHW: done
+
+Signature plots : instead of table
+	Faceted barplots of sig genecount for different thresholds
+	i.e. one plot for each threshold column
+	
+FDRatP plot: FDR histogram for genes meeting a given pvalue threshold (and optionally fold-change threshold)
+
+runVoom revamp
+	code clean up (case syntax for different options)
+	for dupcor
+		voom
+		dupcor
+		voom wieh cor
+		dupcor
+		pass cor to lmfit
+		
+			
+
+
+

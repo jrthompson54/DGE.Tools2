@@ -1,0 +1,90 @@
+Package: DGE.Tools
+Title: A function library to facilitate Differential Gene Expression Analysis
+Version: 1.0.7.6
+Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
+                  role = c("aut", "cre"))
+Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
+    analysis and improve TBio "branding" by standardizing several types of commmon
+    plots. The functions can be grouped into four categories (DGE workflow, DGE
+    plotting tools, mapping/unit conversion functions and a ggplot themepack.
+    The DGE workflow functions include: Function Build_RSE which reads text
+    files and builds a SummarizedExperiment object; Function runEdgeRNorm which
+    normalizes counts and produces a SubsettableListOfArrays (SLOA) object; Function
+    runVoom runs limma voom and lmFit adding additional data to the SLOA object;
+    Function runSVA for detrending unknown covariates. A variety of QC plots are
+    produced to evaluate data quality. The DGE Plotting tools are suitable for
+    downstream analysis visualizations and include: profilePlot, volcanoPlot,
+    comparePlot, plotPvalHist, ggplotMDS and JRT_heatmap. Mapping and conversion
+    functions include: GeneSym2Entrez, EnsemblGene2Entrez, Entrez2GeneSym,
+    EnsemblGene2GeneSym, countToTpm, countToFpkm, fpkmToTpm, Log2CPM_To_Log2FPKM and
+    cpmToFpkm. Lastly, several ggplot themes are provided that make it easy to set
+    up readable plots for both knitr reports and PPT presentations. NEW - Xpress2RSE
+    will build a gene level RSE directly from Xpress.
+Depends:
+    R (>= 3.3.1)
+License: BMS Proprietary
+LazyData: true
+Imports:
+    AnnotationDbi,
+    dplyr (>= 0.4.3),
+    edgeR,
+    gdata,
+    GenomicRanges,
+    ggplot2 (>= 2.0.0),
+    grDevices,
+    grid,
+    gridExtra,
+    IRanges,
+    limma (>= 3.26.3),
+    magrittr (>= 1.5),
+    pheatmap,
+    qvalue,
+    RColorBrewer,
+    reshape2 (>= 1.4.1),
+    S4Vectors,
+    stringi,
+    stringr,
+    SummarizedExperiment (>= 1.0.0),
+    sva,
+    tidyr,
+    tools,
+    zFPKM (>= 0.0.0.9000)
+Suggests:
+    org.Hs.eg.db,
+    org.Mm.eg.db,
+    org.Rn.eg.db,
+    org.Cf.eg.db,
+    annotables
+Collate:
+    'DGE_Tools.R'
+    'BuildAndSaveRSE.R'
+    'Build_RSE.R'
+    'DGE_Unit_Conversion.R'
+    'EnsemblGene2Entrez.R'
+    'EnsemblGene2GeneSym.R'
+    'Entrez2GeneSym.R'
+    'EntrezGene2Ensembl.R'
+    'GeneSym2Entrez.R'
+    'JRT_heatmap.R'
+    'OmicsoftRefGeneID2GeneSym.R'
+    'ThemePack.R'
+    'cdfPlot.R'
+    'comparePlot.R'
+    'extractCol.R'
+    'ggplotMDS.R'
+    'obsPlot.R'
+    'plotDisp.R'
+    'plotDispersion.R'
+    'plotPValDist.R'
+    'plotPValHist.R'
+    'printAndSave.R'
+    'profilePlot.R'
+    'runContrasts.R'
+    'runEdgeRNorm.R'
+    'runIHW.R'
+    'runQvalue.R'
+    'runSVA.R'
+    'runVoom.R'
+    'summarizeSigCounts.R'
+    'volcanoPlot.R'
+RoxygenNote: 5.0.1

@@ -1,0 +1,42 @@
+A typical edgeR analysis might look like the following. Here we assume there are four
+RNA-Seq libraries in two groups, and the counts are stored in a tab-delimited text le, with gene symbols in a column called Symbol.
+
+
+To perform quasi-likelihood F-tests:
+> x <- read.delim("fileofcounts.txt",row.names="Symbol")
+> group <- factor(c(1,1,2,2))
+> y <- DGEList(counts=x,group=group)
+> y <- calcNormFactors(y)
+> design <- model.matrix(~group)
+> y <- estimateDisp(y,design)
+> fit <- glmQLFit(y,design)
+> qlf <- glmQLFTest(fit,coef=2)
+> topTags(qlf)
+
+#JRT magrittr pipeline
+#setup
+group <-  factor(exptdesign$ReplicateGroup)
+design <- model.matrix(~group)
+coef <- length(unique(group))
+
+dgelist <- counts %>% 
+	DGEList %>%
+	calcNormFactors(method="TMM")      #make method an argument
+
+fit <-	estimateDisp(dgelist, design=design)
+	glmQLFit(design=design) 
+
+qlf_toptags  <-  glmQLFTest(fit, coef=coef) %>%
+	topTags(n=Inf, sort.by=NULL)
+
+#Return the dgelist, fit and qlf_toptags
+
+#1st look
+plotMDS(dgelist, method="bcv")
+
+
+
+
+#specific comparisons
+et <- exactTest
+	

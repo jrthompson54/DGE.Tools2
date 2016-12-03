@@ -1,0 +1,11 @@
+DGE.Tools2
+
+revamped runVoom  
+runEdgeR
+runPower
+
+simple workflow list structure.
+	add, get, check, print
+	
+Revise plot tools
+

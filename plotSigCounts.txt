@@ -1,0 +1,7 @@
+plotSigCounts
+
+provide a contrastlist
+provide a list of columns to report on
+
+provide barplot and df in a two element list
+

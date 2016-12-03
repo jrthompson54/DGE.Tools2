@@ -1,0 +1,35 @@
+ResultObject  List of Lists
+
+resultList$dataName$data <- dataobject
+resultList$dataName$type <- datatype (one of "row", "col", "assay", "meta", "topList", "treatList")
+
+dataNames are arbitrary
+each dataName should have both a data element and a type element
+
+assay must all have same dimensions: N rows (genes) by M columns (samples)
+	e.g. counts, Log2CPM, TPM, FPKM, zFPKM, etc.
+
+row data types must have N rows (e.g DGElist, voomElist, fit, gene annotation
+
+col data types must have M rows (e.g. sample annotation (factors), sample-based alignment stats)
+
+meta data type is a catch all for other types of data not keyed to either row or col data
+
+contrastList is a special structure.  
+
+2 strategies for contrasts:
+   a)  dataName is the name of the contrast and type is either "ContrastTop" or "ContrastTreat.
+	Define a getContrast functions that will collect the output as a named contrast list (list of DF)
+
+   b)  dataName uses a reserved word ("ContrastTop" or "ContrastTreat") and this object is the named
+	contrast list already.
+	
+   (a) is more consistent with the rest of the data structure.  Try this first.  But it will be harder
+   	to code the getContrast function to return the contrast list.
+
+accessor functions:
+add_result(resultList, dataName, dataObj, type)  returns resultList with new object added.
+get_result(resultList, dataName) returns one item
+print(resultList)  print list of dataNames and types and print workflowRecord if present.
+"["	Define subsetting functions
+get_type (resultList, type)  return a list of all one type of data (use to retrieve all contrasts to a contrast list).	
