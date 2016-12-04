@@ -102,12 +102,16 @@ convertCounts <- function(counts, unit, geneLength, log, normalize,
     }
     
     .calcZFPKM <- function(counts, log, normalize, geneLength,
-                           PlotDir=PlotDir,
-                           PlotFile=PlotFile, 
-                           FacetTitles=FacetTitles){
-        FPKM <- .calcFPKM(counts, log, normalize, geneLength)
-        FPKM <- zFPKMTransformDF (data.frame(MyAssays$FPKM), PlotDir=PlotDir,
+                           PlotDir,
+                           PlotFile, 
+                           FacetTitles){
+        if(normalize != FALSE)
+            warning("TMM or other normalization not recommended for zFPKM")
+        FPKM <- .calcFPKM(counts, log=FALSE, normalize, geneLength) %>% as.data.frame
+        zFPKM <- zFPKMTransformDF (FPKM, PlotDir=PlotDir,
                           PlotFile=PlotFile, FacetTitles=FacetTitles)
+        if (log==TRUE) 
+            zFPKM <- log2(zFPKM)
     }
 
 #counts and unit are absolutely required
@@ -150,7 +154,8 @@ if (missing(FacetTitles))
 switch(toupper(unit),
        "CPM" = .calcCPM(counts, log, normalize),
        "FPKM" = .calcFPKM(counts, log, normalize, geneLength),
-       "ZFPKM" = .calcZFPKM(counts, log, normalize, geneLength),
+       "ZFPKM" = .calcZFPKM(counts, log, normalize, geneLength,
+                            PlotDir, PlotFile, FacetTitles),
        "FPK" = .calcFPK(counts, log, normalize, geneLength),
        "TPM" = .calcTPM(counts, log, normalize, geneLength)
 )

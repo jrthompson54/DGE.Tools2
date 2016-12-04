@@ -14,6 +14,7 @@ runVoom:
 BuildRSE:
 	Just includes counts now
 	added convertCounts function to get other values(FPKM, TPM, CPM, FPK and zFPKM)
+	This avoids trying to put every derived datatype someone might want into the RSE.
 
 convertCounts function:
 	converts Counts to one of CPM, FPKM, TPM, zFPKM, FPK
