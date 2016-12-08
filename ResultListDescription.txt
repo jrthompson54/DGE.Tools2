@@ -30,3 +30,12 @@ get_result(resultList, dataName) returns one item
 print(resultList)  print list of dataNames and types and print workflowRecord if present.
 "["	Define subsetting functions
 get_type (resultList, type)  return a list of all one type of data (use to retrieve all contrasts to a contrast list).	
+
+
+So, this looks like a variation on the SLOA concept. You'll want to look at my code to see which methods you need to implement. Off the top of my head, you still need nrow, ncol, "[", "[[" and "$". Also, you might want a print method. The "[" method is tricky, because it needs to implement both matrix and list-style indexing. I forget exactly how to do this, but you can refer to my SLOA code.
+
+For the implementation, I see you're using a list of item-type pairs. I would lean toward using two lists instead, or rather a list and a vector. Make the object just a standard list of all the items, such that if you were to run "unclass" on it you would just get a regular list (speaking of which, add an "as.list" method that does exactly that). Then, add the vector of item types, which should probably be a factor with a defined set of levels, as an attribute (see ?attr). You can make this a named vector to avoid having to keep it in the same order as the item list. Another possible option is to use a separate list for each item type. This makes it easier to write the subsetting methods, but harder to preserve the insertion order, if you care about that.
+
+For the dimension, I wouldn't use a hidden .dim element in the backing list. I would either use an attribute or just infer the dimension from the elements of the object. For nrow, search for the first element that implies a row count and return its size, and likewise for ncol. If the list is empty or contains no elements that allows you to infer a dimension, return 0 for that dimension. 
+
+For addItem, you want to limit the item type to a set of known types. For this, you need match.arg. You might also consider writing an "addItems" method for adding multiple items, taking a named list and a vector of types, with the type vector recycled as necessary. Alternatively, you could just leave items with unknown types alone.

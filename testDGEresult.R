@@ -1,0 +1,6 @@
+RSE <- readRDS("RSE.RDS")
+library(magrittr)
+d <- DGEresult()
+d %<>% addItem(assay(RSE, "Counts"), "Counts", "assay")
+d %<>% addItem(mcols(RSE), "GeneAnnotation", "row")
+d %<>% addItem(colData(RSE), "SampAnnotation", "col")
