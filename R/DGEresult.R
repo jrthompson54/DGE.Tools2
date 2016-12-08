@@ -13,8 +13,8 @@ DGEresult <- function(item, itemName, itemType) {
 }
 
 ### .checkDimension
-.checkDimension <- function(x, ...) UseMethod(".checkDimension")
-.checkDimension.default <- function(dgeResult, ...)
+.dimensionMatch <- function(x, ...) UseMethod(".checkDimension")
+.dimensionMatch.default <- function(dgeResult, ...)
 {
     warning(paste(".checkDimension does not know how to handle object of class ", 
                   class(dgeResult), 
@@ -99,8 +99,9 @@ rmItem.default <- function(dgeResult, ...)
 }
 rmItem.DGEresult <- function(dgeResult, itemName){
     #remove the named item
-    dgeResult$data[[itemName]] <- NULL
-    dgeResult$type[[itemName]] <- NULL
+    dgeResult$data[itemName] <- NULL
+    dgeResult$type[itemName] <- NULL
+    return(dgeResult)
 }
 
 ### getItem
