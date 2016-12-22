@@ -1,5 +1,5 @@
 # DGE_Tools.R
-# Author: JRT 28Dec2015
+# Author: JRT 11Jan2016
 #
 # A set of functions to facilitate differential gene expression analysis
 # of data exported from the Omicsoft RNA-Seq Pipeline.  Easily Adaptable
@@ -30,18 +30,11 @@
 ### DATA STRATEGY ###
 # DGE analysis will involve 2 standard data structures:
 # 1) A SummarizedExperiment will hold primary data from an RNA-Seq pipeline
-# e.g. counts, FPKM, TPM, zFPKM, as well as row and column annotation.
+# e.g. counts as well as row and column annotation.
 #
-# 2) Limma output from model fitting will be contained within a SubsettableListOfArrays
+# 2) Limma output from model fitting will be contained within a DGEresut S3
 # object.  Unlike SummarizedExperiment, this object can hold Fit objects as well as
 # multiple types of row and column annotation.
-#
-# Both SummarizedExperiment and SubsettableListOfArrays object support subsetting the
-# all the contained objects appropriately when the main object is subsetted.
-# For example:  MySummarizedExperiment[1:100, 1:10] would automatically subset
-# the count, FPKM etc matices to the first 100 genes and 10 samples.  The associated
-# row and col data is also subsetted appropriately. SubsettableListOfArrays behaves
-# similar in this regard.
 #
 #
 # Dealing with multiple contrasts (List of Contrasts dataframes)
@@ -98,19 +91,19 @@ GeneData = list(
   Level = list(name = "Level",
                level = "Gene",
                type = "metadata"),
-  FPKM = list(name = "FPKM",
-              file = "RNA-Seq.FPKM.Table.txt",
-              type = "Assay"),
-  TPM = list(name = "TPM",
-              file = "Genes.TPM.Table.txt",
-              type = "Assay"),
+  # FPKM = list(name = "FPKM",
+  #             file = "RNA-Seq.FPKM.Table.txt",
+  #             type = "Assay"),
+  # TPM = list(name = "TPM",
+  #             file = "Genes.TPM.Table.txt",
+  #             type = "Assay"),
   QC.Metrics = list(name = "QC.Metrics",
             file = "RNA-Seq.QCMetrics.Table.txt",
             type = "metadata")
 )
 # uncomment this block to save changes to this datastructure to be built into the package
 # x = getwd()
-# setwd ("~/R/lib/pkgsrc/DGE.Tools/")
+# setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
 # save(GeneData, file="./data/GeneData.rda")
 # setwd(x)
 
@@ -136,56 +129,20 @@ TranscriptData = list(
   Level = list(name = "Level",
                level = "Transcript",
                type = "metadata"),
-  FPKM = list(name = "FPKM",
-              file = "RNA-Seq.Transcript_FPKM.Table.txt",
-              type = "Assay"),
-  TPM = list(name = "TPM",
-              file = "Transcripts.TPM.Table.txt",
-              type = "Assay"),
+  # FPKM = list(name = "FPKM",
+  #             file = "RNA-Seq.Transcript_FPKM.Table.txt",
+  #             type = "Assay"),
+  # TPM = list(name = "TPM",
+  #             file = "Transcripts.TPM.Table.txt",
+  #             type = "Assay"),
   QC.Metrics = list(name = "QC.Metrics",
             file = "RNA-Seq.QCMetrics.Table.txt",
             type = "metadata")
 )
 # x = getwd()
-# setwd ("~/R/lib/pkgsrc/DGE.Tools/")
+# setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
 # save(TranscriptData, file="./data/TranscriptData.rda")
 # setwd(x)
-
-
-###  SubsettableListOrArrays data class
-#
-#This block defines a subclass of SubsettableListOfArrays.  SubsettableListOfArrays is a
-#class object under development by Ryan Thompson at Scripps Research Institute.
-#A SubsettableListOfArrays object allows you to define slots for row(gene/Transcript) data
-#(e.g. gene annotatiton), column(Sample) data (e.g. Sample metadata) and gene expression
-#data with N rows(genes) x M columns (samples).  SummarizedExperiments only allow one
-#dataframe each for row and col data.  SubsettableListOfArrays allows you to define
-#an arbitrary number of row and col dataframes.  Both SummarizedExperiments and
-#SubsettableListOfArrays share the convenient feature that subsetting the main object
-#(genes or samples) will properly subset all of the elements contained within.
-#
-
-# SLOA <- defineSLOASubclass("SLOA",
-#                            I="RowRanges",
-#                            IX=c("rowData", "Fit"),  #objects indexed as rowdata
-#                            JX=c("colData",  "DesignMatrix"), #objects indexed as col data
-#                            IJ=c("RSE", "DGElist", "Elist", "Counts", "FPKM", "Log2FPKM", "Log2CPM", "Residuals"), #data matrices
-#                            required=c("rowData", "colData", "Counts")
-# )
-# I: defines an array of gene data
-# IX: defines a dataframe of gene data
-#     rowData is for gene annotation
-#     Fit will hold a limma fit object
-# IJ: define gene x samples data
-#     RSE is a SummarizedExperiment (A SummarizedExperiment can be embedded within a SLOA)
-#     DGElist, Elist, Counts, and CPM are all intermediate matices that you might
-#     want to capture while running a DGE analysis.
-# required:  defines which objects must be included in an SLOA
-# J:  not used here, but defines an array of sample data
-#Now to load data:
-#   MyData = SLOA(rowData=MyGeneAnnotation, colData=MySampleAnnotation, Fit = MyFit, Alignment.QC.summary = MyQCSummary, Counts=MyCounts)
-#to extract data, reference just like a list:
-#   MyCounts = MyData$Counts
 
 ### Utility FUNCTIONS ###
 
