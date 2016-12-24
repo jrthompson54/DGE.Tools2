@@ -1,24 +1,14 @@
 # DGE_Tools.R
-# Author: JRT 11Jan2016
+# Author: JRT 24Dec2016
 #
 # A set of functions to facilitate differential gene expression analysis
 # of data exported from the Omicsoft RNA-Seq Pipeline.  Easily Adaptable
 # to other data sources of, minimally, count data, row(gene) annotation
 # and col(sample) annotation.
 #
-# Main Functions:
-# Build_RSE:  Read in a named list of expresson data files
-# plotDispersion: generate an edgeR dispersion plot
-# DGE_Calc: run edgeR/voom pipeline and run a fit
-#
-# Utility Functions: not exported
-# Txt2DF: Utility function called by Build_EO
-# fpkmToTpm: Utility function called by Build_RSE
-# tsmsg: a timestamped message
-# df2gr: Convert a DF with chr, start, end, strand column to a GRanges object.
 
-###LIBRARIES used
-# library(magrittr)
+
+### LIBRARIES used
 # library(gdata)
 # library(openxlsx)
 # library(GenomicRanges)
@@ -26,7 +16,10 @@
 # library(dplyr)
 # library(reshape2)
 # library(ggplot2)
-
+# library(assertthat)
+# library(DGEobj)
+# library(magrittr)
+# 
 ### DATA STRATEGY ###
 # DGE analysis will involve 2 standard data structures:
 # 1) A SummarizedExperiment will hold primary data from an RNA-Seq pipeline
@@ -77,8 +70,8 @@
 #' is preconfigured for datafiles from the Omicsoft pipeline.  Modify GeneData
 #' file values to use data from a different pipeline.
 #'
-"GeneData"
-GeneData = list(
+# "GeneData"
+.GeneData = list(
   Annotation = list(name = "Annotation",
                     file = "RNA-Seq.Count.Annotation.txt",
                     type = "rowRanges"),
@@ -115,8 +108,7 @@ GeneData = list(
 #' is preconfigured for datafiles from the Omicsoft pipeline.  Modify TranscriptData
 #' file values to use data from a different pipeline.
 #'
-"TranscriptData"
-TranscriptData = list(
+.TranscriptData = list(
   Annotation = list(name = "Annotation",
                     file = "RNA-Seq.Transcript_Count.Annotation.txt",
                     type = "rowRanges"),
@@ -156,8 +148,8 @@ tsmsg <- function(...) {
 
 ### Function df2GR ###
 #' @import magrittr IRanges GenomicRanges
-#' @export
-df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"), start="start", end="end", strand="strand",
+df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"), 
+                  start="start", end="end", strand="strand",
                   start.offset=1, end.offset=start.offset) {
   #Convert a Annotation DF to a genomic Ranges object
   #Optional parameters for seqnames, start, end, strand anticipate possible you might have for these
@@ -185,11 +177,6 @@ df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"), start="start"
     gr <- GenomicRanges::GRanges(seqnames=df[[seqnames.col]],
                                  ranges=MyRanges,
                                  strand=df[[strand.col]])
-
-#     gr <- GenomicRanges::GRanges(seqnames=df[[seqnames.col]],
-#                   ranges=IRanges::IRanges(start=df[[start.col]] - start.offset + 1,
-#                                  end=df[[end.col]]) - end.offset + 1,
-#                   strand=df[[strand.col]])
 
     GenomicRanges::mcols(gr) <- df[other.cols]
     names(gr) <- rownames(df)

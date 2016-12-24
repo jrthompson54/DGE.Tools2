@@ -1,6 +1,6 @@
-Package: DGE.Tools
+Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 1.0.7.6
+Version: 2.0.1
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -21,7 +21,7 @@ Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
     up readable plots for both knitr reports and PPT presentations. NEW - Xpress2RSE
     will build a gene level RSE directly from Xpress.
 Depends:
-    R (>= 3.3.1)
+    R (>= 3.3.2)
 License: BMS Proprietary
 LazyData: true
 Imports:
@@ -48,7 +48,8 @@ Imports:
     sva,
     tidyr,
     tools,
-    zFPKM (>= 0.0.0.9000)
+    zFPKM (>= 0.0.0.9000),
+    DGEobj
 Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,
@@ -60,6 +61,7 @@ Collate:
     'BuildAndSaveRSE.R'
     'Build_RSE.R'
     'DGE_Unit_Conversion.R'
+    'DGEresult.R'
     'EnsemblGene2Entrez.R'
     'EnsemblGene2GeneSym.R'
     'Entrez2GeneSym.R'
@@ -67,9 +69,11 @@ Collate:
     'GeneSym2Entrez.R'
     'JRT_heatmap.R'
     'OmicsoftRefGeneID2GeneSym.R'
+    'OmicsoftToDgeObj.R'
     'ThemePack.R'
     'cdfPlot.R'
     'comparePlot.R'
+    'convertCounts.R'
     'extractCol.R'
     'ggplotMDS.R'
     'obsPlot.R'

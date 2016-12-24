@@ -4,59 +4,44 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(normSLOA, CountField = "DGElist", PlotFile = NULL, MVplot = TRUE,
-  dupCor = FALSE, dupCorSingleVoom = FALSE, qualityWeights = TRUE)
+runVoom(dgelist, designMatrix, formula, dupcorBlock = NULL,
+  qualityWeights = TRUE, var.design = NULL, dgeResult = NULL)
 }
 \arguments{
-\item{normSLOA}{An SLOA object (typically created by runEdgeRNorm) minimally
-containing normalized count data (either DGElist or Counts), a DesignMatrix
-and a Formula.}
+\item{dgelist}{An edgeR DGEList object that has already been normalized 
+(e.g. by edgeR::calcNormFactors or DGE.Tools::runEdgeRNorm) (required)}
 
-\item{CountField}{name of the SLOA element that contains the normalized log2
-count data. Normalized Counts are usually Log2CPM values. Defaults to
-"DGElist". I don't recommend changing this, but the only thing you might
-change this to is "Counts" in which case you should make sure these are
-normalized log2 count data.}
+\item{designMatrix}{A design matrix created by model.matrix (required)}
 
-\item{PlotFile}{File name for the voom MeanVaraince QC plot. Default = NULL.
-Provide a filename (.PNG) here to save the graphic to an image file.}
+\item{formula}{A text representation of a formula to fit (required)}
 
-\item{MVplot}{Set to TRUE to enable the voom Mean-Variance plot (Default = TRUE)}
+\item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional)}
 
-\item{dupCor}{Set to true to run duplicateCorrelation and feeds the
-correlation vector to voom and lmfit. To use duplicate correlation, you
-should have a "block" column in the Design table of the RSE (this will get
-carried into the SLOA$colData dataframe available for use in runVoom).
-Alternatively, you can manually add the "block" column to the SLOA object
-as normSLOA$colData$block just before executing runVoom. "block" is simply
-a vector that has the same value for each member within the same block.
-(Default=FALSE)}
+\item{qualityWeights}{Runs VoomWithQualityWeights if set to TRUE (default=TRUE)}
 
-\item{dupCorSingleVoom}{(for testing only) If set to true, the blocking info
-correlation vector from duplicateCorrelation is only provided to lmFit.
-(Default = FALSE)}
+\item{var.design}{Provide a design matrix to identify replicate groups.  If omitted
+VoomWithQualityWeights treats each sample individually.}
 
-\item{qualityWeights}{If True runs voomWithQualityWeights instead of voom.
-Will automatically also use var.design if var.design is present in the
-SLOA. Default = True. var.design will be used if present in the SLOA object
-(sloa$var.design).}
+\item{dgeResult}{A List object to add results to. If supplied, results 
+will be added to this. Otherwise a new dgeResult will be created. This
+allows you to sequentially capture results of multiple steps by passing
+the dgeResult to each function in the pipeline that supports it.}
 }
 \value{
-SLOA a SubsettableListOfArrays containing the model fit and ancillary
-  data
+A dgeResult object (currently a simple List of Lists structure)
 }
 \description{
-Input is an SLOA containing a logNormalizedCPM matrix.
-Returns a SubsettableListOfArrays (SLOA) containing the Fit and associated
-output from the standard RNA-Seq
-followed by limma voom and lmfit.  The SLOA contains the Fit object
-and various associated data  use "print(SLOA)" to examine the contents.
+Input is minimally a DGEList (typically from counts %>% DGEList %>%
+calcNormFactors), a design matrix (from model.matrix) and a formula (text
+representation).  Instead of a dgelist, you can probably use a Log2CPM matrix
+(preferably already normalized).
+}
+\details{
+Returns a dgeResult object containing the VoomElist and Fit objects derived from
+voom and lmfit respectively. Appends to a prior dgeResult if one is passed, else
+creates a new dgeResult.
 }
 \examples{
-#default to DGElist for counts and TMM normalization
-MyFitSLOA = runVoom (MyNormSLOA, PlotFile="MVplot.png")
-
-MyFitSLOA = runVoom (MyNormSLOA, CountField = "Counts", dupCor=MyDupCor)
 
 }
 \author{

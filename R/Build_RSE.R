@@ -51,7 +51,7 @@
 #' @import S4Vectors SummarizedExperiment zFPKM dplyr edgeR magrittr
 #'
 #' @export
-Build_RSE <- function (GeneData, OutputPath=".", PlotFile = "zFPKM.PNG", FacetTitles=FALSE, debug=FALSE){
+Build_RSE <- function (.GeneData, OutputPath="."){
   # Parameters:
   #   GeneData list of lists which list the name, file and type of data to load
   #
@@ -174,7 +174,6 @@ Build_RSE <- function (GeneData, OutputPath=".", PlotFile = "zFPKM.PNG", FacetTi
   #Capture reproducible info in metadata
   workflowRecord = list()
   workflowRecord$Session.Info = sessionInfo()
-  workflowRecord$Build_RSE = paste (date(), " : v", packageVersion("DGE.Tools2"), sep="")
   workflowRecord$RVersion = R.version.string
   workflowRecord$DGE.Tools.Version = packageVersion("DGE.Tools2")
   workflowRecord$Date = date()

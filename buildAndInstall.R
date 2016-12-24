@@ -2,8 +2,8 @@
 #Not for use by end Users!
 
 x = getwd()
-setwd ("~/R/lib/pkgsrc/DGE.Tools/")
-pkg = "~/R/lib/pkgsrc/DGE.Tools_1.0.7.5.tar.gz"
+setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
+pkg = "~/R/lib/pkgsrc/DGE.Tools_2.0.1.tar.gz"
 library(devtools);document();load_all;build()
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
@@ -11,8 +11,8 @@ setwd(x)
 
 #install from Git
 #After pushing to git...
-install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools")
-install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools", repos=BiocInstaller::biocinstallRepos())
+install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2")
+install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2", repos=BiocInstaller::biocinstallRepos())
 
 #for dev
 install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools", branch="dev", repos=BiocInstaller::biocinstallRepos())

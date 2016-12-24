@@ -4,15 +4,12 @@
 \alias{runEdgeRNorm}
 \title{Function  runEdgeRNorm (edgeR normlization )}
 \usage{
-runEdgeRNorm(RSE, Formula, NormMethod = "TMM", Design = NULL,
-  plotFile = "Norm.Factors.PNG", plotLabels = NULL,
-  estimateDispersion = TRUE)
+runEdgeRNorm(dat, Formula, NormMethod = "TMM", Design = NULL,
+  plotFile = "Norm.Factors.PNG", plotLabels = NULL)
 }
 \arguments{
-\item{RSE}{An RSE object e.g as built by Build_RSE function}
-
 \item{Formula}{a text string specifying the model formula. The formula must
-use column names from the sample annotation in the RSE.DGE}
+use column names from the sample annotation in the design data}
 
 \item{NormMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
 
@@ -24,14 +21,11 @@ Set to NULL to disable the plot.}
 \item{plotLabels}{Sample labels for the plot. Length must equal the number of
 samples. (Default = NULL;  sample number will be displayed)}
 
-\item{estimateDispersion}{If true, run edgeR estimateDisp function and adds
-dispersion values to the SLOA output.  (Default = True)  This takes a
-minute or two ro run and you may want to turn it off when you re-running a
-script during development or maybe better, use the cache=TRUE chunk opion
-in knitr so save time rerunning blocks that haven't changed.}
+\item{Data}{An RSE object (e.g as built by Build_RSE function) or a DGEObj
+as produced by initDGEobj.}
 }
 \value{
-SLOA a SubsettableListOfArrays containing data ready for DGE analysis
+A DGEObj
 }
 \description{
 Returns a SubsettableListOfArrays (SLOA) containing the Fit and associated

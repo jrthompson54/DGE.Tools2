@@ -4,15 +4,14 @@
 \alias{Build_RSE}
 \title{Function  Build_RSE}
 \usage{
-Build_RSE(GeneData, OutputPath = ".", PlotFile = "zFPKM.PNG",
-  FacetTitles = FALSE, debug = FALSE)
+Build_RSE(.GeneData, OutputPath = ".")
 }
 \arguments{
+\item{OutputPath}{Path}
+
 \item{GeneData}{A predefined List of Lists defining data names, file names, and file types.}
 
-\item{OutputPath}{Column name of the Ensembl GeneID column to map}
-
-\item{PlotFile}{Name for image of sample distribution fits}
+\item{PlotFile}{Name for image of sample zFPKM distribution fits (set to NULL to disable plot)}
 
 \item{debug}{If TRUE, returns a simple list of data objects instead of building
 a RSE object.  Use this to examine the data if the SummarizedExperiment
@@ -20,7 +19,7 @@ function issues errors.  You can then examine the dataframes that generated
 the errors. Use debug mode if you get errors after the message "Building RSE Object".}
 }
 \value{
-Dataframe with Entez GeneID column added
+A RangedSummarizedExperiment
 }
 \description{
 Build a RangedSummarizedExperiment (RSE) from count data.  The
@@ -34,7 +33,7 @@ GeneData is a predefined data structure (list of lists) that specifies the
 datafiles to import.  GeneData is pre-configured for the standarized Omicsoft
 project output.  Modify as necessary to accommodate data from other
 pipelines.  There is also a "TranscriptData" pre-defined definition.  Passing
-TranscriptData as the  GeneData parameter will properly produce a
+TranscriptData as the GeneData parameter will produce a
 Transcript-level RSE.  Note a single RSE cannot contain both Gene and Transcript
 data because of the mismatch in gene/transcript rowcounts.
 
