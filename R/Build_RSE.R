@@ -37,31 +37,22 @@
 #'
 #' @param GeneData A predefined List of Lists defining data names, file names, and file types.
 #' @param OutputPath  Path 
-#' @param PlotFile Name for image of sample zFPKM distribution fits (set to NULL to disable plot)
-#' @param debug If TRUE, returns a simple list of data objects instead of building
-#'  a RSE object.  Use this to examine the data if the SummarizedExperiment
-#'  function issues errors.  You can then examine the dataframes that generated
-#'  the errors. Use debug mode if you get errors after the message "Building RSE Object".
 #'
 #' @return A RangedSummarizedExperiment
 #'
 #' @examples
-#' MyRSE = Build_RSE (GeneData, PlotFile = "Gene.zFPKM.PNG")
+#' 
+#'     #For Omicsoft data in same folder
+#'     MyRSE <- Build_RSE ()
+#'     
+#'     #User supplied files and modified .Genedata list accordingly to point
+#'     #to their files
+#'     MyRSE <- Build_RSE (MyGeneData, OutputPath = "./rdata")
 #'
-#' @import S4Vectors SummarizedExperiment zFPKM dplyr edgeR magrittr
+#' @import S4Vectors SummarizedExperiment dplyr magrittr
 #'
 #' @export
 Build_RSE <- function (.GeneData, OutputPath="."){
-  # Parameters:
-  #   GeneData list of lists which list the name, file and type of data to load
-  #
-  #   PlotFile = NULL will disable zFPKM plot, but not zFPKM calculation
-  #
-  #   FacetTitles controls whether or not there is a title bar on each individual facet in
-  #   the zFPKM plot.
-  #
-  # Return an RSE object which is a SummarizedExperiment object encapsulating
-  # various data types (e.g. counts, fpkm, zfpkm, etc.)
 
   MyAssays = list()
   Mymetadata = list()
@@ -182,19 +173,12 @@ Build_RSE <- function (.GeneData, OutputPath="."){
 
   tsmsg("Building RSE Object")
 
-  if (debug==FALSE){
-    RSE = SummarizedExperiment(assays = MyAssays,
+
+  RSE = SummarizedExperiment(assays = MyAssays,
                                rowRanges = df2GR(MyRowData),
                                colData = S4Vectors::DataFrame(MyColData),
                                metadata = S4Vectors::SimpleList(Mymetadata))
 
-    return(RSE)
-  } else {
-    tsmsg("Debug Mode: Output is a simple List of dataframes instead of an RSE")
-    output = list()
-    output$assays <- MyAssays
-    output$colData <- MyColData
-    output$metadata <- Mymetadata
-    return(output)
-  }
+  return(RSE)
+
 }

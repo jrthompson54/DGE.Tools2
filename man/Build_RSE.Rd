@@ -10,13 +10,6 @@ Build_RSE(.GeneData, OutputPath = ".")
 \item{OutputPath}{Path}
 
 \item{GeneData}{A predefined List of Lists defining data names, file names, and file types.}
-
-\item{PlotFile}{Name for image of sample zFPKM distribution fits (set to NULL to disable plot)}
-
-\item{debug}{If TRUE, returns a simple list of data objects instead of building
-a RSE object.  Use this to examine the data if the SummarizedExperiment
-function issues errors.  You can then examine the dataframes that generated
-the errors. Use debug mode if you get errors after the message "Building RSE Object".}
 }
 \value{
 A RangedSummarizedExperiment
@@ -55,7 +48,13 @@ ExonLength field is provided in the row annotation.  Alignment QC data
 will also be imported, if present, and placed in the metadata slot.
 }
 \examples{
-MyRSE = Build_RSE (GeneData, PlotFile = "Gene.zFPKM.PNG")
+
+    #For Omicsoft data in same folder
+    MyRSE <- Build_RSE ()
+    
+    #User supplied files and modified .Genedata list accordingly to point
+    #to their files
+    MyRSE <- Build_RSE (MyGeneData, OutputPath = "./rdata")
 
 }
 \author{
