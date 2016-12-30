@@ -61,7 +61,6 @@ Collate:
     'BuildAndSaveRSE.R'
     'Build_RSE.R'
     'DGE_Unit_Conversion.R'
-    'DGEresult.R'
     'EnsemblGene2Entrez.R'
     'EnsemblGene2GeneSym.R'
     'Entrez2GeneSym.R'

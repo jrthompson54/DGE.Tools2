@@ -9,28 +9,26 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords gene symbol, Entrez, GeneID
 #'
-#' @param Data An RSE object (e.g as built by Build_RSE function) or a DGEObj
-#'     as produced by initDGEobj.
-#' @param Formula a text string specifying the model formula. The formula must
-#'    use column names from the sample annotation in the design data
-#' @param NormMethod One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"
-#' @param Design Used to override the design (colData) embedded in the RSE. Defaults to NULL
+#' @param dat A DGEobj or RSE object data structure containing counts and design
+#'    data
+#' @param normMethod One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"
 #' @param plotFile Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
 #'   Set to NULL to disable the plot.
 #' @param plotLabels Sample labels for the plot. Length must equal the number of
 #'   samples. (Default = NULL;  sample number will be displayed)
 #'
-#' @return A DGEObj
+#' @return A DGEObj with a normalized DGEList added.
 #'
 #' @examples
-#' MyFormula <- "~ 0 + DiseaseTreatment"
-#' MySLOA <- runEdgeRNorm (RSE, MyFormula)
+#' MyDgeObj <- runEdgeRNorm (RSE)
+#' 
+#' MyDgeObj <- runEdgeRNorm (MyDgeObj)
 #'
 #' @import edgeR magrittr limma SummarizedExperiment DGEobj assertthat
 #'
 #' @export
-runEdgeRNorm <- function(dat, Formula, NormMethod="TMM", Design=NULL,
-                         plotFile="Norm.Factors.PNG",
+runEdgeRNorm <- function(dat, NormMethod="TMM", 
+                         plotFile="TMM_Norm.Factors.PNG",
                          plotLabels = NULL){
 
     funArgs <- match.call()
@@ -40,17 +38,12 @@ runEdgeRNorm <- function(dat, Formula, NormMethod="TMM", Design=NULL,
                 (datClass == "DGEobj"))
    
 #create the DGEobj if needed  
-  if (datClass == "RangedSummarizedExperiment"){ 
-      RowData <- rowData(dat) %>% as.data.frame
-      rownames(RowData) <- RowData$ID
-      dgeObj <- initDGEobj(assay(dat, "Counts"), 
-                                 RowData,
-                                 colData(RSE))
-  } else dgeObj <- dat
+  if (datClass == "RangedSummarizedExperiment")
+      dgeObj <- as.DGEO(dat)
+  else dgeObj <- dat
 
   #convert counts to a matrix
   CountsMatrix = as.matrix(getType(dgeObj, "counts"))
-
 
   #Now ready to normalize counts
   MyDGElist = CountsMatrix %>%
@@ -58,9 +51,10 @@ runEdgeRNorm <- function(dat, Formula, NormMethod="TMM", Design=NULL,
     calcNormFactors (method = NormMethod)   
   
   #capture the DGEList
-  dgeObj <- addItem(dgeObj, MyDGElist, "DGEList",  "DGEList", funArgs=funArgs)
-  dgeObj <- setAttributes(dgeObj$data[["DGEList"]],
-                          list(normalization="TMM"))
+  custAttr <- list(normalization="TMM")
+  dgeObj <- addItem(dgeObj, MyDGElist, "DGEList",  "DGEList", 
+                    funArgs=funArgs,
+                    custAttr=custAttr)
 
   #plot the Norm factors
   if (!is.null(plotLabels)  && length(plotLabels == ncol(dgeObj))){
@@ -81,7 +75,7 @@ runEdgeRNorm <- function(dat, Formula, NormMethod="TMM", Design=NULL,
                 xlab("Samples") +
                 ylab("Norm Factors") +
                 ggtitle ("Normalization Factors") +
-                bwTheme(12) +
+                theme_bw(12) +
                 theme(axis.text.x = element_text(angle=angle, hjust = 1.0))
 
     print(nfplot)

@@ -60,7 +60,7 @@ Build_RSE <- function (.GeneData, OutputPath="."){
   #check for level definition
   if (is.null(GeneData$Level)){
     Mymetadata$Level = "Unk"
-    stop ("GeneData$Level$level must have be set to Gene or Transcript")
+    stop ("GeneData$Level$level must be set to Gene or Transcript")
   }
   tsmsg("Importing text files ...")
   #read tabbed text files specified in GeneData into dataframes
@@ -173,8 +173,7 @@ Build_RSE <- function (.GeneData, OutputPath="."){
 
   tsmsg("Building RSE Object")
 
-
-  RSE = SummarizedExperiment(assays = MyAssays,
+  RSE <- SummarizedExperiment(assays = MyAssays,
                                rowRanges = df2GR(MyRowData),
                                colData = S4Vectors::DataFrame(MyColData),
                                metadata = S4Vectors::SimpleList(Mymetadata))

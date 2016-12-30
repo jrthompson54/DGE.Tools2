@@ -139,13 +139,14 @@
 ### Utility FUNCTIONS ###
 
 ### Function tsmsg ###
+# a timestamped message
 #' @export
 tsmsg <- function(...) {
   # Works like message() but prepends a timestamp
   message(date(), ": ", ...)
 }
 
-
+#df2GR is obsolete.  Can now use:  gr <- as(geneInfoDF, "GRanges")
 ### Function df2GR ###
 #' @import magrittr IRanges GenomicRanges
 df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"), 
@@ -184,7 +185,6 @@ df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"),
 }
 
 ### Function Txt2DF ###
-#' @export
 Txt2DF <- function(filename) {
   #configured to read Omicsoft .txt files correctly capturing GeneIDs as rownames
   if (file.exists(filename)) {

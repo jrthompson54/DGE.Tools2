@@ -4,16 +4,12 @@
 \alias{runEdgeRNorm}
 \title{Function  runEdgeRNorm (edgeR normlization )}
 \usage{
-runEdgeRNorm(dat, Formula, NormMethod = "TMM", Design = NULL,
-  plotFile = "Norm.Factors.PNG", plotLabels = NULL)
+runEdgeRNorm(dat, NormMethod = "TMM", plotFile = "TMM_Norm.Factors.PNG",
+  plotLabels = NULL)
 }
 \arguments{
-\item{Formula}{a text string specifying the model formula. The formula must
-use column names from the sample annotation in the design data}
-
-\item{NormMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
-
-\item{Design}{Used to override the design (colData) embedded in the RSE. Defaults to NULL}
+\item{dat}{A DGEobj or RSE object data structure containing counts and design
+data}
 
 \item{plotFile}{Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
 Set to NULL to disable the plot.}
@@ -21,11 +17,10 @@ Set to NULL to disable the plot.}
 \item{plotLabels}{Sample labels for the plot. Length must equal the number of
 samples. (Default = NULL;  sample number will be displayed)}
 
-\item{Data}{An RSE object (e.g as built by Build_RSE function) or a DGEObj
-as produced by initDGEobj.}
+\item{normMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
 }
 \value{
-A DGEObj
+A DGEObj with a normalized DGEList added.
 }
 \description{
 Returns a SubsettableListOfArrays (SLOA) containing the Fit and associated
@@ -34,8 +29,9 @@ followed by limma voom and lmfit.  The SLOA contains the Fit object
 and various associated data  use "print(SLOA)" to examine the contents.
 }
 \examples{
-MyFormula <- "~ 0 + DiseaseTreatment"
-MySLOA <- runEdgeRNorm (RSE, MyFormula)
+MyDgeObj <- runEdgeRNorm (RSE)
+
+MyDgeObj <- runEdgeRNorm (MyDgeObj)
 
 }
 \author{

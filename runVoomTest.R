@@ -1,23 +1,52 @@
 #test runVoom
-
-dgelist <- readRDS('~/R/recount/SRP010041/dgelist.RDS')
-load(file.path('~/R/recount/SRP010041', 'rse_gene.Rdata'))
+rm(list=ls())
+# dgelist <- readRDS('~/R/recount/SRP010041/dgelist.RDS')
+# load(file.path('~/R/recount/SRP010041', 'rse_gene.Rdata'))
 library(dplyr)
 library(edgeR)
-library(limia)
-source('runVoom.R')
+library(limma)
+library(magrittr)
+library(DGEobj)
+library(DGE.Tools2)
 
-design <- colData(rse_gene) %>% as.data.frame
-design$State <- as.factor(c(rep("Norm", 3), rep("IPF", 3)))
-design$State %<>% relevel("Norm")
-formula <- '~ State'
+setwd("~/R/DGE.Tools_Example")
+
+dgeObj <- OmicsoftToDgeObj()
+
+dgeObj <- runEdgeRNorm(dgeObj)
+
+#define a formula and construct a design matrix
+design <- getItem(dgeObj, "design")
+design$ReplicateGroup %<>% as.factor
+design$ReplicateGroup %<>% relevel("Normal_control")
+formula <- '~ ReplicateGroup'
 designMatrix <- model.matrix (as.formula(formula), design)
 
+#try all 6 senarios
+d1 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE)
 
-dgeResult <- runVoom(dgelist, designMatrix, formula, qualityWeights = FALSE)
+#QW and Var.design
+vd <- model.matrix(as.formula("~ Treatment"), design)
+d2 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE,
+              var.design=vd)
 
-result <- runVoom(dgelist, designMatrix, formula,
-                    dupcorBlock=NULL,
-                    qualityWeights = TRUE,
-                    qwBlock=NULL,
-                    resultList=NULL)
+#QW and Var.design and dupCor
+block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
+d3 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE,
+              var.design=vd,
+              dupcorBlock=block)
+#add QW
+d4 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE)
+
+#QW and Var.design
+vd <- model.matrix(as.formula("~ Treatment"), design)
+d5 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+              var.design=vd)
+
+#QW and Var.design and dupCor
+block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
+d6 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+              var.design=vd,
+              dupcorBlock=block)
+
+

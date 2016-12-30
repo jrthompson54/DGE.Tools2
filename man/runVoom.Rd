@@ -4,42 +4,56 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgelist, designMatrix, formula, dupcorBlock = NULL,
-  qualityWeights = TRUE, var.design = NULL, dgeResult = NULL)
+runVoom(dgeObj, designMatrix, formula, dupcorBlock, qualityWeights = TRUE,
+  var.design, mvPlot = TRUE)
 }
 \arguments{
-\item{dgelist}{An edgeR DGEList object that has already been normalized 
-(e.g. by edgeR::calcNormFactors or DGE.Tools::runEdgeRNorm) (required)}
+\item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
 
 \item{designMatrix}{A design matrix created by model.matrix (required)}
 
 \item{formula}{A text representation of a formula to fit (required)}
 
-\item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional)}
+\item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional). 
+Should be a vector the same length as ncol with values to indicate common
+group membership for duplicateCorrelation.}
 
-\item{qualityWeights}{Runs VoomWithQualityWeights if set to TRUE (default=TRUE)}
+\item{qualityWeights}{Runs VoomWithQualityWeights if set to TRUE (default=TRUE).
+This should normally be set to TRUE.}
 
-\item{var.design}{Provide a design matrix to identify replicate groups.  If omitted
+\item{var.design}{Provide a design matrix (from model.matrix) to identify 
+replicate groups (e.g. "~ ReplicateGroup") for quality weight determination. 
+Causes quality weights to be determined on a group basis.  If omitted 
 VoomWithQualityWeights treats each sample individually.}
 
-\item{dgeResult}{A List object to add results to. If supplied, results 
-will be added to this. Otherwise a new dgeResult will be created. This
-allows you to sequentially capture results of multiple steps by passing
-the dgeResult to each function in the pipeline that supports it.}
+\item{mvPlot}{Enables the voom mean-variance plot (Default = TRUE)}
 }
 \value{
-A dgeResult object (currently a simple List of Lists structure)
+A DGEobj now containing designMatrix, Elist and fit object
 }
 \description{
-Input is minimally a DGEList (typically from counts %>% DGEList %>%
-calcNormFactors), a design matrix (from model.matrix) and a formula (text
-representation).  Instead of a dgelist, you can probably use a Log2CPM matrix
-(preferably already normalized).
+Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
+a design matrix (from model.matrix) and a formula (text
+representation).  Other arguments can invoke duplicateCorrelation and modify
+use of quality weights.
 }
 \details{
-Returns a dgeResult object containing the VoomElist and Fit objects derived from
-voom and lmfit respectively. Appends to a prior dgeResult if one is passed, else
-creates a new dgeResult.
+Returns a DGEobj class object containing the designMatrix, VoomElist (voom
+output) and Fit object (lmfit output). Appends data items to the input
+DGEobj.
+
+Quality weights should be left enabled unless you have a good reason to turn it 
+off.  If all samples are equal quality, the weights will all be 1 with no 
+effect on the results.  More typically,  some samples are better than others
+and using quality weights improves the results.
+
+Use var.design when you notice that quality weights are correlated with some
+factor in the experiment.  This will cause the quality weights to be 
+calculated as a group instead of individually.
+
+Use duplicate correlattion when you have subjects that have been sampled more
+than once (e.g. before and after some treatment).  This calculates a within 
+subject correlation and includes this in the model.
 }
 \examples{
 

@@ -62,25 +62,30 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               customAttr){
     
     #get the data i
-    countData <- read.table (counts, sep="\t", stringsAsFactors = FALSE,
-                             header=TRUE, row.names = 1, comment.char="",
-                             quote="", na.strings=c("NA", "."))
+    countData <- Txt2DF(counts)
+        # read.table (counts, sep="\t", stringsAsFactors = FALSE,
+        #                      header=TRUE, row.names = 1, comment.char="",
+        #                      quote="", na.strings=c("NA", ".")) %>% 
+        #                      as.matrix
     
-    seqData <- read.table (seqAnnotation, sep="\t", stringsAsFactors = FALSE,
-                             header=TRUE, row.names = 1, comment.char="",
-                             quote="", na.strings=c("NA", ".")) %>% 
-                             as.matrix
+    seqData <- Txt2DF(seqAnnotation)
+        # read.table (seqAnnotation, sep="\t", stringsAsFactors = FALSE,
+        #                      header=TRUE, row.names = 1, comment.char="",
+        #                      quote="", na.strings=c("NA", ".")) 
     
-    designData <- read.table (design, sep="\t", stringsAsFactors = FALSE,
-                             header=TRUE, row.names = 1, comment.char="",
-                             quote="", na.strings=c("NA", "."))
-    
+    designData <- Txt2DF(design)
+    # read.table (design, sep="\t", stringsAsFactors = FALSE,
+    #                          header=TRUE, row.names = 1, comment.char="",
+    #                          quote="", na.strings=c("NA", "."))
+
     #build the DgeObj
     if (missing(customAttr))
-        DgeObj <- initDGEobj(countData, designData, seqData, level)
+        DgeObj <- initDGEobj(counts=countData, rowData=seqData, 
+                             colData=designData, level)
     else {
         if (class(customAttr)[[1]] == "list")
-            DgeObj <- initDGEobj(countData, designData, seqData, level, 
+            DgeObj <- initDGEobj(counts=countData, rowData=seqData, 
+                                 colData=designData, level, 
                                  customAttr=customAttr)
         else
             stop ("customAttr must be a named list of attribute/value pairs")
@@ -89,4 +94,4 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     return(DgeObj)
 }
 
-  
+ 
