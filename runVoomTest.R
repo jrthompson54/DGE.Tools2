@@ -1,27 +1,4 @@
-#test runVoom
-rm(list=ls())
-# dgelist <- readRDS('~/R/recount/SRP010041/dgelist.RDS')
-# load(file.path('~/R/recount/SRP010041', 'rse_gene.Rdata'))
-library(dplyr)
-library(edgeR)
-library(limma)
-library(magrittr)
-library(DGEobj)
-library(DGE.Tools2)
-
-setwd("~/R/DGE.Tools_Example")
-
-dgeObj <- OmicsoftToDgeObj()
-
-dgeObj <- runEdgeRNorm(dgeObj)
-
-#define a formula and construct a design matrix
-design <- getItem(dgeObj, "design")
-design$ReplicateGroup %<>% as.factor
-design$ReplicateGroup %<>% relevel("Normal_control")
-formula <- '~ ReplicateGroup'
-designMatrix <- model.matrix (as.formula(formula), design)
-
+name
 #try all 6 senarios
 d1 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE)
 
@@ -49,4 +26,8 @@ d6 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
               var.design=vd,
               dupcorBlock=block)
 
-
+#QW and Var.design with eBayes
+vd <- model.matrix(as.formula("~ Treatment"), design)
+d7 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+              var.design=vd, 
+              runEBayes=TRUE)

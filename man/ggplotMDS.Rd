@@ -4,19 +4,23 @@
 \alias{ggplotMDS}
 \title{Function ggplotMDS}
 \usage{
-ggplotMDS(DGElist, top = Inf, labels = NULL, labelSize = 2,
-  title = NULL, textColor = "blue2", hlineIntercept = NULL,
-  vlineIntercept = NULL, reflineColor = "darkgoldenrod1",
-  reflineSize = 0.5, baseFontSize = 12, themeStyle = "grey", ...)
+ggplotMDS(DGEdata, colorBy, top = Inf, labels, labelSize = 2, title,
+  textColor = "blue2", hlineIntercept, vlineIntercept,
+  reflineColor = "darkgoldenrod1", reflineSize = 0.5, baseFontSize = 12,
+  themeStyle = "grey", symShape, symFill = "blue2", symColor = "blue2",
+  ...)
 }
 \arguments{
-\item{DGElist}{A DGEList object taken after running edgeR TMM normalization}
+\item{DGEdata}{A DGEList object taken after normalization 
+or a DGEobj that contains a DGEList. (Required)}
+
+\item{colorBy}{A grouping vector to color by (e.g. ReplicateGroup) (Required)}
 
 \item{top}{Number of most variant genes to include (default = Inf)}
 
 \item{labels}{Text labels for the samples.  These should be short
 abbreviations of the sample identifiers so that the plot is not too
-cluttered.  If NULL, the column names from DGElist are used.}
+cluttered.}
 
 \item{labelSize}{Size for the text labels in the plot (default = 2)}
 
@@ -35,7 +39,14 @@ cluttered.  If NULL, the column names from DGElist are used.}
 
 \item{themeStyle}{One of "grey" or "bw" (Default = "grey")}
 
-\item{...}{arguments from plotMDS.DGEList (see ?plotMDS.DGEList in package
+\item{symShape}{Set the shape of the symbols (Optional)}
+
+\item{symFill}{Set color for the fill on open symbols (Default = "blue2")}
+
+\item{symColor}{set color for solid symbols or outline for open symbols
+(Default = "blue2")}
+
+\item{...}{argument passed to plotMDS function (see ?plotMDS in package
 edgeR)}
 }
 \value{
@@ -47,6 +58,9 @@ This is a wrapper around the plotMDS function that generates the plot with
 ggplot2 instead of base graphics.
 }
 \details{
+If you define symShape, you'll get a plot of symbols with optional text labels.
+If you leave symShape undefined, the just the labels will be plotted.
+
 The underlying plotMDS function uses a default of top=500 to use the top 500
 highest fold change genes for the analysis.  The method runs quick and I've
 found situations where a larger value produced a more stable result.  Thus
@@ -68,9 +82,8 @@ detected in your data.
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }
-\keyword{compare}
-\keyword{ggplot2}
-\keyword{logratio}
-\keyword{plot}
-\keyword{scatterplot}
+\keyword{DGE,}
+\keyword{MDS,}
+\keyword{QC}
+\keyword{RNA-Seq,}
 

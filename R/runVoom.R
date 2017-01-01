@@ -1,19 +1,24 @@
 ### Function runVoom ###
 #' Function  runVoom (voom then lmFit)
 #'
+#' In the recommended workflow this runs voomWithQualityWeights followed by
+#' lmfit and optionally eBayes.  You should enable eBayes if the contrasts of
+#' interest are already represented in the model. If you intend to use
+#' contrasts.fit, you should run eBayes after that step instead.
+#' 
 #' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
 #' a design matrix (from model.matrix) and a formula (text
 #' representation).  Other arguments can invoke duplicateCorrelation and modify
-#' use of quality weights.
+#' use of quality weights.  
 #' 
 #' Returns a DGEobj class object containing the designMatrix, VoomElist (voom
 #' output) and Fit object (lmfit output). Appends data items to the input
 #' DGEobj.
 #' 
 #' Quality weights should be left enabled unless you have a good reason to turn it 
-#' off.  If all samples are equal quality, the weights will all be 1 with no 
-#' effect on the results.  More typically,  some samples are better than others
-#' and using quality weights improves the results.
+#' off.  If all samples are equal quality, the weights will all approach 1.0 with no 
+#' consequence on the results.  More typically,  some samples are better than others
+#' and using quality weights improves the overall result.
 #' 
 #' Use var.design when you notice that quality weights are correlated with some
 #' factor in the experiment.  This will cause the quality weights to be 
@@ -38,6 +43,11 @@
 #'    replicate groups (e.g. "~ ReplicateGroup") for quality weight determination. 
 #'    Causes quality weights to be determined on a group basis.  If omitted 
 #'    VoomWithQualityWeights treats each sample individually.
+#' @param runEBayes Runs eBayes after lmfit; default = FALSE
+#' @param proportion Proportion of genes expected to be differentially expressed
+#'   (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
+#'   significantly higher or lower proportion of genes regulated than the default.
+#'   a significantly higher or lower proportion of genes regulated than the default.
 #' @param mvPlot Enables the voom mean-variance plot (Default = TRUE)
 #' @return A DGEobj now containing designMatrix, Elist and fit object
 #'
@@ -50,7 +60,9 @@ runVoom <- function(dgeObj, designMatrix, formula,
                     dupcorBlock,
                     qualityWeights = TRUE,
                     var.design,
-                    mvPlot = TRUE
+                    mvPlot = TRUE,
+                    runEBayes = FALSE,
+                    proportion=0.01
                     ){
     
     assert_that(!missing("dgeObj"),
@@ -172,6 +184,12 @@ runVoom <- function(dgeObj, designMatrix, formula,
     } else {
         stop ("argument combination not supported!")
     }
+    
+    #run eBayes
+    if (runEBayes) {
+        fit = eBayes(fit, robust=TRUE, proportion=proportion)
+        custAttr$eBayes <- TRUE
+    } else custAttr$eBayes <- FALSE
 
     #save the VoomElist and fit objects
     dgeObj %<>% addItem(designMatrix, "designMatrix", "designMatrix", 
