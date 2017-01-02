@@ -93,23 +93,21 @@ ggplotMDS <- function(DGEdata,
                       ...
                         )
 {
-    #logic 
-    #if labels and sym arguments set: plot points with labels
-    #if only sym arguments: plot points
-    #if only labels: plot text only
-    
+
   #default labels to colnames of DGEdata
-  if (!is.null(labels))
-      if (missing(labels))
-          labels <- colnames(DGEdata)
+  addLabels <- TRUE
+  if (missing(labels)){ #set default labels
+      labels <- colnames(DGEdata)
       # Get labels from ReplicateGroup if present
-      if (missing(labels) & class(DGEdata)[[1]] == "DGEobj"){  
+      if (class(DGEdata)[[1]] == "DGEobj"){  
           design <- getItem(DGEdata, "design")
-          if (exists(design))
+          if (exists("design"))
               if (with (design, exists("ReplicateGroup")))
                   labels <- design$ReplicateGroup
       }
-              
+  } else if (is.null(labels))
+      addLabels <- FALSE
+ 
   #argument checks
   if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
       DGEdata <- getItem(DGEdata, "DGEList") 
@@ -171,16 +169,20 @@ ggplotMDS <- function(DGEdata,
   }
 
   pdf(NULL) #suppress the plot and just capture the output
-  mds <- plotMDS(DGEdata, top = top, labels = labels, pch = pch,
+  # mds <- plotMDS(DGEdata, top = top, labels = labels, pch = pch,
+  #                cex = cex, dim.plot = dim.plot, ndim = ndim,
+  #                gene.selection = gene.selection,
+  #                xlab = Xlab, ylab = Ylab)
+  mds <- plotMDS(DGEdata, top = top, pch = pch,
                  cex = cex, dim.plot = dim.plot, ndim = ndim,
                  gene.selection = gene.selection,
                  xlab = Xlab, ylab = Ylab)
   invisible(dev.off())
 
   #pull the plotting data together
-  if (is.null(labels))
-      xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy)
-  else xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy, Labels=labels)
+  if (addLabels == TRUE)
+      xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy, Labels=labels)
+  else xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy)
   
   byShape <- FALSE
   if (!missing(shapeBy)){
