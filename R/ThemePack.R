@@ -572,16 +572,17 @@ setLegendPosition <- function(ggplot, legendPosition = "right", themeStyle = "gr
 #' @export
 getXrange <- function(p){
   #http://stackoverflow.com/questions/7705345/how-can-i-extract-plot-axes-ranges-for-a-ggplot2-object
-  xrange <- ggplot_build(p)$panel$ranges[[1]]$x.range
+  xrange <- ggplot_build(p)$layout$panel_ranges[[1]]$x.range
+  #xrange <- ggplot_build(p)$panel$ranges[[1]]$x.range
   xrange <- unlist(xrange)
   return(xrange)
 }
 
-### Function getXrange ###
-#' Function  getXrange
+### Function getYrange ###
+#' Function  getYrange
 #'
 #' A simple function to spare me from looking up the syntax everytime
-#' I want to get the x range of a plot
+#' I want to get the y range of a plot
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords ggplot2
@@ -598,7 +599,8 @@ getXrange <- function(p){
 #' @export
 getYrange <- function(p){
   #http://stackoverflow.com/questions/7705345/how-can-i-extract-plot-axes-ranges-for-a-ggplot2-object
-  yrange <- ggplot_build(p)$panel$ranges[[1]]$y.range
+  yrange <- ggplot_build(p)$layout$panel_ranges[[1]]$y.range
+  #yrange <- ggplot_build(p)$panel$ranges[[1]]$y.range
   yrange <- unlist(yrange)
   return(yrange)
 }
