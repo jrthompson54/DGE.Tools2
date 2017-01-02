@@ -27,9 +27,11 @@
 #' @param sizeBy A numeric vector to define point size (Optional)
 #' @param top Number of most variant genes to include (default = Inf)
 #' @param labels Text labels for the samples.  These should be short
-#'   abbreviations of the sample identifiers so that the plot is not too
-#'   cluttered.  
-#' @param labelSize Size for the text labels in the plot (default = 2)
+#'   abbreviations of the sample identifiers.  
+#'   Default = ReplicateGroup or rownames of DGEdata.  Set to NULL to disable
+#'   text labels
+#' @param labelSize control the Size for the text labels in the plot if you 
+#'   don't like the default
 #' @param textColor Color for the text labels in the plot (default = "blue2")
 #' @param vlineIntercept X intercept of vertical line (Optional)
 #' @param hlineIntercept Y intercept of horizontal line (Optional)
@@ -73,7 +75,7 @@ ggplotMDS <- function(DGEdata,
                       sizeBy,
                       top = Inf,
                       labels,
-                      labelSize = 2,
+                      labelSize,
                       title,
                       textColor = "blue2",
                       hlineIntercept,
@@ -95,10 +97,18 @@ ggplotMDS <- function(DGEdata,
     #if labels and sym arguments set: plot points with labels
     #if only sym arguments: plot points
     #if only labels: plot text only
-  
-    textMode <- FALSE
-    if (!missing(labels))
-        textMode <- TRUE
+    
+  #default labels to colnames of DGEdata
+  if (!is.null(labels))
+      if (missing(labels))
+          labels <- colnames(DGEdata)
+      # Get labels from ReplicateGroup if present
+      if (missing(labels) & class(DGEdata)[[1]] == "DGEobj"){  
+          design <- getItem(DGEdata, "design")
+          if (exists(design))
+              if (with (design, exists("ReplicateGroup")))
+                  labels <- design$ReplicateGroup
+      }
               
   #argument checks
   if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
@@ -168,7 +178,9 @@ ggplotMDS <- function(DGEdata,
   invisible(dev.off())
 
   #pull the plotting data together
-  xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy) 
+  if (is.null(labels))
+      xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy)
+  else xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy, Labels=labels)
   
   byShape <- FALSE
   if (!missing(shapeBy)){
@@ -188,48 +200,57 @@ ggplotMDS <- function(DGEdata,
   if (!is.null(Ylab))
       xylab[[2]] <- Ylab
   
-  my_gg <- g + geom_point_interactive(aes(tooltip = model), size = 2) 
-  ggiraph(code = print(my_gg), width = .7)
+  # my_gg <- g + geom_point_interactive(aes(tooltip = labels), size = 2) 
+  # ggiraph(code = print(my_gg), width = .7)
   
   #start the plot
   if (byShape == FALSE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode)) +
-        geom_point(shape=symShape, size=symSize) +
-        scale_fill_manual(values=colors) +
-        scale_colour_manual(values=colors) 
+        # geom_point_interactive(aes(data_id = labels),
+        #                        shape=symShape, size=symSize) +
+        geom_point(shape=symShape, size=symSize) 
   
   else if (byShape == TRUE & bySize == FALSE)  
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
                                   shape=Shape)) +
+        # geom_point_interactive(aes(data_id = labels), size=symSize) +
         geom_point(size=symSize) +
-        scale_shape_manual(values=shapes) +
-        scale_fill_manual(values=colors) +
-        scale_colour_manual(values=colors) 
+        scale_shape_manual(values=shapes) 
   
   else if (byShape == FALSE & bySize == TRUE)  
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
                                   size=Size)) +
-        geom_point(shape=symShape) +
-        scale_fill_manual(values=colors) +
-        scale_colour_manual(values=colors) 
+        # geom_point_interactive(aes(data_id = labels), shape=symShape) +
+        geom_point(shape=symShape) 
   
   else if (byShape == TRUE & bySize == TRUE)  
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
                                   shape=Shape,
                                   size=Size)) +
+        # geom_point_interactive(aes(data_id = labels)) +
         geom_point() +
-        scale_shape_manual(values=shapes) +
-        scale_fill_manual(values=colors) +
-        scale_colour_manual(values=colors) 
+        scale_shape_manual(values=shapes) 
+  
+  #add point labels
+  if (!is.null(labels)){
+      if (missing(labelSize))
+         mdsplot <- mdsplot + 
+                    geom_text_repel(aes(label = Labels))
+      else mdsplot <- mdsplot + 
+              geom_text_repel(aes(label = Labels), size=labelSize)
+  }    
  
-  #add some labels
+  #add some other common elements
   mdsplot <- mdsplot + 
+      scale_fill_manual(values=colors) +
+      scale_colour_manual(values=colors) +
+      coord_fixed() +
       xlab (xylab[[1]]) +
       ylab (xylab[[2]]) +
       ggtitle (title)
   
   
-  browser()
+  # browser()
   
   #place an annotation on the bottom left of the plot
   xrange <- getXrange(mdsplot)
@@ -256,6 +277,9 @@ ggplotMDS <- function(DGEdata,
   if (tolower(themeStyle) %in% c("grey", "gray")){
     mdsplot <- mdsplot + theme_grey(baseFontSize)
   } else mdsplot <- mdsplot + theme_bw(baseFontSize)
+  
+  #print the interactive plot
+  ggiraph(code = print(mdsplot), width = .7)
 
   return(list(plot=mdsplot, mdsobj=mds))
 

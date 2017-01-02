@@ -4,17 +4,21 @@
 \alias{ggplotMDS}
 \title{Function ggplotMDS}
 \usage{
-ggplotMDS(DGEdata, colorBy, top = Inf, labels, labelSize = 2, title,
-  textColor = "blue2", hlineIntercept, vlineIntercept,
+ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels,
+  labelSize = 2, title, textColor = "blue2", hlineIntercept, vlineIntercept,
   reflineColor = "darkgoldenrod1", reflineSize = 0.5, baseFontSize = 12,
-  themeStyle = "grey", symShape, symFill = "blue2", symColor = "blue2",
-  ...)
+  themeStyle = "grey", symShape = 16, symSize = 5, symFill = "blue2",
+  symColor = "blue2", shapes, colors, ...)
 }
 \arguments{
 \item{DGEdata}{A DGEList object taken after normalization 
 or a DGEobj that contains a DGEList. (Required)}
 
 \item{colorBy}{A grouping vector to color by (e.g. ReplicateGroup) (Required)}
+
+\item{shapeBy}{A grouping vector to map to shape (Optional)}
+
+\item{sizeBy}{A numeric vector to define point size (Optional)}
 
 \item{top}{Number of most variant genes to include (default = Inf)}
 
@@ -26,9 +30,9 @@ cluttered.}
 
 \item{textColor}{Color for the text labels in the plot (default = "blue2")}
 
-\item{hlineIntercept}{Y intercept of horizontal line (Default = Null)}
+\item{hlineIntercept}{Y intercept of horizontal line (Optional)}
 
-\item{vlineIntercept}{X intercept of vertical line (Default = Null)}
+\item{vlineIntercept}{X intercept of vertical line (Optional)}
 
 \item{reflineColor}{Color for the horizontal and vertiacl reference lines
 (Default = "darkgoldenrod1")}
@@ -39,14 +43,17 @@ cluttered.}
 
 \item{themeStyle}{One of "grey" or "bw" (Default = "grey")}
 
-\item{symShape}{Set the shape of the symbols (Optional)}
+\item{symShape}{Set the default shape of the symbols if not mapped to a column (Default = 19 solid circle)}
+
+\item{symSize}{Set the default size of the symbols if not mapped to a column 
+(Default = 5)}
 
 \item{symFill}{Set color for the fill on open symbols (Default = "blue2")}
 
 \item{symColor}{set color for solid symbols or outline for open symbols
 (Default = "blue2")}
 
-\item{...}{argument passed to plotMDS function (see ?plotMDS in package
+\item{...}{arguments passed through to plotMDS function (see ?plotMDS in package
 edgeR)}
 }
 \value{
@@ -58,8 +65,11 @@ This is a wrapper around the plotMDS function that generates the plot with
 ggplot2 instead of base graphics.
 }
 \details{
-If you define symShape, you'll get a plot of symbols with optional text labels.
-If you leave symShape undefined, the just the labels will be plotted.
+colorBy, shapeBy and sizeBy are grouping variables to encode group info by
+color, shape or size.  These are vectors that must be the same length as 
+ncol(DGEdata).  colorBy and sizeBy will plot as continuous color or size
+changes if a numeric vector is used.  Convert the vector to a factor to 
+treat as groups instead of continuous.
 
 The underlying plotMDS function uses a default of top=500 to use the top 500
 highest fold change genes for the analysis.  The method runs quick and I've
@@ -77,6 +87,7 @@ detected in your data.
 
      #plot the 2nd and 3rd dimensions using the top 1000 genes
      MyMDS = ggplotMDS (MyDGEList, dim.plot=c(2,3) ndim =3)
+     MyMDS[[1]]
 
 }
 \author{

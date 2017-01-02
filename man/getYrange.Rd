@@ -2,7 +2,7 @@
 % Please edit documentation in R/ThemePack.R
 \name{getYrange}
 \alias{getYrange}
-\title{Function  getXrange}
+\title{Function  getYrange}
 \usage{
 getYrange(p)
 }
@@ -14,7 +14,7 @@ a vector of length 2 with xmin, xmax
 }
 \description{
 A simple function to spare me from looking up the syntax everytime
-I want to get the x range of a plot
+I want to get the y range of a plot
 }
 \examples{
 xrange<- getXrange(Myggplot)
