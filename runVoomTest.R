@@ -19,7 +19,7 @@ dgeObj <- runEdgeRNorm(dgeObj)
 design <- getItem(dgeObj, "design")
 design$ReplicateGroup %<>% as.factor
 design$ReplicateGroup %<>% relevel("Normal_control")
-formula <- '~ ReplicateGroup'
+formula <- '~ 0 + ReplicateGroup'
 designMatrix <- model.matrix (as.formula(formula), design)
 
 #try all 6 senarios
@@ -82,4 +82,18 @@ m[[1]]
 m <- ggplotMDS(dgeObj, colorBy = design$Treatment, 
                shapeBy = design$Disease.Status, symSize =5,
                labels=NULL)
+m[[1]]
 
+#use color and shape default labels (should be ReplicateGroup
+m <- ggplotMDS(dgeObj, colorBy = design$Treatment, 
+               shapeBy = design$Disease.Status, symSize =5)
+m[[1]]
+
+
+#runContrast testing  
+contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNormal_control",
+                      TGF_Stable = "ReplicateGroupStable_TGFb - ReplicateGroupStable_control",
+                      TGF_Rapid = "ReplicateGroupRapid_TGFb - ReplicateGroupRapid_control"
+)
+library(assertthat)
+DgeObj_contrast <- runContrasts(d7, contrastList)

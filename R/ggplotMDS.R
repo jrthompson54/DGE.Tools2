@@ -66,7 +66,7 @@
 #'      MyMDS = ggplotMDS (MyDGEList, dim.plot=c(2,3) ndim =3)
 #'      MyMDS[[1]]
 #'
-#' @import ggplot2 magrittr edgeR assertthat
+#' @import ggplot2 magrittr edgeR assertthat ggrepel ggiraph
 #'
 #' @export
 ggplotMDS <- function(DGEdata,
@@ -251,9 +251,6 @@ ggplotMDS <- function(DGEdata,
       ylab (xylab[[2]]) +
       ggtitle (title)
   
-  
-  # browser()
-  
   #place an annotation on the bottom left of the plot
   xrange <- getXrange(mdsplot)
   yrange <- getYrange(mdsplot)
@@ -281,7 +278,7 @@ ggplotMDS <- function(DGEdata,
   } else mdsplot <- mdsplot + theme_bw(baseFontSize)
   
   #print the interactive plot
-  ggiraph(code = print(mdsplot), width = .7)
+  #ggiraph(code = print(mdsplot), width = .7)
 
   return(list(plot=mdsplot, mdsobj=mds))
 

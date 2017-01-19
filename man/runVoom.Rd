@@ -5,7 +5,8 @@
 \title{Function  runVoom (voom then lmFit)}
 \usage{
 runVoom(dgeObj, designMatrix, formula, dupcorBlock, qualityWeights = TRUE,
-  var.design, mvPlot = TRUE, runEBayes = FALSE, proportion = 0.01)
+  var.design, mvPlot = TRUE, runEBayes = FALSE, robust = TRUE,
+  proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
@@ -29,6 +30,8 @@ VoomWithQualityWeights treats each sample individually.}
 \item{mvPlot}{Enables the voom mean-variance plot (Default = TRUE)}
 
 \item{runEBayes}{Runs eBayes after lmfit; default = FALSE}
+
+\item{robust}{Used by eBayes (Default = TRUE)}
 
 \item{proportion}{Proportion of genes expected to be differentially expressed
 (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 

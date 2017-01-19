@@ -4,15 +4,17 @@
 \alias{runContrasts}
 \title{Function  runContrasts}
 \usage{
-runContrasts(sloa, ContrastList, runTopTable = TRUE, runTopTreat = FALSE,
-  FoldChangeThreshold = 1.5, runEBayes = TRUE, robust = TRUE,
-  qvalues = FALSE, PvalueThreshold = 0.01, FDRthreshold = 0.1,
-  proportion = 0.01, SigTable = NULL, SigTablePNG = NULL)
+runContrasts(dgeObj, fitName, ContrastList, runTopTable = TRUE,
+  runTopTreat = FALSE, FoldChangeThreshold = 1.5, PvalueThreshold = 0.01,
+  FDRthreshold = 0.1, runEBayes = TRUE, robust = TRUE,
+  proportion = 0.01)
 }
 \arguments{
-\item{sloa}{An SLOA object containing a Fit object}
+\item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
 
-\item{ContrastList}{A named list of contrasts}
+\item{fitName}{The name of the fit within dgeObj to use for contrast analysis  (required)}
+
+\item{ContrastList}{A named list of contrasts  (required)}
 
 \item{runTopTable}{runs topTable on the specified contrasts (Default = TRUE)}
 
@@ -20,37 +22,29 @@ runContrasts(sloa, ContrastList, runTopTable = TRUE, runTopTreat = FALSE,
 
 \item{FoldChangeThreshold}{Only applies to TopTreat (Default = 1.5)}
 
-\item{runEBayes}{Runs eBayes after lmfit; default = TRUE}
-
-\item{robust}{eBayes robust option (default = TRUE)}
-
-\item{qvalues}{Deprecated and ignored.  Qvalue functionality has been removed from
-runContrasts and relegated to a separate function see ?runQvalues.#'}
-
 \item{PvalueThreshold}{Default = 0.01}
 
 \item{FDRthreshold}{Default = 0.1}
 
+\item{runEBayes}{Runs eBayes after lmfit (default = TRUE)}
+
+\item{robust}{eBayes robust option (default = TRUE)}
+
 \item{proportion}{Proportion of genes expected to be differentially expressed
 (used by eBayes) (Default = 0.01)}
-
-\item{SigTable}{Deprecated and ignored: replaced with summarizeSigCounts function}
-
-\item{SigTablePNG}{Deprecated and ignored: replaced with summarizeSigCounts function}
 }
 \value{
-A list containing contrast dataframes and other associated data.frames.
+The DGEobj with contrast fits and topTable/topTreat dataframes added.
 }
 \description{
-Take an SLOA object and a named list of contrasts to perform. The SLOA must
-contain a Fit object and a DesignMatrix. Returns a list of data objects
-including topTable and topTreat output, ContrastMatrix, Fit.Contrasts, gene
-and sample annotation (rowData and colData).
+Take a DGEObj and a named list of contrasts to build. The DGEobj must
+contain a limma Fit object and associated DesignMatrix. Returns the DGEobj with
+contrast fit(s), contrast matrix and topTable/topTreat dataframes added.
 }
 \details{
-The contrasts are composed of column names from the DesignMatrix of the SLOA
-and put into list form to start the analysis. Each contrast is named to give
-it a short pneumonic name.
+The contrastList is a named list composed of column names from the DesignMatrix 
+of the DGEobj.  Each contrast is named to give
+it a short recognizable name.
 
 Example ContrastList \cr
 
@@ -61,30 +55,26 @@ ContrastList = list( \cr
 
 where treatment1, treatment2 and control are columns in the DesignMatrix
 
-The returned ContrastAnalysis list contains the followin objects:
+The returned ContrastAnalysis list contains the following objects:
 \itemize{
    \item{"ContrastMatrix"} {a matrix}
    \item{"Fit.Contrasts"} {a Fit object}
    \item{"TopTableList"} {a List of dataframes}
    \item{"TopTreatList"} {a List of dataframes}
-   \item{"SigCountsTable"} {a dataframe summarizing signature gene counts}
-   \item{"workflowRecord"} {List of reproducible documentation}
-   \item{"Level"} {Type of data; one of Gene, Transcript or Exon}
 }
-
-See ?extractCol for a convenient means to extract a named column from all
-the contrasts in a TopTableList or TopTreatList.
 }
 \examples{
 #run defaults
-MyContsratList  = runContrasts (MySLOA, ConstrastList)
-MyContsratList  = runContrasts (MySLOA, ConstrastList, runTopTable = TRUE
-       ConstrastType = "TopTreat", FoldChangeThreshold = 1.25)
+myDgeObj  = runContrasts (myDgeObj, myFitName, ConstrastList)
+myDgeObj  = runContrasts (myDgeObj, myFitName, ConstrastList, runTopTable = TRUE
+       runTopTreat=TRUE, FoldChangeThreshold = 1.25)
 
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }
-\keyword{SLOA;}
-\keyword{contrasts}
+\keyword{DGE;}
+\keyword{DGEobj}
+\keyword{RNA-Seq;}
+\keyword{contrasts;}
 

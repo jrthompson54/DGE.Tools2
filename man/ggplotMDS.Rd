@@ -4,8 +4,8 @@
 \alias{ggplotMDS}
 \title{Function ggplotMDS}
 \usage{
-ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels,
-  labelSize = 2, title, textColor = "blue2", hlineIntercept, vlineIntercept,
+ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels, labelSize,
+  title, textColor = "blue2", hlineIntercept, vlineIntercept,
   reflineColor = "darkgoldenrod1", reflineSize = 0.5, baseFontSize = 12,
   themeStyle = "grey", symShape = 16, symSize = 5, symFill = "blue2",
   symColor = "blue2", shapes, colors, ...)
@@ -23,10 +23,12 @@ or a DGEobj that contains a DGEList. (Required)}
 \item{top}{Number of most variant genes to include (default = Inf)}
 
 \item{labels}{Text labels for the samples.  These should be short
-abbreviations of the sample identifiers so that the plot is not too
-cluttered.}
+abbreviations of the sample identifiers.  
+Default = ReplicateGroup or rownames of DGEdata.  Set to NULL to disable
+text labels}
 
-\item{labelSize}{Size for the text labels in the plot (default = 2)}
+\item{labelSize}{control the Size for the text labels in the plot if you 
+don't like the default}
 
 \item{textColor}{Color for the text labels in the plot (default = "blue2")}
 
