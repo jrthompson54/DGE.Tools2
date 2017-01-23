@@ -4,7 +4,8 @@
 #' In the recommended workflow this runs voomWithQualityWeights followed by
 #' lmfit and optionally eBayes.  You should enable eBayes if the contrasts of
 #' interest are already represented in the model. If you intend to use
-#' contrasts.fit, you should run eBayes after that step instead.
+#' contrasts.fit downstream, you should run eBayes after that step instead. In
+#' other words, run eBayes last.
 #' 
 #' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
 #' a design matrix (from model.matrix) and a formula (text
@@ -57,7 +58,7 @@
 #' @import magrittr limma 
 #'
 #' @export
-runVoom <- function(dgeObj, designMatrix, formula,
+runVoom <- function(dgeObj, formula,
                     dupcorBlock,
                     qualityWeights = TRUE,
                     var.design,
@@ -77,7 +78,12 @@ runVoom <- function(dgeObj, designMatrix, formula,
     result <- try(as.formula(formula), silent=TRUE)
     if (class(result) == "try-error") {
       stop("You're formula is badly formatted")
-    } 
+    }
+    
+    #build the designMatrix
+    design <- getItem(dgeObj, "design")
+    designMatrix <- model.matrix (as.formula(formula), design)
+    setAttributes(designMatrix, list(formula=formula))
     
     #get the DGEList
     if ("DGEList" %in% attr(dgeObj, "type"))
@@ -107,8 +113,10 @@ runVoom <- function(dgeObj, designMatrix, formula,
     # TTF  "dupcor_indQW"
     # TTT  "dupcor_vdQW" (var.design blocking on QW)
 
-# Note: Gordon Smythe has noted that duplicateCorrelation should be run twice.
+# Note re Duplicate Correlation: 
+# Gordon Smythe has noted that duplicateCorrelation should be run twice.
 # Actually, should interate until asymtope achieved but normally twice is sufficient.
+# https://support.bioconductor.org/p/59700/#67620
 
 #Main Calculations (one of six blocks will be run)
     
@@ -197,7 +205,9 @@ runVoom <- function(dgeObj, designMatrix, formula,
     dgeObj %<>% addItem(designMatrix, "designMatrix", "designMatrix", 
                         funArgs=funArgs,
                         custAttr=custAttr)
-    dgeObj %<>% addItem(VoomElist, "Elist", "Elist", funArgs=funArgs)
+    dgeObj %<>% addItem(VoomElist, "Elist", "Elist", 
+                        funArgs=funArgs,
+                        custAttr=custAttr)
     dgeObj %<>% addItem(fit, "fit", "fit", 
                         funArgs=funArgs,
                         custAttr=custAttr)

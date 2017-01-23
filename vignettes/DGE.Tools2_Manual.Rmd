@@ -1,0 +1,5 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{ISMB Twitter Analysis}
+%\VignetteDepends{ggplot2, ismbTweetAnalysis}
+-->

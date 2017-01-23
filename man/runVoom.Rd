@@ -4,14 +4,11 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgeObj, designMatrix, formula, dupcorBlock, qualityWeights = TRUE,
-  var.design, mvPlot = TRUE, runEBayes = FALSE, robust = TRUE,
-  proportion = 0.01)
+runVoom(dgeObj, formula, dupcorBlock, qualityWeights = TRUE, var.design,
+  mvPlot = TRUE, runEBayes = FALSE, robust = TRUE, proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
-
-\item{designMatrix}{A design matrix created by model.matrix (required)}
 
 \item{formula}{A text representation of a formula to fit (required)}
 
@@ -37,6 +34,8 @@ VoomWithQualityWeights treats each sample individually.}
 (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
 significantly higher or lower proportion of genes regulated than the default.
 a significantly higher or lower proportion of genes regulated than the default.}
+
+\item{designMatrix}{A design matrix created by model.matrix (required)}
 }
 \value{
 A DGEobj now containing designMatrix, Elist and fit object
@@ -45,7 +44,8 @@ A DGEobj now containing designMatrix, Elist and fit object
 In the recommended workflow this runs voomWithQualityWeights followed by
 lmfit and optionally eBayes.  You should enable eBayes if the contrasts of
 interest are already represented in the model. If you intend to use
-contrasts.fit, you should run eBayes after that step instead.
+contrasts.fit downstream, you should run eBayes after that step instead. In
+other words, run eBayes last.
 }
 \details{
 Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 

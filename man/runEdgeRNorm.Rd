@@ -8,8 +8,8 @@ runEdgeRNorm(dat, NormMethod = "TMM", plotFile = "TMM_Norm.Factors.PNG",
   plotLabels = NULL)
 }
 \arguments{
-\item{dat}{A DGEobj or RSE object data structure containing counts and design
-data}
+\item{dat}{A DGEobj or RSE object data structure containing counts, design
+data and gene annotation}
 
 \item{plotFile}{Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
 Set to NULL to disable the plot.}

@@ -9,8 +9,8 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords gene symbol, Entrez, GeneID
 #'
-#' @param dat A DGEobj or RSE object data structure containing counts and design
-#'    data
+#' @param dat A DGEobj or RSE object data structure containing counts, design
+#'    data and gene annotation
 #' @param normMethod One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"
 #' @param plotFile Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
 #'   Set to NULL to disable the plot.
@@ -51,7 +51,7 @@ runEdgeRNorm <- function(dat, NormMethod="TMM",
     calcNormFactors (method = NormMethod)   
   
   #capture the DGEList
-  custAttr <- list(normalization="TMM")
+  custAttr <- list(normalization="TMM", parent="counts")
   dgeObj <- addItem(dgeObj, MyDGElist, "DGEList",  "DGEList", 
                     funArgs=funArgs,
                     custAttr=custAttr)

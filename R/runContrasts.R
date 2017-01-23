@@ -121,37 +121,37 @@ runContrasts <- function(dgeObj, fitName, ContrastList,
 
  dgeObj <- addItem(dgeObj, item=ContrastMatrix, itemName="contrastMatrix",
                    itemType="contrastMatrix", funArgs=funArgs,
-                   custAttr=list(parent="fitName"))
+                   custAttr=list(parent=fitName))
  
  if (exists("TopTableList")){
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts,
-                      itemName="fit.contrast",
-                      itemType="fit.contrast",
+                      itemName="contrast.fit",
+                      itemType="contrast.fit",
                       funArgs=funArgs,
-                      custAttr=list(parent="fitName"))
+                      custAttr=list(parent=fitName))
     
     for (i in 1:length(TopTableList)){
         listNames <- names(TopTableList)
         dgeObj <- addItem(dgeObj, item=TopTableList[[i]], 
                           itemName=paste(listNames[i], "_treat", sep=""), 
                           itemType="topTreat", funArgs=funArgs,
-                          custAttr=list(parent="fitName"))
+                          custAttr=list(parent=fitName))
     }
  }
   
  if (exists("TopTreatList")){
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts.treat,
-                       itemName="fit.contrast.treat",
-                       itemType="fit.contrast.treat",
+                       itemName="contrast.fit.treat",
+                       itemType="contrast.fit.treat",
                        funArgs=funArgs,
-                       custAttr=list(parent="fitName")) 
+                       custAttr=list(parent=fitName)) 
 
     for (i in 1:length(TopTreatList)){
         listNames <- names(TopTreatList)
         dgeObj <- addItem(dgeObj, item=TopTreatList[[i]], 
                           itemName=paste(listNames[i], "_treat", sep=""), 
                           itemType="topTreat", funArgs=funArgs,
-                          custAttr=list(parent="fitName"))
+                          custAttr=list(parent=fitName))
         }
  }
      

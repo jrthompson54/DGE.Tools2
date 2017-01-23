@@ -20,6 +20,7 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords Omicsoft, DGEObj, RNA-Seq, Data loading
 #'
+#' @param path File path for the three data files (Default = "./")
 #' @param counts A matrix or dataframe of R gene by C samples (required)
 #'  [Default = "RNA-Seq.Count.Table.txt"]
 #' @param seqAnnotation  Gene, isoform or exon level (row) annotation (required)
@@ -59,24 +60,15 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               seqAnnotation = "RNA-Seq.Count.Annotation.txt",
                               design = "RNA-Seq.Design.txt",
                               level = "gene",
+                              path = ".",
                               customAttr){
     
-    #get the data i
-    countData <- Txt2DF(counts)
-        # read.table (counts, sep="\t", stringsAsFactors = FALSE,
-        #                      header=TRUE, row.names = 1, comment.char="",
-        #                      quote="", na.strings=c("NA", ".")) %>% 
-        #                      as.matrix
-    
-    seqData <- Txt2DF(seqAnnotation)
-        # read.table (seqAnnotation, sep="\t", stringsAsFactors = FALSE,
-        #                      header=TRUE, row.names = 1, comment.char="",
-        #                      quote="", na.strings=c("NA", ".")) 
-    
-    designData <- Txt2DF(design)
-    # read.table (design, sep="\t", stringsAsFactors = FALSE,
-    #                          header=TRUE, row.names = 1, comment.char="",
-    #                          quote="", na.strings=c("NA", "."))
+    #get the data 
+    countData <- Txt2DF(file.path(path, counts))
+
+    seqData <- Txt2DF(file.path(path, seqAnnotation))
+
+    designData <- Txt2DF(file.path(path, design))
 
     #build the DgeObj
     if (missing(customAttr))
