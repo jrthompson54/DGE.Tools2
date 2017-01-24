@@ -44,11 +44,11 @@ m <- ggplotMDS(d1, colorBy = design$Treatment,
                labelSize=3)
 m[[1]]
 
-source('C:/Users/thompj27/Documents/R/lib/pkgsrc/DGE.Tools2/R/runContrasts.R')
+# source('C:/Users/thompj27/Documents/R/lib/pkgsrc/DGE.Tools2/R/runContrasts.R')
 #runContrast testing  
 contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNormal_control",
                       TGF_Stable = "ReplicateGroupStable_TGFb - ReplicateGroupStable_control",
                       TGF_Rapid = "ReplicateGroupRapid_TGFb - ReplicateGroupRapid_control"
 )
-library(assertthat)
-DgeObj_contrast <- runContrasts(d1, "fit", contrastList)
+# library(assertthat)
+DgeObj_contrast <- runContrasts(d1, "Treatment_fit", contrastList, runTopTreat=T)

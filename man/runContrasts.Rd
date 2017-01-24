@@ -4,7 +4,7 @@
 \alias{runContrasts}
 \title{Function  runContrasts}
 \usage{
-runContrasts(dgeObj, fitName, contrastSetName = fitName, contrastList,
+runContrasts(dgeObj, fitName, contrastList, contrastSetName = fitName,
   runTopTable = TRUE, runTopTreat = FALSE, FoldChangeThreshold = 1.5,
   PvalueThreshold = 0.01, FDRthreshold = 0.1, runEBayes = TRUE,
   robust = TRUE, proportion = 0.01)
@@ -14,10 +14,10 @@ runContrasts(dgeObj, fitName, contrastSetName = fitName, contrastList,
 
 \item{fitName}{The name of the fit within dgeObj to use for contrast analysis  (required)}
 
+\item{contrastList}{A named list of contrasts  (required)}
+
 \item{contrastSetName}{Name for the set of contrasts specified in contrastList.  Defaults
 to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.}
-
-\item{contrastList}{A named list of contrasts  (required)}
 
 \item{runTopTable}{runs topTable on the specified contrasts (Default = TRUE)}
 
