@@ -31,9 +31,9 @@
 #'
 #' @param dgeObj A DGEobj object containing a Fit object and design matrix (required)
 #' @param fitName The name of the fit within dgeObj to use for contrast analysis  (required)
+#' @param contrastList A named list of contrasts  (required)
 #' @param contrastSetName Name for the set of contrasts specified in contrastList.  Defaults
 #'   to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.
-#' @param contrastList A named list of contrasts  (required)
 #' @param runTopTable runs topTable on the specified contrasts (Default = TRUE)
 #' @param runTopTreat runs topTreat on the specified contrasts (Default = FALSE)
 #' @param FoldChangeThreshold Only applies to TopTreat (Default = 1.5)
@@ -55,8 +55,8 @@
 #'
 #' @export
 runContrasts <- function(dgeObj, fitName, 
-                         contrastSetName = fitName,
                          contrastList,
+                         contrastSetName = fitName,
 						runTopTable = TRUE,
 						runTopTreat = FALSE,
                         FoldChangeThreshold = 1.5,
@@ -80,7 +80,12 @@ runContrasts <- function(dgeObj, fitName,
   funArgs <- match.call() #capture arguments
     
   designMatrix <- getType(dgeObj, "designMatrix")
-  fit <- getItem(dgeObj, fitName)
+  
+  result <- try((fit <- getItem(dgeObj, fitName)), silent=TRUE)
+  if (class(result) == "try-error") {
+      stop(Paste(fitName, "not fount in dgeObj", sep=" "))
+  }
+  # fit <- getItem(dgeObj, fitName)
   
   #run the contrast fit
   ContrastMatrix <- makeContrasts (contrasts=contrastList, levels=designMatrix)
@@ -95,7 +100,7 @@ runContrasts <- function(dgeObj, fitName,
   
   #run topTable on each contrast and add each DF to a list
 
-  if (runTopTable){
+  if (runTopTable == TRUE){
     #Run topTable via lapply to generate a bunch of contrasts.
     MyCoef = 1:length(contrastList) %>% as.list
     TopTableList = lapply (MyCoef, function(x) (topTable(MyFit.Contrasts, coef=x,
@@ -104,7 +109,7 @@ runContrasts <- function(dgeObj, fitName,
     names(TopTableList) = names(contrastList)
   }
 
-  if (runTopTreat) {
+  if (runTopTreat == TRUE) {
     #Run topTreat via lapply to generate a bunch of contrasts.
     LFC = log2(FoldChangeThreshold)
     MyCoef = 1:length(contrastList) %>% as.list
@@ -117,13 +122,12 @@ runContrasts <- function(dgeObj, fitName,
 #capture the contrastMatrix, MyFit.Contrasts and the contrast DFs
 
  #capture the contrast matrix
- browser()
  dgeObj <- addItem(dgeObj, item=ContrastMatrix, 
                    itemName=paste(contrastSetName, "_cm", sep=""),
                    itemType="contrastMatrix", funArgs=funArgs,
                    custAttr=list(parent=fitName))
  
- if (exists("TopTableList")){
+ if (runTopTable){
     #add the contrast fit
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts,
                       itemName=paste(contrastSetName, "_cf", sep=""),
@@ -132,29 +136,27 @@ runContrasts <- function(dgeObj, fitName,
                       custAttr=list(parent=fitName))
     
     #add the topTable DFs
-    for (i in 1:length(TopTableList)){
-        listNames <- names(TopTableList)
+    listNames <- names(TopTableList)
+    for (i in 1:length(TopTableList))
         dgeObj <- addItem(dgeObj, item=TopTableList[[i]], 
-                          itemName=paste(listNames[i], "_treat", sep=""), 
-                          itemType="topTreat", funArgs=funArgs,
+                          itemName=listNames[[i]], 
+                          itemType="topTable", funArgs=funArgs,
                           custAttr=list(parent=paste(contrastSetName, "_cf", sep="")))
-    }
  }
   
- if (exists("TopTreatList")){
+ if (runTopTreat){
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts.treat,
                        itemName=paste(contrastSetName, "_cft", sep=""),
                        itemType="contrast_fit_treat",
                        funArgs=funArgs,
                        custAttr=list(parent=fitName)) 
-
-    for (i in 1:length(TopTreatList)){
-        listNames <- names(TopTreatList)
+    
+    listNames <- names(TopTreatList)
+    for (i in 1:length(TopTreatList))
         dgeObj <- addItem(dgeObj, item=TopTreatList[[i]], 
                           itemName=paste(listNames[i], "_treat", sep=""), 
                           itemType="topTreat", funArgs=funArgs,
-                          custAttr=list(parent=fitName))
-        }
+                          custAttr=list(parent=paste(contrastSetName, "_cft", sep="")))
  }
      
  return(dgeObj)
