@@ -8,9 +8,8 @@
 #' other words, run eBayes last.
 #' 
 #' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
-#' a design matrix (from model.matrix) and a formula (text
-#' representation).  Other arguments can invoke duplicateCorrelation and modify
-#' use of quality weights.  
+#' and a formula (text representation).  Other arguments can invoke
+#' duplicateCorrelation and modify use of quality weights.
 #' 
 #' Returns a DGEobj class object containing the designMatrix, VoomElist (voom
 #' output) and Fit object (lmfit output). Appends data items to the input
@@ -33,8 +32,8 @@
 #' @keywords gene symbol, Entrez, GeneID
 #'
 #' @param dgeObj A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)
-#' @param designMatrix A design matrix created by model.matrix (required)
 #' @param formula A text representation of a formula to fit (required)
+#' @param formulaName Provides the name of the designMatrix derived from formula (Default = "designMatrix")
 #' @param dupcorBlock Supply a block argument to trigger duplicateCorrelation (optional). 
 #'    Should be a vector the same length as ncol with values to indicate common
 #'    group membership for duplicateCorrelation.
@@ -48,7 +47,6 @@
 #' @param robust Used by eBayes (Default = TRUE)
 #' @param proportion Proportion of genes expected to be differentially expressed
 #'   (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
-#'   significantly higher or lower proportion of genes regulated than the default.
 #'   a significantly higher or lower proportion of genes regulated than the default.
 #' @param mvPlot Enables the voom mean-variance plot (Default = TRUE)
 #' @return A DGEobj now containing designMatrix, Elist and fit object
@@ -58,7 +56,7 @@
 #' @import magrittr limma 
 #'
 #' @export
-runVoom <- function(dgeObj, formula,
+runVoom <- function(dgeObj, formula, formulaName="designMatrix",
                     dupcorBlock,
                     qualityWeights = TRUE,
                     var.design,
@@ -69,9 +67,7 @@ runVoom <- function(dgeObj, formula,
                     ){
     
     assert_that(!missing("dgeObj"),
-                !missing("designMatrix"),
                 !missing("formula"),
-                class(designMatrix)[[1]] == "matrix",
                 class(dgeObj)[[1]] == "DGEobj")
                 
     #check formula format
@@ -83,7 +79,10 @@ runVoom <- function(dgeObj, formula,
     #build the designMatrix
     design <- getItem(dgeObj, "design")
     designMatrix <- model.matrix (as.formula(formula), design)
-    setAttributes(designMatrix, list(formula=formula))
+    setAttributes(designMatrix, list(formula=formula, 
+                                     parent="design"
+                                     )
+                  )
     
     #get the DGEList
     if ("DGEList" %in% attr(dgeObj, "type"))
@@ -92,9 +91,6 @@ runVoom <- function(dgeObj, formula,
     
     #collect calling args for documentation
     funArgs <- match.call()
-    
-    #capture formula for attributes
-    custAttr <- list(formula=formula)
     
     #Set run parameters  
     dupcor <- FALSE
@@ -198,19 +194,33 @@ runVoom <- function(dgeObj, formula,
     #run eBayes
     if (runEBayes) {
         fit = eBayes(fit, robust=robust, proportion=proportion)
-        custAttr$eBayes <- TRUE
-    } else custAttr$eBayes <- FALSE
+        custAttr <- list(eBayes = TRUE)
+    } else custAttr <- list(eBayes = FALSE)
+    
+    custAttr$parent <- "DGEList"
 
     #save the VoomElist and fit objects
-    dgeObj %<>% addItem(designMatrix, "designMatrix", "designMatrix", 
+    dgeObj %<>% addItem(designMatrix, formulaName, "designMatrix", 
                         funArgs=funArgs,
-                        custAttr=custAttr)
-    dgeObj %<>% addItem(VoomElist, "Elist", "Elist", 
-                        funArgs=funArgs,
-                        custAttr=custAttr)
-    dgeObj %<>% addItem(fit, "fit", "fit", 
+                        custAttr=list(parent="design"))
+
+    #Add corfit if present
+    if (exists("corfit"))
+        dgeObj %<>% addItem(corfit, paste(formulaName, "_corFit", sep=""),
+                            "corFit",
+                            funArgs=funArgs,
+                            custAttr=custAttr)
+        
+    dgeObj %<>% addItem(VoomElist, paste(formulaName, "_Elist", sep=""),
+                        "Elist",
                         funArgs=funArgs,
                         custAttr=custAttr)
     
-  return(dgeObj)  #now containing Fit info etc.
+    dgeObj %<>% addItem(fit, paste(formulaName, "_fit", sep=""), 
+                        "fit", 
+                        funArgs=funArgs,
+                        custAttr=custAttr)
+
+    
+  return(dgeObj)  #now containing designMatrix, corFit, Elist and fit
 }

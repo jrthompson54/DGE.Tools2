@@ -27,7 +27,7 @@
 #' @import edgeR magrittr limma SummarizedExperiment DGEobj assertthat
 #'
 #' @export
-runEdgeRNorm <- function(dat, NormMethod="TMM", 
+runEdgeRNorm <- function(dat, normMethod="TMM", 
                          plotFile="TMM_Norm.Factors.PNG",
                          plotLabels = NULL){
 
@@ -48,10 +48,10 @@ runEdgeRNorm <- function(dat, NormMethod="TMM",
   #Now ready to normalize counts
   MyDGElist = CountsMatrix %>%
     DGEList %>%  #edgeR
-    calcNormFactors (method = NormMethod)   
+    calcNormFactors (method = normMethod)   
   
   #capture the DGEList
-  custAttr <- list(normalization="TMM", parent="counts")
+  custAttr <- list(normalization=normMethod, parent="counts")
   dgeObj <- addItem(dgeObj, MyDGElist, "DGEList",  "DGEList", 
                     funArgs=funArgs,
                     custAttr=custAttr)

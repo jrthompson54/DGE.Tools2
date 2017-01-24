@@ -9,9 +9,9 @@ library(magrittr)
 library(DGEobj)
 library(DGE.Tools2)
 
-setwd("~/R/lib/DGE.Tools_Example")
+setwd("~/R/lib/pkgsrc/DGE.Tools2")
 
-dgeObj <- OmicsoftToDgeObj()
+dgeObj <- OmicsoftToDgeObj(path="./inst/extdata")
 
 dgeObj <- runEdgeRNorm(dgeObj)
 
@@ -20,13 +20,15 @@ design <- getItem(dgeObj, "design")
 design$ReplicateGroup %<>% as.factor
 design$ReplicateGroup %<>% relevel("Normal_control")
 formula <- '~ 0 + ReplicateGroup'
-designMatrix <- model.matrix (as.formula(formula), design)
-setAttributes(designMatrix, list(formula=formula))
+# designMatrix <- model.matrix (as.formula(formula), design)
+# setAttributes(designMatrix, list(formula=formula))
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
-d1 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+d1 <- runVoom(dgeObj, formula, 
+              formulaName = "Treatment",
+              qualityWeights = TRUE,
               var.design=vd,
               dupcorBlock=block)
 

@@ -20,39 +20,56 @@ design <- getItem(dgeObj, "design")
 design$ReplicateGroup %<>% as.factor
 design$ReplicateGroup %<>% relevel("Normal_control")
 formula <- '~ 0 + ReplicateGroup'
-designMatrix <- model.matrix (as.formula(formula), design)
+# designMatrix <- model.matrix (as.formula(formula), design)
 
-#try all 6 senarios
-d1 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE)
+#try 2 senarios
+#Simple Voom (SV)
+d1 <- runVoom(dgeObj, formula, 
+              formulaName = "SV",
+              qualityWeights = FALSE)
 
-#QW and Var.design
+#Var.design (SV_VD)
 vd <- model.matrix(as.formula("~ Treatment"), design)
-d2 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE,
+d2 <- runVoom(dgeObj, formula, 
+              formulaName = "SV_VD",
+              qualityWeights = FALSE,
               var.design=vd)
 
-#QW and Var.design and dupCor
+#Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
-d3 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE,
+d3 <- runVoom(dgeObj, formula, 
+              formulaName = "SV_VD_DC",
+              qualityWeights = FALSE,
               var.design=vd,
               dupcorBlock=block)
 #add QW
-d4 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE)
+d4 <- runVoom(dgeObj, formula, 
+              formulaName = "VQW",
+              qualityWeights = TRUE)
 
 #QW and Var.design
 vd <- model.matrix(as.formula("~ Treatment"), design)
-d5 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+d5 <- runVoom(dgeObj, formula, 
+              formulaName = "VQW_VD",
+              qualityWeights = TRUE,
               var.design=vd)
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
-d6 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
+d6 <- runVoom(dgeObj, formula, 
+              formulaName = "VQW_VD_DC",
+              qualityWeights = TRUE,
               var.design=vd,
               dupcorBlock=block)
 
 #QW and Var.design with eBayes
+block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
-d7 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = TRUE,
-              var.design=vd, 
+d7 <- runVoom(dgeObj, formula, 
+              formulaName = "VQW_VD_DC",
+              qualityWeights = TRUE,
+              var.design=vd,
+              dupcorBlock=block,
               runEBayes=TRUE)
 
 m <- ggplotMDS(dgeObj, colorBy = design$ReplicateGroup, labels=design$ReplicateGroup)

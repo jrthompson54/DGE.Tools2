@@ -4,13 +4,16 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgeObj, formula, dupcorBlock, qualityWeights = TRUE, var.design,
-  mvPlot = TRUE, runEBayes = FALSE, robust = TRUE, proportion = 0.01)
+runVoom(dgeObj, formula, formulaName = "designMatrix", dupcorBlock,
+  qualityWeights = TRUE, var.design, mvPlot = TRUE, runEBayes = FALSE,
+  robust = TRUE, proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
 
 \item{formula}{A text representation of a formula to fit (required)}
+
+\item{formulaName}{Provides the name of the designMatrix derived from formula (Default = "designMatrix")}
 
 \item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional). 
 Should be a vector the same length as ncol with values to indicate common
@@ -32,10 +35,7 @@ VoomWithQualityWeights treats each sample individually.}
 
 \item{proportion}{Proportion of genes expected to be differentially expressed
 (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
-significantly higher or lower proportion of genes regulated than the default.
 a significantly higher or lower proportion of genes regulated than the default.}
-
-\item{designMatrix}{A design matrix created by model.matrix (required)}
 }
 \value{
 A DGEobj now containing designMatrix, Elist and fit object
@@ -49,9 +49,8 @@ other words, run eBayes last.
 }
 \details{
 Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
-a design matrix (from model.matrix) and a formula (text
-representation).  Other arguments can invoke duplicateCorrelation and modify
-use of quality weights.
+and a formula (text representation).  Other arguments can invoke
+duplicateCorrelation and modify use of quality weights.
 
 Returns a DGEobj class object containing the designMatrix, VoomElist (voom
 output) and Fit object (lmfit output). Appends data items to the input

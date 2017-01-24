@@ -4,17 +4,20 @@
 \alias{runContrasts}
 \title{Function  runContrasts}
 \usage{
-runContrasts(dgeObj, fitName, ContrastList, runTopTable = TRUE,
-  runTopTreat = FALSE, FoldChangeThreshold = 1.5, PvalueThreshold = 0.01,
-  FDRthreshold = 0.1, runEBayes = TRUE, robust = TRUE,
-  proportion = 0.01)
+runContrasts(dgeObj, fitName, contrastSetName = fitName, contrastList,
+  runTopTable = TRUE, runTopTreat = FALSE, FoldChangeThreshold = 1.5,
+  PvalueThreshold = 0.01, FDRthreshold = 0.1, runEBayes = TRUE,
+  robust = TRUE, proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
 
 \item{fitName}{The name of the fit within dgeObj to use for contrast analysis  (required)}
 
-\item{ContrastList}{A named list of contrasts  (required)}
+\item{contrastSetName}{Name for the set of contrasts specified in contrastList.  Defaults
+to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.}
+
+\item{contrastList}{A named list of contrasts  (required)}
 
 \item{runTopTable}{runs topTable on the specified contrasts (Default = TRUE)}
 
@@ -46,9 +49,9 @@ The contrastList is a named list composed of column names from the DesignMatrix
 of the DGEobj.  Each contrast is named to give
 it a short recognizable name.
 
-Example ContrastList \cr
+Example contrastList \cr
 
-ContrastList = list( \cr
+contrastList = list( \cr
    T1 = "treatment1 - control", \cr
    T2 = "treatment2 - control" \cr
 ) \cr

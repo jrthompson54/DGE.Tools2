@@ -1,7 +1,3 @@
-#no errors but toptable output not getting into DGEobj.
-#contrastMatrix is getting into DGEobj
-#What about contrast.fit?  NO
-
 ### Function runContrasts ###
 #' Function  runContrasts
 #'
@@ -13,9 +9,9 @@
 #' of the DGEobj.  Each contrast is named to give
 #' it a short recognizable name.
 #'
-#' Example ContrastList \cr
+#' Example contrastList \cr
 #'
-#' ContrastList = list( \cr
+#' contrastList = list( \cr
 #'    T1 = "treatment1 - control", \cr
 #'    T2 = "treatment2 - control" \cr
 #' ) \cr
@@ -35,7 +31,9 @@
 #'
 #' @param dgeObj A DGEobj object containing a Fit object and design matrix (required)
 #' @param fitName The name of the fit within dgeObj to use for contrast analysis  (required)
-#' @param ContrastList A named list of contrasts  (required)
+#' @param contrastSetName Name for the set of contrasts specified in contrastList.  Defaults
+#'   to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.
+#' @param contrastList A named list of contrasts  (required)
 #' @param runTopTable runs topTable on the specified contrasts (Default = TRUE)
 #' @param runTopTreat runs topTreat on the specified contrasts (Default = FALSE)
 #' @param FoldChangeThreshold Only applies to TopTreat (Default = 1.5)
@@ -56,23 +54,25 @@
 #' @import DGEobj dplyr limma gridExtra magrittr
 #'
 #' @export
-runContrasts <- function(dgeObj, fitName, ContrastList,
-									runTopTable = TRUE,
-									runTopTreat = FALSE,
-                         	        FoldChangeThreshold = 1.5,
-									PvalueThreshold=0.01,
-									FDRthreshold=0.1,
-                         	        runEBayes = TRUE,
-                         	        robust = TRUE,
-                         	        proportion=0.01) {
+runContrasts <- function(dgeObj, fitName, 
+                         contrastSetName = fitName,
+                         contrastList,
+						runTopTable = TRUE,
+						runTopTreat = FALSE,
+                        FoldChangeThreshold = 1.5,
+						PvalueThreshold=0.01,
+						FDRthreshold=0.1,
+                        runEBayes = TRUE,
+                        robust = TRUE,
+                        proportion=0.01) {
 
   assert_that (!missing(dgeObj),
                !missing(fitName),
-               !missing(ContrastList),
+               !missing(contrastList),
                class(dgeObj)[[1]] == "DGEobj",
-               class(ContrastList)[[1]] == "list",
+               class(contrastList)[[1]] == "list",
                FoldChangeThreshold >=0,
-               !is.null(names(ContrastList)),
+               !is.null(names(contrastList)),
                PvalueThreshold > 0 & PvalueThreshold <= 1,
                !(runTopTable == FALSE & runTopTreat == FALSE)
                )
@@ -82,10 +82,8 @@ runContrasts <- function(dgeObj, fitName, ContrastList,
   designMatrix <- getType(dgeObj, "designMatrix")
   fit <- getItem(dgeObj, fitName)
   
-
-  
   #run the contrast fit
-  ContrastMatrix <- makeContrasts (contrasts=ContrastList, levels=designMatrix)
+  ContrastMatrix <- makeContrasts (contrasts=contrastList, levels=designMatrix)
   MyFit.Contrasts <- contrasts.fit(fit, ContrastMatrix)
 
   #run eBayes
@@ -95,54 +93,58 @@ runContrasts <- function(dgeObj, fitName, ContrastList,
     											robust=robust)
   }
   
-
   #run topTable on each contrast and add each DF to a list
 
   if (runTopTable){
     #Run topTable via lapply to generate a bunch of contrasts.
-    MyCoef = 1:length(ContrastList) %>% as.list
+    MyCoef = 1:length(contrastList) %>% as.list
     TopTableList = lapply (MyCoef, function(x) (topTable(MyFit.Contrasts, coef=x,
                               confint=T, number=Inf, p.value=1, sort.by="none")))
     #transfer the contrast names
-    names(TopTableList) = names(ContrastList)
+    names(TopTableList) = names(contrastList)
   }
 
   if (runTopTreat) {
     #Run topTreat via lapply to generate a bunch of contrasts.
     LFC = log2(FoldChangeThreshold)
-    MyCoef = 1:length(ContrastList) %>% as.list
+    MyCoef = 1:length(contrastList) %>% as.list
     TopTreatList = lapply (MyCoef, function(x) (topTreat(MyFit.Contrasts.treat, coef=x,
                                   confint=T, lfc=LFC, number=Inf, p.value=1, sort.by="none")))
     #transfer the contrast names
-    names(TopTreatList) = names(ContrastList)
+    names(TopTreatList) = names(contrastList)
   }
 
 #capture the contrastMatrix, MyFit.Contrasts and the contrast DFs
 
- dgeObj <- addItem(dgeObj, item=ContrastMatrix, itemName="contrastMatrix",
+ #capture the contrast matrix
+ browser()
+ dgeObj <- addItem(dgeObj, item=ContrastMatrix, 
+                   itemName=paste(contrastSetName, "_cm", sep=""),
                    itemType="contrastMatrix", funArgs=funArgs,
                    custAttr=list(parent=fitName))
  
  if (exists("TopTableList")){
+    #add the contrast fit
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts,
-                      itemName="contrast.fit",
-                      itemType="contrast.fit",
+                      itemName=paste(contrastSetName, "_cf", sep=""),
+                      itemType="contrast_fit",
                       funArgs=funArgs,
                       custAttr=list(parent=fitName))
     
+    #add the topTable DFs
     for (i in 1:length(TopTableList)){
         listNames <- names(TopTableList)
         dgeObj <- addItem(dgeObj, item=TopTableList[[i]], 
                           itemName=paste(listNames[i], "_treat", sep=""), 
                           itemType="topTreat", funArgs=funArgs,
-                          custAttr=list(parent=fitName))
+                          custAttr=list(parent=paste(contrastSetName, "_cf", sep="")))
     }
  }
   
  if (exists("TopTreatList")){
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts.treat,
-                       itemName="contrast.fit.treat",
-                       itemType="contrast.fit.treat",
+                       itemName=paste(contrastSetName, "_cft", sep=""),
+                       itemType="contrast_fit_treat",
                        funArgs=funArgs,
                        custAttr=list(parent=fitName)) 
 

@@ -4,20 +4,20 @@
 \alias{runEdgeRNorm}
 \title{Function  runEdgeRNorm (edgeR normlization )}
 \usage{
-runEdgeRNorm(dat, NormMethod = "TMM", plotFile = "TMM_Norm.Factors.PNG",
+runEdgeRNorm(dat, normMethod = "TMM", plotFile = "TMM_Norm.Factors.PNG",
   plotLabels = NULL)
 }
 \arguments{
 \item{dat}{A DGEobj or RSE object data structure containing counts, design
 data and gene annotation}
 
+\item{normMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
+
 \item{plotFile}{Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
 Set to NULL to disable the plot.}
 
 \item{plotLabels}{Sample labels for the plot. Length must equal the number of
 samples. (Default = NULL;  sample number will be displayed)}
-
-\item{normMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
 }
 \value{
 A DGEObj with a normalized DGEList added.
