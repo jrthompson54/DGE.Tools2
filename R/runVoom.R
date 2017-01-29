@@ -85,7 +85,7 @@ runVoom <- function(dgeObj, formula, formulaName="designMatrix",
                   )
     
     #get the DGEList
-    if ("DGEList" %in% attr(dgeObj, "type"))
+    if ("DGEList" %in% getItemAttributes(dgeObj, "type"))
         dgelist <- getType(dgeObj, "DGEList")
     else stop("No DGEList found in DGEobj")
     
@@ -196,31 +196,33 @@ runVoom <- function(dgeObj, formula, formulaName="designMatrix",
         fit = eBayes(fit, robust=robust, proportion=proportion)
         custAttr <- list(eBayes = TRUE)
     } else custAttr <- list(eBayes = FALSE)
-    
-    custAttr$parent <- "DGEList"
 
-    #save the VoomElist and fit objects
-    dgeObj %<>% addItem(designMatrix, formulaName, "designMatrix", 
+    #save the several objects
+    designMatrixName <- formulaName
+    dgeObj %<>% addItem(designMatrix, designMatrixName, "designMatrix", 
                         funArgs=funArgs,
-                        custAttr=list(parent="design"))
-
-    #Add corfit if present
-    if (exists("corfit"))
-        dgeObj %<>% addItem(corfit, paste(formulaName, "_corFit", sep=""),
-                            "corFit",
-                            funArgs=funArgs,
-                            custAttr=custAttr)
-        
-    dgeObj %<>% addItem(VoomElist, paste(formulaName, "_Elist", sep=""),
+                        custAttr=list(parent="design", formula=formula)
+                        )
+    
+    VoomElistName = paste(designMatrixName, "_Elist", sep="")
+    dgeObj %<>% addItem(VoomElist, VoomElistName,
                         "Elist",
                         funArgs=funArgs,
-                        custAttr=custAttr)
+                        custAttr=list(parent=list("DGEList", designMatrixName))
+                        )
     
-    dgeObj %<>% addItem(fit, paste(formulaName, "_fit", sep=""), 
+    #Add corfit if present
+    if (exists("corfit"))
+        dgeObj %<>% addItem(corfit, paste(designMatrixName, "_corFit", sep=""),
+                            "corFit",
+                            funArgs=funArgs,
+                            custAttr=list(parent=paste(designMatrixName, "_Elist", sep="")))
+    
+    custAttr$parent <- list(VoomElistName, designMatrixName)
+    dgeObj %<>% addItem(fit, paste(designMatrixName, "_fit", sep=""), 
                         "fit", 
                         funArgs=funArgs,
                         custAttr=custAttr)
 
-    
   return(dgeObj)  #now containing designMatrix, corFit, Elist and fit
 }

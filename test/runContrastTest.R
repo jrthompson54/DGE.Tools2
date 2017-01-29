@@ -52,3 +52,5 @@ contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNorm
 )
 # library(assertthat)
 DgeObj_contrast <- runContrasts(d1, "Treatment_fit", contrastList, runTopTreat=T)
+saveRDS(DgeObj_contrast, "DGEobj.RDS")
+
