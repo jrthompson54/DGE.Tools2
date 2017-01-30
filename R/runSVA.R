@@ -1,10 +1,10 @@
 ### Function runSVA ###
 #' Function  runSVA
 #'
-#' Takes an SubsettableListOfArrays (SLOA) object from runVoom and returns
-#' the SLOA object after running SVA and adding the surrogate variables it
-#' discovers to the DesignMatrix in the SLOA.  The resulting SLOA object is
-#' ready to be reprocessed by runVoom again to complete the analysis.
+#' Takes an DGEobj from runVoom and tests for surrogate variables.  Adds a new
+#' design matrix to the DGEobj with the surrogate varaible columns appended. 
+#' runVoom should then be run again with the new design matrix to complete the
+#' analysis.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords SVA SLOA
@@ -16,42 +16,44 @@
 #' @examples
 #' MySLOA = runSVA (MySLOA)
 #'
-#' @import sva SummarizedExperiment magrittr
+#' @import sva magrittr assertthat
 #'
 #' @export
-runSVA<- function(MySLOA){
+runSVA<- function(dgeObj, designMatrixName){
 
-  #Version Info
-  FVersion = "runSVA : 28Dec2015"
-
-  if (!exists("SLOA")) {
-    stop("You need to source SubsettableListOfArrays.R before executing runSVA")
-  }
+  assert_that(!missing(dgeObj),
+              !missing(designMatrixName),
+              class(dgeObj)[[1]] == "DGEobj",
+              class(designMatrixName)[[1]] == "character",
+              with(dgeObj, exists("design")),
+              with(dgeObj, exists(designMatrixName)),
+              with(dgeObj, exists(paste(designMatrixName, "_Elist", sep="")))
+              )
 
   #Set up a NullFormula and DesignMatrix
   NullFormula = "~ 1"
-  Design = MySLOA$colData
+  Design = getItem(dgeObj, "design")
   NullDesignMatrix = model.matrix(as.formula(NullFormula), Design)
-
-  n.sv <- num.sv(MySLOA$Elist$E, MySLOA$DesignMatrix, method="leek")
-  svobj <- sva(MySLOA$Elist$E, MySLOA$DesignMatrix, NullDesignMatrix, n.sv=n.sv)
-
-  # Add the SVA columns to the Design table
-  NewDesign <- MySLOA$colData %>% as.data.frame
-  NewDesign %<>% cbind(svobj$sv)
-  MySLOA$colData <- DataFrame(NewDesign)
+  
+  log2cpm <- getItem(dgeObj, paste(designMatrixName, "_Elist", sep=""))$E
+  designMatrix <- getItem(dgeObj, designMatrixName)
+  n.sv <- num.sv(log2cpm, designMatrix, method="leek")
+  svobj <- sva(log2cpm, designMatrix, NullDesignMatrix, n.sv=n.sv)
 
   # Add the SVA colums to the DesignMatrix
-  MySLOA$DesignMatrix %<>% cbind (svobj$sv)
+  designMatrix_SVA <- cbind (designMatrix, svobj$sv)
+  
+  #capture output
+  FunArgs <- match.call()
+  #save the svobj
+  saveRDS(svobj, "svobj.RDS")
+  dgeObj <- addItem(dgeObj, svobj, paste(designMatrixName, "_svobj", sep=""),
+                    "svobj", funArgs=FunArgs,
+                    custAttr=list(parent=designMatrixName))
+  #save the new designMatrix
+  dgeObj <- addItem(dgeObj, designMatrix_SVA, paste(designMatrixName, "_sva", sep=""),
+                    "designMatrix", funArgs=FunArgs,
+                    custAttr=list(parent=designMatrixName))
 
-  #add the svobj object to the MySLOA
-  MySLOA$svobj <- svobj
-  MySLOA$workflowRecord$SVA <- paste (date(), " : v", packageVersion("DGE.Tools"), sep="")
-  MySLOA$workflowRecord$Date = date()
-
-  #delete the old Fit and Residuals to avoid confusion
-  MySLOA$Fit <- NULL
-  MySLOA$Residuals <- NULL
-
-  return(MySLOA)
+  return(dgeObj)
 }

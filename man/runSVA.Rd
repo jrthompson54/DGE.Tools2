@@ -4,7 +4,7 @@
 \alias{runSVA}
 \title{Function  runSVA}
 \usage{
-runSVA(MySLOA)
+runSVA(dgeObj, designMatrixName)
 }
 \arguments{
 \item{MySLOA}{An SLOA object with normalized counts and a DesignMatrix.}
@@ -13,10 +13,10 @@ runSVA(MySLOA)
 MySLOA An SLOA object containing data ready for DGE analysis (runVoom)
 }
 \description{
-Takes an SubsettableListOfArrays (SLOA) object from runVoom and returns
-the SLOA object after running SVA and adding the surrogate variables it
-discovers to the DesignMatrix in the SLOA.  The resulting SLOA object is
-ready to be reprocessed by runVoom again to complete the analysis.
+Takes an DGEobj from runVoom and tests for surrogate variables.  Adds a new
+design matrix to the DGEobj with the surrogate varaible columns appended. 
+runVoom should then be run again with the new design matrix to complete the
+analysis.
 }
 \examples{
 MySLOA = runSVA (MySLOA)

@@ -32,8 +32,7 @@
 #' @keywords gene symbol, Entrez, GeneID
 #'
 #' @param dgeObj A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)
-#' @param formula A text representation of a formula to fit (required)
-#' @param formulaName Provides the name of the designMatrix derived from formula (Default = "designMatrix")
+#' @param designMatrixName Name of a design matrix within dgeObj (required)
 #' @param dupcorBlock Supply a block argument to trigger duplicateCorrelation (optional). 
 #'    Should be a vector the same length as ncol with values to indicate common
 #'    group membership for duplicateCorrelation.
@@ -56,7 +55,7 @@
 #' @import magrittr limma 
 #'
 #' @export
-runVoom <- function(dgeObj, formula, formulaName="designMatrix",
+runVoom <- function(dgeObj, designMatrixName,
                     dupcorBlock,
                     qualityWeights = TRUE,
                     var.design,
@@ -67,22 +66,11 @@ runVoom <- function(dgeObj, formula, formulaName="designMatrix",
                     ){
     
     assert_that(!missing("dgeObj"),
-                !missing("formula"),
+                !missing("designMatrixName"),
+                designMatrixName %in% names(dgeObj),
                 class(dgeObj)[[1]] == "DGEobj")
                 
-    #check formula format
-    result <- try(as.formula(formula), silent=TRUE)
-    if (class(result) == "try-error") {
-      stop("You're formula is badly formatted")
-    }
-    
-    #build the designMatrix
-    design <- getItem(dgeObj, "design")
-    designMatrix <- model.matrix (as.formula(formula), design)
-    setAttributes(designMatrix, list(formula=formula, 
-                                     parent="design"
-                                     )
-                  )
+    designMatrix <- getItem(dgeObj, designMatrixName)
     
     #get the DGEList
     if ("DGEList" %in% getItemAttributes(dgeObj, "type"))
@@ -198,12 +186,7 @@ runVoom <- function(dgeObj, formula, formulaName="designMatrix",
     } else custAttr <- list(eBayes = FALSE)
 
     #save the several objects
-    designMatrixName <- formulaName
-    dgeObj %<>% addItem(designMatrix, designMatrixName, "designMatrix", 
-                        funArgs=funArgs,
-                        custAttr=list(parent="design", formula=formula)
-                        )
-    
+
     VoomElistName = paste(designMatrixName, "_Elist", sep="")
     dgeObj %<>% addItem(VoomElist, VoomElistName,
                         "Elist",
