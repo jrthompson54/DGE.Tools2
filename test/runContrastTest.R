@@ -20,21 +20,27 @@ design <- getItem(dgeObj, "design")
 design$ReplicateGroup %<>% as.factor
 design$ReplicateGroup %<>% relevel("Normal_control")
 formula <- '~ 0 + ReplicateGroup'
-# designMatrix <- model.matrix (as.formula(formula), design)
-# setAttributes(designMatrix, list(formula=formula))
+#build the designMatrix and add some attributes
+designMatrix <- model.matrix (as.formula(formula), design)
+designMatrixName <- "Treatment"
+#add some attributes
+designMatrix <- setAttributes(designMatrix, list(formula=formula, 
+                                 parent="design"))
+#save the designMatrix
+dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
+
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
-d1 <- runVoom(dgeObj, formula, 
-              formulaName = "Treatment",
+d1 <- runVoom(dgeObj, designMatrixName, 
               qualityWeights = TRUE,
               var.design=vd,
               dupcorBlock=block)
 
 #QW and Var.design
 # vd <- model.matrix(as.formula("~ Treatment"), design)
-# d2 <- runVoom(dgeObj, designMatrix, formula, qualityWeights = FALSE,
+# d2 <- runVoom(dgeObj, designMatrixName, qualityWeights = FALSE,
 #               var.design=vd)
 
 #use color and shape with labels and labelSize
@@ -52,5 +58,7 @@ contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNorm
 )
 # library(assertthat)
 DgeObj_contrast <- runContrasts(d1, "Treatment_fit", contrastList, runTopTreat=T)
-saveRDS(DgeObj_contrast, "DGEobj.RDS")
+saveRDS(DgeObj_contrast, "../DGEobj.RDS")
 
+#sva test
+dgeObj_sva <- runSVA(d1, "Treatment")

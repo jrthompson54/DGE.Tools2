@@ -4,16 +4,14 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgeObj, formula, formulaName = "designMatrix", dupcorBlock,
-  qualityWeights = TRUE, var.design, mvPlot = TRUE, runEBayes = FALSE,
-  robust = TRUE, proportion = 0.01)
+runVoom(dgeObj, designMatrixName, dupcorBlock, qualityWeights = TRUE,
+  var.design, mvPlot = TRUE, runEBayes = FALSE, robust = TRUE,
+  proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
 
-\item{formula}{A text representation of a formula to fit (required)}
-
-\item{formulaName}{Provides the name of the designMatrix derived from formula (Default = "designMatrix")}
+\item{designMatrixName}{Name of a design matrix within dgeObj (required)}
 
 \item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional). 
 Should be a vector the same length as ncol with values to indicate common
