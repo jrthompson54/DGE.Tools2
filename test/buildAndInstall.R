@@ -27,3 +27,32 @@ library(devtools);document();load_all;build()
 pkg = "~/R/lib/pkgsrc/DGEobj_0.2.0.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
+
+
+function todo
+
+	plotDisp
+	runQvalue.R
+	runIHW.R
+
+
+noChange needed
+
+	OmicsoftRefGeneID2GeneSym.R
+	EntrezGene2Ensembl.R
+	EnsemblGene2GeneSym.R
+	EnsemblGene2Entrez.R
+	DGE_Unit_Conversion.R
+	summarizeSigCounts.R
+	GeneSym2Entrez.R
+	Entrez2GeneSym.R
+	volcanoPlot.R
+	profilePlot.R
+	comparePlot.R
+	plotPValHist.R
+	cdfPlot.R
+	JRT_heatmap.R (rewrite to use a list of parameters)
+	extractCol.R  (rewrite to check for matching rownames/order)
+
+INC1585521  Avaya softephone ticket
+

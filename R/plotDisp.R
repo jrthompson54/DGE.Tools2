@@ -8,8 +8,8 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, dispersion, plot, QC
 #'
-#' @param MySLOA A SLOA object from DGE:Tools runEdgeRNorm with runDisp=T (the
-#'   default).
+#' @param x A Counts matrix or DGEList (required)
+#' @param designMatrix  A design matrix created limma by model.matrix 
 #' @param symbolSize (Default=1)
 #' @param symbolShape see
 #'   http://www.cookbook-r.com/Graphs/Shapes_and_line_types/ (Default = 1)
@@ -19,25 +19,27 @@
 #'   indicate more transparency (Default = 0.3)
 #' @param linefitSize (Default = 1)
 #' @param linefitColor (Default = "yellow")
-#' @param lineFit (Default = NULL)  Defaults to NULL because enabling this
-#'   overloads my poor 32bit PC. Any type supported by geom_smooth (loess is
-#'   recommended).
+#' @param lineFit (Default = NULL) Any type supported by geom_smooth (loess is
+#'   recommended). Defaults to NULL because enabling this
+#'   overloads my poor 32bit PC.
 #' @param rugColor (Default = NULL)  Set to Null to disable rug plots.
 #'   Note: printing plots with rug plots can be slow (several minutes on my
-#'   poor 32bit pc). So I left this diabled by default.  Assign a valid
+#'   meager 32bit pc). So I left this disabled by default.  Assign a valid
 #'   color to enable
 #' @param rugAlpha Transparency for the rug plots (Default = 0.02)
+#' @param ... Extra parameters to pass to edgeR::estimateDisp
 #'
 #' @return a ggplot object
 #'
 #' @examples
-#'    MyGgplot <- plotDisp (MyData=MySLOA)
-#'    MyGgplot <- plotDisp (MyData=Mydgelist, DesignMatrix=MyDesignMatrix)
+#'    MyGgplot <- plotDisp (MyDGElist)
+#'    MyGgplot <- plotDisp (MyDGEobj)
 #'
-#' @import edgeR
+#' @import assertthat DGEobj
 #'
 #' @export
-plotDisp <- function (MySLOA,
+plotDisp <- function (x,
+                      designMatrix,
                             symbolSize = 1,
                             symbolShape = 1,
                             symbolColor = "darkblue",
@@ -49,29 +51,28 @@ plotDisp <- function (MySLOA,
                             lineType = 1,
                             lineAlpha = 1,
                             rugColor = NULL,
-                            rugAlpha = 0.02) {
+                            rugAlpha = 0.02,
+                            ...) {
 # browser()
   #dispersion: expect 0.4 coef of var for human, 0.1 for inbreed mouse, near 0 for technical reps.
   #  source("~/R/lib/SubsettableListOfArrays.R")
 
-  #Check for and source SubsettableListOfArrays.R  Will save people from
-  #remembering to source it manually if they put it where I suggested.
-  if (file.exists("~/R/lib/SubsettableListOfArrays.R")){
-    source("~/R/lib/SubsettableListOfArrays.R")
-  }
+  assert_that(!missing(x),
+              !missing(designMatrix),
+              class(designMatrix)[[1]] == "matrix")
+    
+  if (class(x)[[1]] == "DGEList")
+    dgelist <- x %>%
+        calcNormFactors %>%
+        estimateDisp (design=designMatrix, robust=TRUE, ...)
+  else dgelist <- x %>%  #process a counts matrix
+      as.matrix %>%
+      DGEList %>%
+      calcNormFactors %>%
+      estimateDisp (design=designMatrix, robust=TRUE, ...) 
+  
+  plotdata <- data.frame(AveLogCPM=dgelist$AveLogCPM, BCV=sqrt(dgelist$tagwise.dispersion))
 
-  if (!exists("SubsettableListOfArrays")){
-    error("You must source SubsettableListOfArrays.R first.  http://bioinformatics.bms.com/active/biohtml/thompj27/DGE.Tools/SubsettableListOfArrays.R.")
-  }
-
-  if (!class(MySLOA)[[1]] == "SLOA"){
-      #get the required data from the SLOA object
-      error("MySLOA must be class SLOA")
-  }
-
-  plotdata <- data.frame(AveLogCPM=MySLOA$DGElist$AveLogCPM, BCV=sqrt(MySLOA$DGElist$tagwise.dispersion))
-
-  dgelist <- MySLOA$DGElist
   MyDispPlot <- ggplot(plotdata, aes(x=AveLogCPM, y=BCV)) +
     geom_point (size=symbolSize, shape=symbolShape, fill=symbolFill,
                 color=symbolColor, alpha=symbolAlpha)
@@ -92,7 +93,7 @@ plotDisp <- function (MySLOA,
 
   MyDispPlot <- MyDispPlot +
     ggtitle ("EdgeR Dispersion Plot") +
-    greyTheme()
+    theme_grey()
 
   return(MyDispPlot)
 }

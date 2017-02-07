@@ -5,10 +5,14 @@
 #' column names (e.g. a list of topTable dataframes). Extract
 #' the named column from each dataframe and return a matrix.
 #'
+#' The common use case for this is to provide a list of topTable
+#' data frames and extract one column from each file to create
+#' a matrix of LogRatios or Pvalues. 
+#'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords topTable
 #'
-#' @param dflist A list of data.frames which all have the same colnames.
+#' @param dflist A list of data.frames which all have the same colnames and same row counts.
 #' The dataframes in the list should have rownames (geneIDs).
 #' @param ColName The name of the data column to extract to a matrix
 #'

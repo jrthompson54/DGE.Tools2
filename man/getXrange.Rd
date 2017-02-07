@@ -24,4 +24,3 @@ xrange<- getXrange(Myggplot)
 John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{ggplot2}
-

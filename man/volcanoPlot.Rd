@@ -15,7 +15,7 @@ volcanoPlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a
-pvalue or FDR column.}
+pvalue or FDR column (typically a topTable dataframe).}
 
 \item{logRatioCol}{name of the LogRatio column (Default = "logFC")}
 
@@ -100,12 +100,6 @@ The points are color coded using both the significance and fold-change threshold
 By default, the P.Value field is used with a threshold of 0.01 to color code the points and fold-change
 threshold of +/- 1.5X.
 
-The volcanoPlot has also been implemented
-with a scalable theme that makes it easy to scale font sizes larger
-or smaller for PPT or Knitr output.  Just add baseFont(n),
-where n equals the desired base font size (12 works well for knitr, 18 or 24 works well
-for PPT).  e.g. MyPlot + baseFont(18).
-
 \strong{Data Structure for the input dataframe:}
 
 The defaults are set for dataframes produced by topTable and topTreat.  The columns named "logFC"
@@ -151,4 +145,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{logratio}
 \keyword{plot}
 \keyword{scatterplot}
-

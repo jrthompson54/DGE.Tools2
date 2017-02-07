@@ -47,4 +47,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{contrasts}
 \keyword{lfdr;}
 \keyword{qvalue;}
-

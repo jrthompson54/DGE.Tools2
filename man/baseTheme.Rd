@@ -34,4 +34,3 @@ John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{fontsize}
 \keyword{ggplot2}
-
