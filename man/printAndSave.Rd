@@ -60,4 +60,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{pdf}
 \keyword{png,}
 \keyword{tiff,}
-

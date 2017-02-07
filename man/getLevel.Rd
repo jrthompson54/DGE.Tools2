@@ -26,4 +26,3 @@ MyLevel <- getLevel(MyContrastData)
 John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{RangedSummarizedExperiment}
-

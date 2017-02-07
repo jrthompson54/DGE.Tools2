@@ -7,7 +7,7 @@
 extractCol(dflist, ColName)
 }
 \arguments{
-\item{dflist}{A list of data.frames which all have the same colnames.
+\item{dflist}{A list of data.frames which all have the same colnames and same row counts.
 The dataframes in the list should have rownames (geneIDs).}
 
 \item{ColName}{The name of the data column to extract to a matrix}
@@ -20,6 +20,11 @@ Take a list of dataframes where each dataframe has the same
 column names (e.g. a list of topTable dataframes). Extract
 the named column from each dataframe and return a matrix.
 }
+\details{
+The common use case for this is to provide a list of topTable
+data frames and extract one column from each file to create
+a matrix of LogRatios or Pvalues.
+}
 \examples{
 MyPvalues  = ExtractCol (MySLOA$TopTableList, "P.Value")
 
@@ -28,4 +33,3 @@ MyPvalues  = ExtractCol (MySLOA$TopTableList, "P.Value")
 John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{topTable}
-

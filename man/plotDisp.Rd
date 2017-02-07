@@ -4,14 +4,15 @@
 \alias{plotDisp}
 \title{Function  plotDispersion}
 \usage{
-plotDisp(MySLOA, symbolSize = 1, symbolShape = 1,
+plotDisp(x, designMatrix, symbolSize = 1, symbolShape = 1,
   symbolColor = "darkblue", symbolFill = "darkblue", symbolAlpha = 0.3,
   linefitSize = 1, linefitColor = "yellow", lineFit = NULL,
-  lineType = 1, lineAlpha = 1, rugColor = NULL, rugAlpha = 0.02)
+  lineType = 1, lineAlpha = 1, rugColor = NULL, rugAlpha = 0.02, ...)
 }
 \arguments{
-\item{MySLOA}{A SLOA object from DGE:Tools runEdgeRNorm with runDisp=T (the
-default).}
+\item{x}{A Counts matrix or DGEList (required)}
+
+\item{designMatrix}{A design matrix created limma by model.matrix}
 
 \item{symbolSize}{(Default=1)}
 
@@ -29,16 +30,18 @@ indicate more transparency (Default = 0.3)}
 
 \item{linefitColor}{(Default = "yellow")}
 
-\item{lineFit}{(Default = NULL)  Defaults to NULL because enabling this
-overloads my poor 32bit PC. Any type supported by geom_smooth (loess is
-recommended).}
+\item{lineFit}{(Default = NULL) Any type supported by geom_smooth (loess is
+recommended). Defaults to NULL because enabling this
+overloads my poor 32bit PC.}
 
 \item{rugColor}{(Default = NULL)  Set to Null to disable rug plots.
 Note: printing plots with rug plots can be slow (several minutes on my
-poor 32bit pc). So I left this diabled by default.  Assign a valid
+meager 32bit pc). So I left this disabled by default.  Assign a valid
 color to enable}
 
 \item{rugAlpha}{Transparency for the rug plots (Default = 0.02)}
+
+\item{...}{Extra parameters to pass to edgeR::estimateDisp}
 }
 \value{
 a ggplot object
@@ -49,8 +52,8 @@ for input after runEdgeRNorm has been executed.  The Biological coefficient
 of variation (BCV) is displayed.  BCV is the sqrt of dispersion.
 }
 \examples{
-   MyGgplot <- plotDisp (MyData=MySLOA)
-   MyGgplot <- plotDisp (MyData=Mydgelist, DesignMatrix=MyDesignMatrix)
+   MyGgplot <- plotDisp (MyDGElist)
+   MyGgplot <- plotDisp (MyDGEobj)
 
 }
 \author{
@@ -60,4 +63,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{RNA-Seq,}
 \keyword{dispersion,}
 \keyword{plot,}
-

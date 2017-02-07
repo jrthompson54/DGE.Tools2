@@ -29,6 +29,9 @@ designMatrix <- setAttributes(designMatrix, list(formula=formula,
 #save the designMatrix
 dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
 
+#dispersion plot
+dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
+dispPlot
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
