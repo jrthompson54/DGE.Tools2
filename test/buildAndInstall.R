@@ -31,10 +31,16 @@ setwd(x)
 
 function todo
 
-	plotDisp
 	runQvalue.R
 	runIHW.R
-
+	ThemePack.R
+	volcanoPlot.R done
+	profilePlot.R done
+	comparePlot.R done
+	plotPValHist.R done
+	cdfPlot.R done
+	obsPlot.R
+	plotPvalHist
 
 noChange needed
 
@@ -46,13 +52,11 @@ noChange needed
 	summarizeSigCounts.R
 	GeneSym2Entrez.R
 	Entrez2GeneSym.R
-	volcanoPlot.R
-	profilePlot.R
-	comparePlot.R
-	plotPValHist.R
-	cdfPlot.R
 	JRT_heatmap.R (rewrite to use a list of parameters)
 	extractCol.R  (rewrite to check for matching rownames/order)
 
 INC1585521  Avaya softephone ticket
+
+
+ThemePack, volcanoPlot, profilePlot, comparePlot, plotPValHist, cdfPlot, obsPlot.R, plotPvalHist, ggplotMDS
 

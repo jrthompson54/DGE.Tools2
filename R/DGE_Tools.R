@@ -1,65 +1,22 @@
 # DGE_Tools.R
-# Author: JRT 24Dec2016
+# Author: JRT 07Feb2017
 #
-# A set of functions to facilitate differential gene expression analysis
-# of data exported from the Omicsoft RNA-Seq Pipeline.  Easily Adaptable
-# to other data sources of, minimally, count data, row(gene) annotation
-# and col(sample) annotation.
-#
+# A set of functions to facilitate differential gene expression analysis. 
 
 
-### LIBRARIES used
-# library(gdata)
-# library(openxlsx)
-# library(GenomicRanges)
-# library(SummarizedExperiment)
-# library(dplyr)
-# library(reshape2)
-# library(ggplot2)
-# library(assertthat)
-# library(DGEobj)
-# library(magrittr)
-# 
-### DATA STRATEGY ###
-# DGE analysis will involve 2 standard data structures:
-# 1) A SummarizedExperiment will hold primary data from an RNA-Seq pipeline
-# e.g. counts as well as row and column annotation.
-#
-# 2) Limma output from model fitting will be contained within a DGEresut S3
-# object.  Unlike SummarizedExperiment, this object can hold Fit objects as well as
-# multiple types of row and column annotation.
-#
-#
-# Dealing with multiple contrasts (List of Contrasts dataframes)
-#
-# Finally, after fitting a model, typically you'll be running multiple contrasts e.g. by
-# running make.contrasts and topTable.  It is recommended that your store multiple
-# contrasts (topTable output) in a simple named list.  This will facilitate operations using lapply
-# to e.g. extract all LogFC columns for a heatmap or filter each contrast in a systematic
-# way.
-# For example:
-#   MyContrastList = list(contrast1 = topTable (....),
-#                         contrast2 = topTable (...),
-#                         contrast3 = topTable (...)
-#                         )
-# Then something like:
-#   MyLogFCMatrix = MyContrastList %>% lapply(`[[`, "LogFC") %>% do.call(what=cbind)
-#
-# will aggregate all the logFC columns into one matrix (you'll probably want to redefine
-# the column names at this point though)
 
-### DATA STRUCTURES ###
-
-#Need separate SummarizedExperiments for Gene and Transcript level because they have
-#different row counts The GeneData list of lists defines the datafiles to load into
-#a SummarizedExperiment, the standard name they will be given in the SummarizedExperiment
+#Need separate data objects for Gene and Transcript level because they have
+#different row counts 
+#
+#The GeneData list of lists defines: the datafiles to load into
+#a DGEobj, the standard name they will be given in the SummarizedExperiment
 #object and the type of data contained in that file (rowRanges, colData, Assay or metadata)
 #
 #Where:
 # rowRanges is genes or transcripts annotation
 # colData is samples annotation
 # Assay is nrow(rowdata) rows by nrow(colData) columns (e.g. counts, FPKM, zFPKM, TPM, etc.)
-# The pre-defined GeneData and TranscriptData lists are configured for the Omicsoft pipeline default values.
+# The pre-defined GeneData and TranscriptData lists are configured for the Omicsoft pipeline default filenames.
 # You can change the filenames to support other datasources.  But do not change the name or type values.
 #
 #' GeneData (list of lists)
@@ -235,32 +192,3 @@ eBayes_autoprop <- function(..., prop.method="lfdr") {
   eBayes(..., proportion=1-ptn)
 }
 
-
-#' Function  getLevel
-#'
-#' Return the Level (Gene or Transcript or Exon) of an RSE object
-#'
-#' @author John Thompson, \email{john.thompson@@bms.com}
-#' @keywords RangedSummarizedExperiment
-#'
-#' @param data Either an RangedSummarizedExperiment, SubsettableListOfArrays or
-#'   ContrastList object. A RangedSummarizedExperiment object
-#'
-#' @return Level of data (Gene, Transcript or Exon)
-#'
-#' @examples
-#' MyLevel = getLevel(RSE)
-#' MyLevel <- getLevel(MySLOA)
-#' MyLevel <- getLevel(MyContrastData)
-#'
-#' @import SummarizedExperiment
-#'
-#' @export
-getLevel <- function(data) {
-  if (class(data)[[1]] == "RangedSummarizedExperiment"){
-    level <- metadata(data)[["Level"]]
-  } else {
-    level <- data$Level
-  }
-  return(level)
-}

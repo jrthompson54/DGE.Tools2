@@ -75,7 +75,7 @@ but for a final plot try 0.1 or 0.2 for alpha for a more informative rug.}
 \item{baseFontSize}{The smallest size font in the figure in points. Default =
 12}
 
-\item{themeStyle}{"bw" or "grey" which correspond to bwTheme or greyTheme
+\item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey
 respectively. Default = bw"}
 
 \item{scaleByIntensity}{Set point size as a function of Intensity (Default =

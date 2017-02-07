@@ -55,6 +55,10 @@ don't like the default}
 \item{symColor}{set color for solid symbols or outline for open symbols
 (Default = "blue2")}
 
+\item{shapes}{A vector of shapes to override the default 8 shapes used in shapeBy (optional)}
+
+\item{colors}{A color pallet to substitute for the default 8 color pallet used by colorBy (optional)}
+
 \item{...}{arguments passed through to plotMDS function (see ?plotMDS in package
 edgeR)}
 }

@@ -56,7 +56,7 @@ Note: You cannot duplicate colors.}
 \item{baseFontSize}{The smallest size font in the figure in points. (Default
 = 12)}
 
-\item{themeStyle}{"bw" or "grey" which correspond to bwTheme or greyTheme
+\item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey
 respectively. Default = "grey"}
 
 \item{pvalMax}{Limit the range of the main plot (Default = 0.10)}

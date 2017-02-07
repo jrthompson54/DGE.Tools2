@@ -15,9 +15,9 @@
 #'        plot to a file.  Pass a list of filenames if Facet=FALSE (length must equal
 #'        sample count).
 #' @param binWidth Range is always 0-1 for pvalues. So this defaults to 0.02
-#' @param baseFontSize Set the base font size for the plot using greyTheme (Default=12)
+#' @param baseFontSize Set the base font size for the plot using theme_grey (Default=12)
 #' @param facetFontSize control font size on the individual plot headers
-#'   (default=NULL). Allows for fine tuning if the greyTheme default doesn't
+#'   (default=NULL). Allows for fine tuning if the theme_grey default doesn't
 #'   work for you. 10 seems good for knitr output (dependant on length of your
 #'   sample titles); bigger (e.g. 14) works better for PPT.
 #' @param alpha Set the transparency. (Default = 0.6)
@@ -94,7 +94,7 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
       ggtitle("Pvalue Histograms") +
       ggplot2::scale_fill_brewer(palette="Set1") +
       ggplot2::facet_wrap(~ Levels, nrow = numrow, scales="free") +
-      greyTheme(baseFontSize)
+      theme_grey() + baseTheme(baseFontSize)
 
       if (!is.null(facetFontSize)) {
        Hist_Pval_Facet <- Hist_Pval_Facet +
@@ -138,7 +138,7 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
         ggplot2::xlab("Pvalue") +
         ggplot2::ylab("Count") +
         ggplot2::ggtitle(paste("Pvalue Histogram\n", s)) +
-        greyTheme(baseFontSize)
+        theme_grey() + baseTheme(baseFontSize)
 
       #print(Hist_Pval)
       plotlist[[i]] = Hist_Pval

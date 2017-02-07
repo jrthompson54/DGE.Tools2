@@ -21,10 +21,10 @@ sample count).}
 
 \item{binWidth}{Range is always 0-1 for pvalues. So this defaults to 0.02}
 
-\item{baseFontSize}{Set the base font size for the plot using greyTheme (Default=12)}
+\item{baseFontSize}{Set the base font size for the plot using theme_grey (Default=12)}
 
 \item{facetFontSize}{control font size on the individual plot headers
-(default=NULL). Allows for fine tuning if the greyTheme default doesn't
+(default=NULL). Allows for fine tuning if the theme_grey default doesn't
 work for you. 10 seems good for knitr output (dependant on length of your
 sample titles); bigger (e.g. 14) works better for PPT.}
 

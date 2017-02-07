@@ -90,7 +90,7 @@ have alot of points.}
 \item{baseFontSize}{The smallest size font in the figure in points. (Default =
 12)}
 
-\item{themeStyle}{"bw" or "grey" which correspond to bwTheme or greyTheme
+\item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey
 respectively. Default = bw"}
 
 \item{facet}{Specifies whether to facet (TRUE) or print individual plots
@@ -133,6 +133,19 @@ list of genes unless you want alot of output.  By default the plot is
 faceted. You should turn facet off if you have more than ~25 genes to plot.
 Colnames and Rownames will be used to label the plots by default but can also
 be supplied as separate vectors.
+}
+\examples{
+   Simple faceted plot with custom title
+
+   #get Log2CPM from an SLOA object
+   dgeObj = readRDS("MyDGEobj.RDS")
+   dgelist <- getItem(dgeObj, "DGEList")
+   Log2CPM <- cpm(dgelist, log=TRUE)
+   genes = Log2CPM[1:12,] #first dozen genes
+   #define six treatment groups in triplicate
+   MyBlock = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6)
+   MyPlot = obsPlot(genes, MyBlock, title = "Plot Title")
+
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}

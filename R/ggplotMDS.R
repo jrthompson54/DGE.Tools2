@@ -47,8 +47,8 @@
 #' @param symFill Set color for the fill on open symbols (Default = "blue2")
 #' @param symColor set color for solid symbols or outline for open symbols
 #'   (Default = "blue2")
-#' @shapes A vector of shapes to override the default 8 shapes used in shapeBy (optional)
-#' @colors A color pallet to substitute for the default 8 color pallet used by colorBy (optional)
+#' @param shapes A vector of shapes to override the default 8 shapes used in shapeBy (optional)
+#' @param colors A color pallet to substitute for the default 8 color pallet used by colorBy (optional)
 #' @param ... arguments passed through to plotMDS function (see ?plotMDS in package
 #'    edgeR)
 #'

@@ -61,7 +61,7 @@ inside the figure. NULL disables the legend. Default = "right"}
 
 \item{baseFontSize}{The smallest size font in the figure in points. Default = 12}
 
-\item{themeStyle}{"bw" or "grey" which corresponds to bwTheme or greyTheme respectively.
+\item{themeStyle}{"bw" or "grey" which corresponds to theme_bw or theme_grey respectively.
 Default = bw"}
 }
 \value{

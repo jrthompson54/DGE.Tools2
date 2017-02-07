@@ -73,7 +73,7 @@
 #'        top/bottom/left/right place the legend outside the figure.  ne/se/nw/sw place the figure
 #'        inside the figure. NULL disables the legend. Default = "right"
 #' @param baseFontSize The smallest size font in the figure in points. Default = 12
-#' @param themeStyle "bw" or "grey" which corresponds to bwTheme or greyTheme respectively.
+#' @param themeStyle "bw" or "grey" which corresponds to theme_bw or theme_grey respectively.
 #'        Default = bw"
 #'
 #' @return ggplot object
@@ -264,9 +264,9 @@ comparePlot <- function(df, pthreshold=0.01,
 
   #Set the font size before placing the legend
   if (tolower(themeStyle) == "bw") {
-    CompPlot = CompPlot + bwTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    CompPlot = CompPlot + theme_bw() + baseTheme(baseFontSize)
   } else {
-    CompPlot = CompPlot + greyTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    CompPlot = CompPlot + theme_grey() + baseTheme(baseFontSize)
   }
 
   CompPlot = setLegendPosition(CompPlot, legendPosition, themeStyle)
