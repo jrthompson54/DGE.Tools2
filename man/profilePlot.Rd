@@ -78,7 +78,7 @@ inside the figure. NULL disables the legend. Default = "right"}
 
 \item{baseFontSize}{The smallest size font in the figure in points. Default = 12}
 
-\item{themeStyle}{"bw" or "grey" which correspond to bwTheme or greyTheme respectively.
+\item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey respectively.
 Default = bw"}
 }
 \value{
@@ -102,7 +102,7 @@ The profilePlot has also been implemented
 with a scalable theme that makes it easy to scale font sizes larger
 or smaller for PPT or Knitr output.  Just add baseFont(n),
 where n equals the base font size (12 works well for knitr, 18 or 24 works well
-for PPT).  e.g. MyPlot + greyTheme(18).
+for PPT).  e.g. MyPlot + theme_grey(18).
 
 \strong{Data Structure for the input dataframe:}
 

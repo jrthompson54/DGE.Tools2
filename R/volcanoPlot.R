@@ -80,7 +80,7 @@
 #'   but for a final plot try 0.1 or 0.2 for alpha for a more informative rug.
 #' @param baseFontSize The smallest size font in the figure in points. Default =
 #'   12
-#' @param themeStyle "bw" or "grey" which correspond to bwTheme or greyTheme
+#' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey
 #'   respectively. Default = bw"
 #' @param refLineThickness Set the thickness for all reference lines (Default =
 #'   1)
@@ -295,9 +295,9 @@ volcanoPlot <- function(df,
 
   #Set the font size before placing the legend
   if (tolower(themeStyle) == "bw") {
-    volcanoPlot = volcanoPlot + bwTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    volcanoPlot = volcanoPlot + theme_bw() + baseTheme(baseFontSize)
   } else {
-    volcanoPlot = volcanoPlot + greyTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    volcanoPlot = volcanoPlot + theme_grey() + baseTheme(baseFontSize)
   }
 
   volcanoPlot = setLegendPosition(volcanoPlot, legendPosition, themeStyle)

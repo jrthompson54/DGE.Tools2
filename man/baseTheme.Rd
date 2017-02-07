@@ -17,11 +17,10 @@ baseTheme(base_size = 18, base_family = "", scale_legend = TRUE)
 A ggplot theme that can be added to a plot object
 }
 \description{
-A basic theme for individual plots that only sets relative font sizes
-for common graphic elements.  Apply baseTheme as your last
-layer.  In particular, theme_bw, theme_grey, bwTheme or greyTheme
-will undo some of the changes set by baseTheme.  After applying
-baseTheme, you can use baseFont to adjust font sizes for different
+A basic theme for individual plots that only sets relative font sizes for
+common graphic elements.  Apply baseTheme as your last layer.  In particular,
+theme_bw, theme_grey, will undo some of the changes set by baseTheme.  After
+applying baseTheme, you can use baseFont to adjust font sizes for different 
 output purposes (e.g. larger for PPT, smaller for knitr).
 }
 \examples{

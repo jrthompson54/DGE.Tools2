@@ -66,7 +66,7 @@
 #' @param meanSize Size of the points (Default = 6)
 #' @param baseFontSize The smallest size font in the figure in points. (Default =
 #'   12)
-#' @param themeStyle "bw" or "grey" which correspond to bwTheme or greyTheme
+#' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey
 #'   respectively. Default = bw"
 #' @param facet Specifies whether to facet (TRUE) or print individual plots
 #'   (FALSE)  (Default = TRUE)
@@ -84,8 +84,10 @@
 #'    Simple faceted plot with custom title
 #'
 #'    #get Log2CPM from an SLOA object
-#'    sloa = readRDS(MySLOA.RDS")
-#'    genes = sloa$Log2CPM[1:12,] #first dozen genes
+#'    dgeObj = readRDS("MyDGEobj.RDS")
+#'    dgelist <- getItem(dgeObj, "DGEList")
+#'    Log2CPM <- cpm(dgelist, log=TRUE)
+#'    genes = Log2CPM[1:12,] #first dozen genes
 #'    #define six treatment groups in triplicate
 #'    MyBlock = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6)
 #'    MyPlot = obsPlot(genes, MyBlock, title = "Plot Title")
@@ -256,9 +258,9 @@ obsPlot <- function(data,
     MyPlot <- MyPlot + ggplot2::ylab(ylab)
     MyPlot <- MyPlot + ggplot2::ggtitle(title)
     if (tolower(themeStyle) == "bw" ){
-      MyPlot <- MyPlot + bwTheme(baseFontSize)
+      MyPlot <- MyPlot + theme_bw() + baseTheme(baseFontSize)
     } else {
-      MyPlot <- MyPlot + greyTheme(baseFontSize)
+      MyPlot <- MyPlot + theme_grey() + baseTheme(baseFontSize)
     }
 
     #rotate xaxis group labels
@@ -277,7 +279,7 @@ obsPlot <- function(data,
           xlab(xlab) +
           ylab(ylab) +
           ggtitle(obs) +
-          greyTheme() + facetTheme(baseFontSize)
+          theme_grey() + facetTheme(baseFontSize)
         aplot <- addGeoms(aplot)
         if (mean == TRUE){
           aplot <- aplot +
@@ -295,9 +297,6 @@ obsPlot <- function(data,
       MyPlot = plotlist
 
   }
-
-#    theme(strip.text.x = element_text(size = facetFontSize,
-#                                        colour = "red", angle = 0)) +
 
   return(MyPlot)
 }

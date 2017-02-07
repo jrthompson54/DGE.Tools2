@@ -66,7 +66,7 @@
 #' @param refLineThickness Set thicknesss of the reference line (Default=1)
 #' @param baseFontSize The smallest size font in the figure in points. (Default
 #'   = 12)
-#' @param themeStyle "bw" or "grey" which correspond to bwTheme or greyTheme
+#' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey
 #'   respectively. Default = "grey"
 #' @param printPlot Specify printing the combined plot to the console/knitr
 #'   (Default = TRUE)
@@ -212,9 +212,9 @@ cdfPlot <- function(df,
 
   #Set the font size before placing the legend
   if (tolower(themeStyle) == "bw") {
-    cdfMain <- cdfMain + bwTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    cdfMain <- cdfMain + theme_bw(baseFontSize) #+ baseTheme(baseFontSize)
   } else {
-    cdfMain <- cdfMain + greyTheme(baseFontSize) #+ baseTheme(baseFontSize)
+    cdfMain <- cdfMain + theme_grey(baseFontSize) #+ baseTheme(baseFontSize)
   }
 
   cdfMain <- setLegendPosition(cdfMain, legendPosition, themeStyle)
@@ -263,9 +263,9 @@ cdfPlot <- function(df,
 
   #Set the font size
   if (tolower(themeStyle) == "bw") {
-    cdfInset <- cdfInset + bwTheme(baseFontSize*factor)
+    cdfInset <- cdfInset + theme_bw() + baseTheme(baseFontSize*factor)
   } else {
-    cdfInset <- cdfInset + greyTheme(baseFontSize*factor)
+    cdfInset <- cdfInset + theme_grey() +baseTheme(baseFontSize*factor)
   }
 
   #Now arrange plot inside a plot
