@@ -78,6 +78,7 @@ convertCounts <- function(counts, unit, geneLength, log, normalize,
             tpm <- fpkmToTpm(fpkm)
         else 
             tpm <- log2(fpkmToTpm(2^fpkm))
+        return(tpm)
     }
     
     .calcFPK <- function(counts, log, normalize, geneLength){
@@ -89,16 +90,16 @@ convertCounts <- function(counts, unit, geneLength, log, normalize,
             
             if (log == TRUE)
                 FPK <- log2(FPK + 0.5)
-        } else #why would you want normalized FPK???
+        } else {
+            #why would you want normalized FPK???
             #See Mark Robinson response on how to get normalized counts
             #from edgeR
             #https://stat.ethz.ch/pipermail/bioconductor/2012-July/046795.html
             #JRT: I haven't validated this because I can think of no reason 
             #why you'd want normalized FPK
-            FPK <- counts %>%
-                    DGEList %>%
-                    calcNormFactors (method=normalize) %>%
-                    cpm(normalize.lib.sizes=FALSE, log=log)
+            stop("FPK should not be normalized")
+        }
+        return(FPK)
     }
     
     .calcZFPKM <- function(counts, log, normalize, geneLength,
@@ -108,10 +109,11 @@ convertCounts <- function(counts, unit, geneLength, log, normalize,
         if(normalize != FALSE)
             warning("TMM or other normalization not recommended for zFPKM")
         FPKM <- .calcFPKM(counts, log=FALSE, normalize, geneLength) %>% as.data.frame
-        zFPKM <- zFPKMTransformDF (FPKM, PlotDir=PlotDir,
+        zfpkm <- zFPKMTransformDF (FPKM, PlotDir=PlotDir,
                           PlotFile=PlotFile, FacetTitles=FacetTitles)
         if (log==TRUE) 
-            zFPKM <- log2(zFPKM)
+            zfpkm <- log2(zfpkm)
+        return(zfpkm)
     }
 
 #counts and unit are absolutely required
@@ -151,7 +153,7 @@ if (missing(PlotFile))
 if (missing(FacetTitles))
     FacetTitles <- TRUE
     
-switch(toupper(unit),
+result <- switch(toupper(unit),
        "CPM" = .calcCPM(counts, log, normalize),
        "FPKM" = .calcFPKM(counts, log, normalize, geneLength),
        "ZFPKM" = .calcZFPKM(counts, log, normalize, geneLength,
@@ -159,5 +161,6 @@ switch(toupper(unit),
        "FPK" = .calcFPK(counts, log, normalize, geneLength),
        "TPM" = .calcTPM(counts, log, normalize, geneLength)
 )
+return(result)
 }
    
