@@ -57,6 +57,10 @@ noChange needed
 
 INC1585521  Avaya softephone ticket
 
+Next:  IHW and qvalue handling  
+These functions work on a contrast list.  
+provide a dgeObj and a contrast list (named)
+add IHW and qvalue as attributes and replace/overwrite the existing contrast objects.
 
-ThemePack, volcanoPlot, profilePlot, comparePlot, plotPValHist, cdfPlot, obsPlot.R, plotPvalHist, ggplotMDS
+  
 

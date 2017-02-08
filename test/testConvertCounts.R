@@ -1,9 +1,12 @@
+library(DGEobj)
+library(DGE.Tools2)
+# debugSource('~/R/lib/pkgsrc/DGE.Tools2/R/convertCounts.R')
+
 #test convertCounts
+dgeObj <- readRDS("../DGEobj.RDS")
+counts <- getItem(dgeObj, "counts")
+genelength <- getItem(dgeObj, "geneData")$ExonLength
 
-counts <- assay(RSE, "Counts")
-genelength <- mcols(RSE)$ExonLength
-
-source('~/R/lib/pkgsrc/DGE.Tools2/R/convertCounts.R')
 
 fkpm <- convertCounts(counts, "FPKM", geneLength=genelength)
 logfpkm <- convertCounts(counts, "FPKM", geneLength=genelength, log=TRUE)
@@ -38,3 +41,4 @@ fpk <- convertCounts(counts, "FPK", geneLength=genelength, normalize="RLE")
 logfpk <- convertCounts(counts, "FPK", geneLength=genelength, log=TRUE, normalize="RLE")
 zfkpm <- convertCounts(counts, "ZFPKM", geneLength=genelength, normalize="RLE")
 logzfpkm <- convertCounts(counts, "ZFPKM", geneLength=genelength, log=TRUE, normalize="RLE")
+

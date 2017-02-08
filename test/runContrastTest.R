@@ -15,6 +15,16 @@ dgeObj <- OmicsoftToDgeObj(path="./inst/extdata")
 
 dgeObj <- runEdgeRNorm(dgeObj)
 
+#low expression filter
+counts <- getItem(dgeObj, "counts")
+genelength <-getItem(dgeObj, "geneData")$ExonLength
+fpk <- convertCounts(counts, 
+                     unit="FPK", 
+                     geneLength=genelength)
+#keep FPK >=5
+idx <- FPK >= 5.0
+
+
 #define a formula and construct a design matrix
 design <- getItem(dgeObj, "design")
 design$ReplicateGroup %<>% as.factor
@@ -30,8 +40,8 @@ designMatrix <- setAttributes(designMatrix, list(formula=formula,
 dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
 
 #dispersion plot
-dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
-dispPlot
+dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix, lineFit="loess")
+dispPlot + baseTheme(18)
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
