@@ -4,15 +4,16 @@
 \alias{runContrasts}
 \title{Function  runContrasts}
 \usage{
-runContrasts(dgeObj, fitName, contrastList, contrastSetName = fitName,
-  runTopTable = TRUE, runTopTreat = FALSE, FoldChangeThreshold = 1.5,
-  PvalueThreshold = 0.01, FDRthreshold = 0.1, runEBayes = TRUE,
-  robust = TRUE, proportion = 0.01)
+runContrasts(dgeObj, designMatrixName, contrastList,
+  contrastSetName = fitName, runTopTable = TRUE, runTopTreat = FALSE,
+  FoldChangeThreshold = 1.5, PvalueThreshold = 0.01, FDRthreshold = 0.1,
+  runEBayes = TRUE, robust = TRUE, proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
 
-\item{fitName}{The name of the fit within dgeObj to use for contrast analysis  (required)}
+\item{designMatrixName}{The name of the design matrix within dgeObj to use for 
+contrast analysis  (required)}
 
 \item{contrastList}{A named list of contrasts  (required)}
 

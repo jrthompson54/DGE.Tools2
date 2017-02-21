@@ -7,40 +7,39 @@
 runIHW(contrastList, alpha = 0.1, FDRthreshold = 0.1, ...)
 }
 \arguments{
-\item{contrastList}{A list object produced by runContrasts.  The list must
-contain, either or both of TopTableList and TopTreatList items as provided
-by the runContrasts function.}
+\item{contrastList}{A list of topTable dataframes.}
 
 \item{alpha}{The alpha value is the FDR level you wish to interogate (range 0-1; default = 0.1)}
-
-\item{FDRthreshold}{Value used to estimate proportion of differential genes for each contrast.}
 
 \item{...}{other arguments are passed directly to the ihw function (see ?ihw).}
 }
 \value{
-The contrastList is returned.  The TopTableList and TopTreatList items will
-contain additional columns added by the ihw analysis and prefixed with "ihw."
-The IHW dataframe of results will also be appended to the contrast list.
+A list of lists.  The first element is the original contrastList with
+  additional IHW columns added to each dataframe.   The TopTable dataframes
+  will contain additional columns added by the ihw analysis and prefixed with
+  "ihw." The second list element is the IHW result dataframe.
 }
 \description{
 This is a wrapper around the independent hypothesis weighting package that
-takes a contrast list from runContrasts and applies Independent Hypothesis
-Weighting (IHW) to the TopTableList within the contrast list.  IHW is a
-method developed by N. Ignatiadis (http://dx.doi.org/10.1101/034330) to weight
-FDR values based on a covariate (AveExpr in this case).
+takes a list of topTable dataframes and applies Independent Hypothesis
+Weighting (IHW) to each topTable dataframe in the list.
 }
 \details{
-The IHW FDR values are added as additional columns to the topTable dataframes.
-It is designed to work on dataframes created by topTable and containe in the
-"contrast list" data structure produced by runContrasts.
+IHW is a method developed by N. Ignatiadis (http://dx.doi.org/10.1101/034330)
+to weight FDR values based on a covariate (AveExpr in this case).
 
-Note that it is impractical to run IHW on a list of genes less than ~5000 because
-it breaks the data into bins of 1500 genes for the analysis if bins = 1, IHW converges
-on the BH FDR value and there's no point.  So we run IHW on the complete set
-of detected genes from topTable results (not topTreat).
+The IHW FDR values are added as additional columns to the topTable dataframes.
+
+Note that it is impractical to run IHW on a list of genes less than ~5000
+because operationally, it breaks the data into bins of 1500 genes for the
+analysis if bins = 1, IHW converges on the BH FDR value and there's no point.
+So we run IHW on the complete set of detected genes from topTable results
+(not topTreat).
 }
 \examples{
-MyContrasts = runIHW(MyContrasts)
+IHWresults <- runIHW(MyContrastList)
+MyContrastList <- IHWresults[[1]]
+IHWdf <- IHWresults[[2]]
 
 }
 \author{

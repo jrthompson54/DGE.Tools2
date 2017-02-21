@@ -73,8 +73,8 @@ runVoom <- function(dgeObj, designMatrixName,
     designMatrix <- getItem(dgeObj, designMatrixName)
     
     #get the DGEList
-    if ("DGEList" %in% getItemAttributes(dgeObj, "type"))
-        dgelist <- getType(dgeObj, "DGEList")
+    if ("DGEList" %in% getItemAttribute(dgeObj, "type"))
+        dgelist <- getItem(dgeObj, "DGEList")
     else stop("No DGEList found in DGEobj")
     
     #collect calling args for documentation

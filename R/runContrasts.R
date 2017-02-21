@@ -30,7 +30,8 @@
 #' @keywords RNA-Seq; DGE; contrasts; DGEobj
 #'
 #' @param dgeObj A DGEobj object containing a Fit object and design matrix (required)
-#' @param fitName The name of the fit within dgeObj to use for contrast analysis  (required)
+#' @param designMatrixName The name of the design matrix within dgeObj to use for 
+#'    contrast analysis  (required)
 #' @param contrastList A named list of contrasts  (required)
 #' @param contrastSetName Name for the set of contrasts specified in contrastList.  Defaults
 #'   to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.
@@ -54,7 +55,7 @@
 #' @import DGEobj dplyr limma gridExtra magrittr
 #'
 #' @export
-runContrasts <- function(dgeObj, fitName, 
+runContrasts <- function(dgeObj, designMatrixName, 
                          contrastList,
                          contrastSetName = fitName,
 						runTopTable = TRUE,
@@ -67,7 +68,7 @@ runContrasts <- function(dgeObj, fitName,
                         proportion=0.01) {
 
   assert_that (!missing(dgeObj),
-               !missing(fitName),
+               !missing(designMatrixName),
                !missing(contrastList),
                class(dgeObj)[[1]] == "DGEobj",
                class(contrastList)[[1]] == "list",
@@ -78,15 +79,18 @@ runContrasts <- function(dgeObj, fitName,
                )
     
   funArgs <- match.call() #capture arguments
-    
-  designMatrix <- getType(dgeObj, "designMatrix")
+ 
+  #need to retrieve designMatrix
+  result <- try({designMatrix <- getItem(dgeObj, designMatrixName)}, silent=TRUE)
+  if (class(result) == "try-error")
+      stop(paste("Couldn't find", designMatrixName, "in dgeObj.", sep=" "))
   
+  fitName <- paste(designMatrixName, "_fit", sep="")
   result <- try((fit <- getItem(dgeObj, fitName)), silent=TRUE)
   if (class(result) == "try-error") {
-      stop(Paste(fitName, "not fount in dgeObj", sep=" "))
+      stop(paste(fitName, "not fount in dgeObj", sep=" "))
   }
-  # fit <- getItem(dgeObj, fitName)
-  
+
   #run the contrast fit
   ContrastMatrix <- makeContrasts (contrasts=contrastList, levels=designMatrix)
   MyFit.Contrasts <- contrasts.fit(fit, ContrastMatrix)
