@@ -33,27 +33,11 @@ function todo
 
 	runQvalue.R
 	runIHW.R
-	ThemePack.R
-	volcanoPlot.R done
-	profilePlot.R done
-	comparePlot.R done
-	plotPValHist.R done
-	cdfPlot.R done
-	obsPlot.R
-	plotPvalHist
 
-noChange needed
-
-	OmicsoftRefGeneID2GeneSym.R
-	EntrezGene2Ensembl.R
-	EnsemblGene2GeneSym.R
-	EnsemblGene2Entrez.R
-	DGE_Unit_Conversion.R
-	summarizeSigCounts.R
-	GeneSym2Entrez.R
-	Entrez2GeneSym.R
 	JRT_heatmap.R (rewrite to use a list of parameters)
 	extractCol.R  (rewrite to check for matching rownames/order)
+	
+	subset not working with logical idx
 
 INC1585521  Avaya softephone ticket
 
@@ -62,5 +46,10 @@ These functions work on a contrast list.
 provide a dgeObj and a contrast list (named)
 add IHW and qvalue as attributes and replace/overwrite the existing contrast objects.
 
-  
+Stopping point:
+    testing runQvalue, addItems
+But 
+> dgeObj <- runEdgeRNorm(dgeObj)
+Error in .isAllZero(counts) : 
+    count matrix must be integer or double-precision
 

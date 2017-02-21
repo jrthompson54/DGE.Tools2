@@ -1,10 +1,8 @@
 ### Function runEdgeRNorm ###
 #' Function  runEdgeRNorm (edgeR normlization )
 #'
-#' Returns a SubsettableListOfArrays (SLOA) containing the Fit and associated
-#' output from the standard RNA-Seq using edgeR TMM normalization
-#' followed by limma voom and lmfit.  The SLOA contains the Fit object
-#' and various associated data  use "print(SLOA)" to examine the contents.
+#' Returns a DGEobj containing DGEList object representing the result of
+#'  edgeR TMM normalization.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords gene symbol, Entrez, GeneID
@@ -43,7 +41,7 @@ runEdgeRNorm <- function(dat, normMethod="TMM",
   else dgeObj <- dat
 
   #convert counts to a matrix
-  CountsMatrix = as.matrix(getType(dgeObj, "counts"))
+  CountsMatrix = as.matrix(getItem(dgeObj, "counts"))
 
   #Now ready to normalize counts
   MyDGElist = CountsMatrix %>%

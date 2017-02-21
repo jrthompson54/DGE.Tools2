@@ -9,10 +9,12 @@ library(magrittr)
 library(DGEobj)
 library(DGE.Tools2)
 
+setwd("~/R/lib/pkgsrc/DGE.Tools2/inst/extdata")
 setwd("~/R/lib/pkgsrc/DGE.Tools2")
-
 dgeObj <- OmicsoftToDgeObj(path="./inst/extdata")
+# dgeObj <- OmicsoftToDgeObj()
 
+setwd("~/R/lib/pkgsrc/DGE.Tools2")
 dgeObj <- runEdgeRNorm(dgeObj)
 
 #low expression filter
@@ -21,9 +23,13 @@ genelength <-getItem(dgeObj, "geneData")$ExonLength
 fpk <- convertCounts(counts, 
                      unit="FPK", 
                      geneLength=genelength)
-#keep FPK >=5
-idx <- FPK >= 5.0
-
+#keep FPK >=5 in 50% of samples
+idx <- fpk >= 5.0
+frac <- rowSums(fpk) / ncol(fpk)
+idx <- frac >= 0.75
+d1 <- dgeObj  #save for testing
+dgeObj <- subset(dgeObj, idx, 1:ncol(dgeObj))
+d2 <- dgeObj
 
 #define a formula and construct a design matrix
 design <- getItem(dgeObj, "design")
@@ -39,9 +45,11 @@ designMatrix <- setAttributes(designMatrix, list(formula=formula,
 #save the designMatrix
 dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
 
+
 #dispersion plot
-dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix, lineFit="loess")
+dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
 dispPlot + baseTheme(18)
+
 
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
@@ -75,3 +83,12 @@ saveRDS(DgeObj_contrast, "../DGEobj.RDS")
 
 #sva test
 dgeObj_sva <- runSVA(d1, "Treatment")
+
+
+#Qvalue test
+#extract a topTable List
+contrastList <- getType(DgeObj_contrast, type="topTAble", parent="Treatment_fit_cf")
+contrastList2 <- runQvalue(contrastList)
+#now put the contrast back in the DGEobj
+DgeObj_q <- addItems(DgeObj_contrast, contrastList2, overwrite=TRUE)
+

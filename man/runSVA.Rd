@@ -7,19 +7,19 @@
 runSVA(dgeObj, designMatrixName)
 }
 \arguments{
-\item{MySLOA}{An SLOA object with normalized counts and a DesignMatrix.}
+\item{dgeObj}{A DGEobj with normalized counts and a DesignMatrix.}
 }
 \value{
-MySLOA An SLOA object containing data ready for DGE analysis (runVoom)
+dgeObj The DGEobj is returned containing a new design matrix.
 }
 \description{
 Takes an DGEobj from runVoom and tests for surrogate variables.  Adds a new
-design matrix to the DGEobj with the surrogate varaible columns appended. 
+design matrix to the DGEobj with the surrogate variable columns appended (cbind). 
 runVoom should then be run again with the new design matrix to complete the
 analysis.
 }
 \examples{
-MySLOA = runSVA (MySLOA)
+MyDgeObj = runSVA (MyDgeObj)
 
 }
 \author{

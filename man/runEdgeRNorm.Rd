@@ -23,10 +23,8 @@ samples. (Default = NULL;  sample number will be displayed)}
 A DGEObj with a normalized DGEList added.
 }
 \description{
-Returns a SubsettableListOfArrays (SLOA) containing the Fit and associated
-output from the standard RNA-Seq using edgeR TMM normalization
-followed by limma voom and lmfit.  The SLOA contains the Fit object
-and various associated data  use "print(SLOA)" to examine the contents.
+Returns a DGEobj containing DGEList object representing the result of
+ edgeR TMM normalization.
 }
 \examples{
 MyDgeObj <- runEdgeRNorm (RSE)
