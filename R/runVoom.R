@@ -73,7 +73,7 @@ runVoom <- function(dgeObj, designMatrixName,
     designMatrix <- getItem(dgeObj, designMatrixName)
     
     #get the DGEList
-    if ("DGEList" %in% getItemAttribute(dgeObj, "type"))
+    if ("DGEList" %in% attr(dgeObj, "type"))
         dgelist <- getItem(dgeObj, "DGEList")
     else stop("No DGEList found in DGEobj")
     
@@ -182,8 +182,8 @@ runVoom <- function(dgeObj, designMatrixName,
     #run eBayes
     if (runEBayes) {
         fit = eBayes(fit, robust=robust, proportion=proportion)
-        custAttr <- list(eBayes = TRUE)
-    } else custAttr <- list(eBayes = FALSE)
+        itemAttr <- list(eBayes = TRUE)
+    } else itemAttr <- list(eBayes = FALSE)
 
     #save the several objects
 
@@ -191,7 +191,7 @@ runVoom <- function(dgeObj, designMatrixName,
     dgeObj %<>% addItem(VoomElist, VoomElistName,
                         "Elist",
                         funArgs=funArgs,
-                        custAttr=list(parent=list("DGEList", designMatrixName))
+                        parent=list("DGEList", designMatrixName)
                         )
     
     #Add corfit if present
@@ -199,13 +199,13 @@ runVoom <- function(dgeObj, designMatrixName,
         dgeObj %<>% addItem(corfit, paste(designMatrixName, "_corFit", sep=""),
                             "corFit",
                             funArgs=funArgs,
-                            custAttr=list(parent=paste(designMatrixName, "_Elist", sep="")))
+                            parent=paste(designMatrixName, "_Elist", sep=""))
     
-    custAttr$parent <- list(VoomElistName, designMatrixName)
     dgeObj %<>% addItem(fit, paste(designMatrixName, "_fit", sep=""), 
                         "fit", 
                         funArgs=funArgs,
-                        custAttr=custAttr)
+                        itemAttr=itemAttr,
+                        parent=list(VoomElistName, designMatrixName))
 
   return(dgeObj)  #now containing designMatrix, corFit, Elist and fit
 }

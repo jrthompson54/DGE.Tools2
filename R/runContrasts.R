@@ -129,7 +129,7 @@ runContrasts <- function(dgeObj, designMatrixName,
  dgeObj <- addItem(dgeObj, item=ContrastMatrix, 
                    itemName=paste(contrastSetName, "_cm", sep=""),
                    itemType="contrastMatrix", funArgs=funArgs,
-                   custAttr=list(parent=fitName))
+                   parent=fitName)
  
  if (runTopTable){
     #add the contrast fit
@@ -137,7 +137,7 @@ runContrasts <- function(dgeObj, designMatrixName,
                       itemName=paste(contrastSetName, "_cf", sep=""),
                       itemType="contrast_fit",
                       funArgs=funArgs,
-                      custAttr=list(parent=fitName))
+                      parent=fitName)
     
     #add the topTable DFs
     listNames <- names(TopTableList)
@@ -145,7 +145,7 @@ runContrasts <- function(dgeObj, designMatrixName,
         dgeObj <- addItem(dgeObj, item=TopTableList[[i]], 
                           itemName=listNames[[i]], 
                           itemType="topTable", funArgs=funArgs,
-                          custAttr=list(parent=paste(contrastSetName, "_cf", sep="")))
+                          parent=paste(contrastSetName, "_cf", sep=""))
  }
   
  if (runTopTreat){
@@ -153,14 +153,14 @@ runContrasts <- function(dgeObj, designMatrixName,
                        itemName=paste(contrastSetName, "_cft", sep=""),
                        itemType="contrast_fit_treat",
                        funArgs=funArgs,
-                       custAttr=list(parent=fitName)) 
+                       parent=fitName) 
     
     listNames <- names(TopTreatList)
     for (i in 1:length(TopTreatList))
         dgeObj <- addItem(dgeObj, item=TopTreatList[[i]], 
                           itemName=paste(listNames[i], "_treat", sep=""), 
                           itemType="topTreat", funArgs=funArgs,
-                          custAttr=list(parent=paste(contrastSetName, "_cft", sep="")))
+                          parent=paste(contrastSetName, "_cft", sep=""))
  }
      
  return(dgeObj)

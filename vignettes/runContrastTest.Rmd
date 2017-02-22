@@ -4,9 +4,9 @@
 %\VignetteDepends{ggplot2, magrittr}
 -->
 ---
-title: "Title"
-author: "John Thompson"
-date: "Date5"
+title: "DGE.Tools2"
+author: "John Thompson (john.thompson@bms.com)"
+date: '`r format.Date(Sys.Date(), "%B %d %Y")`'
 header-includes:
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
@@ -98,10 +98,12 @@ designMatrix <- model.matrix (as.formula(formula), design)
 #give this design a name
 designMatrixName <- "Treatment"
 #capture the formula and parent as attributes
-designMatrix <- setAttributes(designMatrix, list(formula=formula, 
-                                 parent="design"))
+designMatrix <- setAttributes(designMatrix, list(formula=formula))
 #save the designMatrix
-dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
+dgeObj <- addItem(dgeObj, item=designMatrix, 
+                  itemName=designMatrixName, 
+                  itemType="designMatrix",
+                  parent="design")
 ```
 
 #QC: Dispersion Plot
@@ -115,7 +117,7 @@ dgeObj <- addItem(dgeObj, designMatrix, designMatrixName, "designMatrix")
 
 #Run Voom and fit the model (lmfit)
 
-```{r runVoom}
+```{r runVoom, cache=T}
 #QW and Var.design and dupCor
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
@@ -123,6 +125,15 @@ d1 <- runVoom(dgeObj, designMatrixName,
               qualityWeights = TRUE,
               var.design=vd,
               dupcorBlock=block)
+```
+
+I'm getting a warning here I don't understand: 
+```
+Warning messages:  
+1: In at[itemName] <- attribs[[i]] :
+  number of items to replace is not a multiple of replacement length
+2: In at[itemName] <- attribs[[i]] :
+  number of items to replace is not a multiple of replacement length
 ```
 
 #Data Exploration: MDS plot
@@ -172,7 +183,7 @@ We'll now re-run runVoom with the new designMatrix.
 
 ##Re-Run voom/lmfit
 
-```{r rerunVoom}
+```{r rerunVoom, cache=T}
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
 dgeObj_sva <- runVoom(dgeObj_sva, designMatrixName="Treatment_sva", 
@@ -180,6 +191,7 @@ dgeObj_sva <- runVoom(dgeObj_sva, designMatrixName="Treatment_sva",
               var.design=vd,
               dupcorBlock=block)
 ```
+
 ##Re-run Contrasts
 
 ```{r rerunContrasts}
@@ -189,7 +201,7 @@ contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNorm
                       TGF_Rapid = "ReplicateGroupRapid_TGFb - ReplicateGroupRapid_control"
 )
 # library(assertthat)
-DgeObj_contrast <- runContrasts(d1, 
+DgeObj_contrast <- runContrasts(dgeObj_sva, 
                                 designMatrixName="Treatment_sva", 
                                 contrastList=contrastList, 
                                 runTopTreat=T)
@@ -217,7 +229,10 @@ contrastList <- getType(DgeObj_contrast, type="topTable", parent="Treatment_fit_
 contrastList2 <- runQvalue(contrastList)
 
 #now put the contrasts back in the DGEobj
-DgeObj_q <- addItems(DgeObj_contrast, contrastList2, overwrite=TRUE)
+DgeObj_q <- addItems(DgeObj_contrast, 
+                     itemList=contrastList2,
+                     itemTypes=as.list(rep("topTable", length(contrastList2))),
+                     overwrite=TRUE)
 ```
 
 ##runIHW
@@ -226,9 +241,12 @@ DgeObj_q <- addItems(DgeObj_contrast, contrastList2, overwrite=TRUE)
 #IHW test
 #extract a topTable List
 contrastList <- getType(DgeObj_contrast, type="topTable", parent="Treatment_fit_cf")
-pcontrastList2 <- runIHW(contrastList)
+contrastList2 <- runIHW(contrastList)
 
 #now put the contrasts back in the DGEobj
-DgeObj_ihw <- addItems(DgeObj_contrast, contrastList2, overwrite=TRUE)
+DgeObj_ihw <- addItems(DgeObj_contrast, 
+                       itemList=contrastList2, 
+                       itemTypes=as.list(rep("topTable", length(contrastList2))),
+                       overwrite=TRUE)
 ```
 
