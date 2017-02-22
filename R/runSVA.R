@@ -39,21 +39,31 @@ runSVA<- function(dgeObj, designMatrixName){
   designMatrix <- getItem(dgeObj, designMatrixName)
   n.sv <- num.sv(log2cpm, designMatrix, method="leek")
   svobj <- sva(log2cpm, designMatrix, NullDesignMatrix, n.sv=n.sv)
-
-  # Add the SVA colums to the DesignMatrix
-  designMatrix_SVA <- cbind (designMatrix, svobj$sv)
+  #pull out the surrogate variables
+  sv <- svobj$sv
   
-  #capture output
-  FunArgs <- match.call()
-  #save the svobj
-  saveRDS(svobj, "svobj.RDS")
-  dgeObj <- addItem(dgeObj, svobj, paste(designMatrixName, "_svobj", sep=""),
-                    "svobj", funArgs=FunArgs,
-                    custAttr=list(parent=designMatrixName))
-  #save the new designMatrix
-  dgeObj <- addItem(dgeObj, designMatrix_SVA, paste(designMatrixName, "_sva", sep=""),
-                    "designMatrix", funArgs=FunArgs,
-                    custAttr=list(parent=designMatrixName))
-
+  if (ncol(sv) > 0) {
+      
+      #give them a colname
+      colnames(sv) <- paste("sva", 1:ncol(sv), sep="")
+      
+      # Add the SVA colums to the DesignMatrix
+      designMatrix_SVA <- cbind (designMatrix, sv)
+      
+      #capture output
+      FunArgs <- match.call()
+      #save the svobj
+      saveRDS(svobj, "svobj.RDS")
+      dgeObj <- addItem(dgeObj, svobj, paste(designMatrixName, "_svobj", sep=""),
+                        "svobj", funArgs=FunArgs,
+                        parent=designMatrixName)
+      
+      #save the new designMatrix
+      dgeObj <- addItem(dgeObj, designMatrix_SVA, paste(designMatrixName, "_sva", sep=""),
+                        "designMatrix", funArgs=FunArgs,
+                        parent=designMatrixName)
+      
+  } else tsmsg ("No Surrogate Variables Found. DGEobj is unchanged.")
+  
   return(dgeObj)
 }

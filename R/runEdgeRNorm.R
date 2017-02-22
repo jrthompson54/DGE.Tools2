@@ -49,10 +49,13 @@ runEdgeRNorm <- function(dat, normMethod="TMM",
     calcNormFactors (method = normMethod)   
   
   #capture the DGEList
-  custAttr <- list(normalization=normMethod, parent="counts")
-  dgeObj <- addItem(dgeObj, MyDGElist, "DGEList",  "DGEList", 
+  itemAttr <- list(normalization=normMethod)
+  dgeObj <- addItem(dgeObj, item=MyDGElist, 
+                    itemName="DGEList",  
+                    itemType="DGEList", 
                     funArgs=funArgs,
-                    custAttr=custAttr)
+                    itemAttr=itemAttr,
+                    parent="counts")
 
   #plot the Norm factors
   if (!is.null(plotLabels)  && length(plotLabels == ncol(dgeObj))){
