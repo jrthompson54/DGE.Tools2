@@ -42,4 +42,3 @@ Ryan Thompson, \email{rct@thompsonclan.org}
 \keyword{DGE,}
 \keyword{eBayes,}
 \keyword{limma}
-

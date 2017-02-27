@@ -4,8 +4,8 @@
 \alias{convertCounts}
 \title{Function convertCounts}
 \usage{
-convertCounts(counts, unit, geneLength, log, normalize, PlotDir, PlotFile,
-  FacetTitles)
+convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
+  PlotDir, PlotFile, FacetTitles)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -26,8 +26,7 @@ edgeR::calcNormFactors for normalization.}
 \item{PlotFile}{Only applies to zFPKM. Default = "zFPKM_Distribution.png"}
 
 \item{FacetTitles}{Only applies to zFPKM. Turn facet titles on or off 
-  (Default = TRUE)
-other arguments to calcNormFactors can be included here.}
+(Default = TRUE)}
 }
 \value{
 A matrix in the new unit space
@@ -58,4 +57,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{RNA-Seq,}
 \keyword{conversion}
 \keyword{unit}
-

@@ -33,4 +33,3 @@ MyPvalues  = ExtractCol (MySLOA$TopTableList, "P.Value")
 John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{topTable}
-

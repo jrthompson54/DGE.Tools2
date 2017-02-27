@@ -89,7 +89,7 @@
 
   #todo: add optional facet plots of weights vs. Intensity colorby bin
   
-  result <- list(contrastList, ihwlist)
+  result <- list(contrasts=contrastList, ihwObj=ihwList)
   return(result)
 
 }
