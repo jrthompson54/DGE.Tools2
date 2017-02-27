@@ -88,7 +88,7 @@ runContrasts <- function(dgeObj, designMatrixName,
   fitName <- paste(designMatrixName, "_fit", sep="")
   result <- try((fit <- getItem(dgeObj, fitName)), silent=TRUE)
   if (class(result) == "try-error") {
-      stop(paste(fitName, "not fount in dgeObj", sep=" "))
+      stop(paste(fitName, "not found in dgeObj", sep=" "))
   }
 
   #run the contrast fit

@@ -1,0 +1,361 @@
+---
+title: "DGE.Tools2"
+author: "John Thompson (john.thompson@bms.com)"
+date: '`r format.Date(Sys.Date(), "%B %d %Y")`'
+header-includes:
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{}
+- \fancyfoot[CO,CE]{\textit{BMS Confidential}}
+- \fancyfoot[LE,RO]{\thepage}
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    number_sections: true
+    fig_width: 7
+    fig_height: 5
+fontsize: 10pt
+---
+
+\newpage
+
+#Load Libraries
+
+```{r setup, echo=TRUE, warning=FALSE, message=FALSE}
+rm(list=ls()) #Clear the workspace
+invisible(gc()) #garbage collection to maximize available memory
+startTime = Sys.time() #used to time the run
+
+library(dplyr)
+library(edgeR)
+library(limma)
+library(magrittr)
+library(DGEobj)
+library(DGE.Tools2)
+```
+
+#Get raw count data from an Omicsoft project
+
+This builds a DGEobj with the mimimal set of raw data.  Here raw data is defined 
+as a matrix of counts with associated dataframes to annotate the genes (row) and
+samples (col) data (3 tabbed text files).
+
+```{r getOmicsoftData, echo=TRUE, warning=FALSE, message=FALSE}
+
+#change this to your working directory
+setwd("~/R/lib/pkgsrc/DGE.Tools2")
+
+#this should point to the installed library folder containing sample data
+rawDataPath <- paste(.libPaths()[[1]], "/DGE.Tools2/extdata", sep="")
+dgeObj <- OmicsoftToDgeObj(path=rawDataPath)
+
+```
+
+#zFPKM analysis
+
+FPKM density curves of gene level data show a bimodal distribution.
+[Hart et al.](http://www.biomedcentral.com/1471-2164/14/778) used ChIP-Seq
+data from ENCODE that define open and closed chromation configurations to orthogonally
+define which genes were expressed and showed that the upper FPKM peak corresponds 
+closely to the open (active) chromatin conformation.  They developed a method
+to fit a curve to just the upper peak and then use Z-score analysis to define
+a low expression cutoff.  Ron Ammar implemented this method in the zFPKM package
+on the BMS biogit.
+
+This shows how to calculate zFPKM.  zFPKM >= -3 is the recommended threshold
+to use as a cutoff for "present" genes.  To rely on zFPKM you need to inspect
+the FPKM density curve and visually verify that the algorithm properly identified
+and fit the upper peak in the density curve.  The red curve is a fit to the upper
+peak of the bimodal FPKM density curve (blue).
+
+
+```{r zFPKM, echo=TRUE, warning=FALSE, message=FALSE}
+counts <- getItem(dgeObj, "counts")
+geneAnno <- getItem(dgeObj, "geneData")
+FPKM <- convertCounts(counts, unit="FPKM",
+                       geneLength=geneAnno$ExonLength) %>%
+    as.data.frame
+library(zFPKM)
+zFPKM <- zFPKMTransformDF(FPKM[,1, drop=FALSE])
+
+```
+
+#Filter out low intensity genes
+
+Typically, genes with near zero counts are removed before further analysis. They
+contain no information, increase the multiple test burden, and could (under
+some conditions) compromise the normalization.
+
+Although zFPKM is more unbiased (in terms of genelength) than the mincount 
+method of low intensity filtering, I have a preference for the FPK filtering 
+methods.  FPK is also unbiased with respect to genelength and has the 
+further advantage that is can be used to evaluate the "biological" noise
+floor by calculating the FPK value for intergenic DNA. Reads mapping to intergenic
+DNA are thought to arise by either low-level stochastic non-promoter driven transcription or DNA contamination. This represents a baseline below which you cannot infer
+mRNA expression.
+
+I typically use a FPK + mincount filter to define detected/non detected for individual 
+samples.  You then have to decide how to integrate this information across 
+experiment groups. You can get more sophisticated and do
+this on a group-wise basis so you can include genes that were expressed in 
+at least one of your treatment groups.  I leave that as an exercise for the reader
+and here just use the simplistic method of requiring XX% of samples to pass the 
+intensity threshold.  
+
+Dimensions before filtering:  
+`r dim(dgeObj)`
+
+```{r LowIntensityFilter, echo=TRUE, warning=FALSE, message=FALSE}
+fracThreshold <- 0.3
+
+#low expression filter
+counts <- getItem(dgeObj, "counts")
+genelength <-getItem(dgeObj, "geneData")$ExonLength
+fpk <- convertCounts(counts, 
+                     unit="FPK", 
+                     geneLength=genelength)
+
+#keep FPK >=5 in 75% of samples
+idxfpk <- fpk >= 5.0
+frac <- rowSums(fpk) / ncol(fpk)
+idx <- frac >= fracThreshold
+d1 <- dgeObj  #save for testing
+dgeObj <- subset(dgeObj, idx, 1:ncol(dgeObj))
+d2 <- dgeObj
+
+#overlay a mincount filter
+counts <- getItem(dgeObj, "counts")
+genelength <-getItem(dgeObj, "geneData")$ExonLength
+idxmin <- counts >= 10
+frac <- rowSums(idxmin)/ncol(idxmin)
+idx <- frac >= fracThreshold
+dgeObj <- subset(dgeObj, idx,)
+d3 <- dgeObj
+```
+
+Dimensions after filtering:  
+`r dim(dgeObj)`
+
+
+#EdgeR Normalization
+
+```{r Normalize, echo=TRUE, warning=FALSE, message=FALSE}
+dgeObj <- runEdgeRNorm(dgeObj)
+```
+
+
+#Define the model
+
+Provide a formula and construct the design matrix.
+
+```{r ModelDefinition, echo=TRUE, warning=FALSE, message=FALSE}
+#define a formula and construct a design matrix
+design <- getItem(dgeObj, "design")
+design$ReplicateGroup %<>% as.factor
+design$ReplicateGroup %<>% relevel("Normal_control")
+formula <- '~ 0 + ReplicateGroup'
+#build the designMatrix and add some attributes
+designMatrix <- model.matrix (as.formula(formula), design)
+#give this design a name
+designMatrixName <- "Treatment"
+#capture the formula as an attribute
+designMatrix <- setAttributes(designMatrix, list(formula=formula))
+#save the designMatrix
+dgeObj <- addItem(dgeObj, item=designMatrix, 
+                  itemName=designMatrixName, 
+                  itemType="designMatrix",
+                  parent="design")
+```
+
+#QC: Dispersion Plot
+
+```{r DispersionPlot, echo=TRUE, warning=FALSE, message=FALSE}
+#this plot takes a few minutes
+#dispersion plot
+# dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
+# dispPlot + baseTheme(18)
+```
+
+#Run Voom and fit the model (lmfit)
+
+```{r runVoom, echo=TRUE, warning=FALSE, message=FALSE}
+#QW and Var.design and dupCor
+# block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
+# vd <- model.matrix(as.formula("~ Treatment"), design)
+# d1 <- runVoom(dgeObj, designMatrixName, 
+#               qualityWeights = TRUE,
+#               var.design=vd,
+#               dupcorBlock=block)
+
+#Omit duplicate correlation to run faster as an example
+#QW and Var.design 
+block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
+#the vd design matrix is used to block the quality weight determination
+vd <- model.matrix(as.formula("~ Disease.Status"), design)
+d1 <- runVoom(dgeObj, designMatrixName, 
+              qualityWeights = TRUE,
+              var.design=vd)
+```
+
+I'm getting a warning here I don't understand: coming from appendAttributes
+
+```
+Warning messages:  
+1: In at[itemName] <- attribs[[i]] :
+  number of items to replace is not a multiple of replacement length
+2: In at[itemName] <- attribs[[i]] :
+  number of items to replace is not a multiple of replacement length
+```
+
+#Data Exploration: MDS plot
+
+```{r MDSplot, echo=TRUE, warning=FALSE, message=FALSE}
+#use color and shape with labels and labelSize
+m <- ggplotMDS(d1, colorBy = design$Treatment, 
+               shapeBy = design$Disease.Status, symSize =5,
+               labels=design$VendorBarcode,
+               labelSize=3)
+print(m[[1]])
+```
+
+#Set up and run contrasts
+
+Function runContrasts takes a named list of contrasts.  The values in the list
+should correspond to columns in the design matrix.
+
+```{r runContrasts, echo=TRUE, warning=FALSE, message=FALSE}
+#runContrast testing  
+contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNormal_control",
+                      TGF_Stable = "ReplicateGroupStable_TGFb - ReplicateGroupStable_control",
+                      TGF_Rapid = "ReplicateGroupRapid_TGFb - ReplicateGroupRapid_control"
+)
+# library(assertthat)
+DgeObj_contrast <- runContrasts(d1, 
+                                designMatrixName="Treatment", 
+                                contrastList=contrastList, 
+                                runTopTreat=T)
+saveRDS(DgeObj_contrast, "../DGEobj.RDS")
+```
+
+#Check for Surrogate Variables (unaccounted for variation)
+
+If SVA find surrogate variables,  you cbind the design table for the surrogate
+variables to your experiments design matrix and then re-run voom/lmfit.
+
+##runSVA
+
+```{r SVA, echo=TRUE, warning=FALSE, message=FALSE}
+
+#sva test
+dgeObj_sva <- runSVA(d1, designMatrixName="Treatment")
+```
+SVA found 5 surrogate variables in this dataset and created a new design matrix.
+We'll now re-run runVoom with the new designMatrix.
+
+##Re-Run voom/lmfit
+
+```{r rerunVoom, echo=TRUE, warning=FALSE, message=FALSE}
+block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
+vd <- model.matrix(as.formula("~ Treatment"), design)
+dgeObj_sva <- runVoom(dgeObj_sva, designMatrixName="Treatment_sva", 
+              qualityWeights = TRUE,
+              var.design=vd)
+```
+
+##Re-run Contrasts
+
+```{r rerunContrasts, echo=TRUE, warning=FALSE, message=FALSE}
+#runContrast testing  
+contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNormal_control",
+                      TGF_Stable = "ReplicateGroupStable_TGFb - ReplicateGroupStable_control",
+                      TGF_Rapid = "ReplicateGroupRapid_TGFb - ReplicateGroupRapid_control"
+)
+# library(assertthat)
+DgeObj_contrast <- runContrasts(dgeObj_sva, 
+                                designMatrixName="Treatment_sva", 
+                                contrastList=contrastList, 
+                                runTopTreat=T)
+saveRDS(DgeObj_contrast, "../DGEobj.RDS")
+
+```
+
+
+#Alternative FDR scores
+
+topTable provides a BH FDR value (adj.P.Val).  We provide two functions (runQvalue
+and runIHW) that provide alternative FDR measures. See the help for each of those 
+functions for details of how each method determines the FDR value.
+
+Here we extract all topTable dataframes as a list.  Then we loop through and add
+the specified FDR measures as additional columns in the topTable dataframes and
+return the original list of dataframes.
+
+##runQvalue
+
+```{r runQvalue, echo=TRUE, warning=FALSE, message=FALSE}
+#Qvalue test
+#extract a topTable List
+contrastList <- getType(DgeObj_contrast, type="topTable", parent="Treatment_fit_cf")
+contrastList2 <- runQvalue(contrastList)
+
+#now put the contrasts back in the DGEobj
+DgeObj_q <- addItems(DgeObj_contrast, 
+                     itemList=contrastList2,
+                     itemTypes=as.list(rep("topTable", length(contrastList2))),
+                     overwrite=TRUE)
+```
+
+##runIHW
+
+```{r runIHW, echo=TRUE, warning=FALSE, message=FALSE}
+#IHW test
+#extract a topTable List
+contrastList <- getType(DgeObj_contrast, type="topTable", parent="Treatment_fit_cf")
+IHWresult <- runIHW(contrastList)
+contrastList2 <- IHWresult[[1]]
+
+#now put the contrasts back in the DGEobj
+DgeObj_ihw <- addItems(DgeObj_contrast, 
+                       itemList=contrastList2, 
+                       itemTypes=as.list(rep("topTable", length(contrastList2))),
+                       overwrite=TRUE)
+```
+
+#Printing a DGEobj
+
+The print method has been adapted to print out an informative table of information
+that is useful to inspect the contents of a DGEobj and identify the names of individual
+items.
+
+Simple print:  
+```{r simplePrint}
+library(knitr)
+kable(print(DgeObj_contrast))
+```
+
+Verbose print:  
+```{r verbosePrint}
+
+kable(print(DgeObj_contrast, verbose=TRUE))
+```
+
+
+\newpage
+
+# Session Info
+
+***Time required to process this report:*** *`r format(Sys.time() - startTime)`* 
+
+**R Session Info**
+
+```{r SessionInfo}
+#Don's envDoc replacement for sessionInfo()
+# library(envDocument)
+# library(knitr)
+# myenv = env_doc("return")
+# kable(myenv)
+sessionInfo()
+```
+

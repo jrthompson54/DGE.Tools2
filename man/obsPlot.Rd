@@ -154,4 +154,3 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{ggplot2}
 \keyword{logratio}
 \keyword{violinplot}
-

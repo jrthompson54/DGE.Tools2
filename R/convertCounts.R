@@ -21,7 +21,6 @@
 #' @param PlotFile Only applies to zFPKM. Default = "zFPKM_Distribution.png"
 #' @param FacetTitles Only applies to zFPKM. Turn facet titles on or off 
 #'    (Default = TRUE)
-#'  other arguments to calcNormFactors can be included here. 
 #' 
 #' @return A matrix in the new unit space
 #'
@@ -42,7 +41,11 @@
 #' @import edgeR zFPKM dplyr magrittr
 #'
 #' @export
-convertCounts <- function(counts, unit, geneLength, log, normalize,
+convertCounts <- function(counts, 
+                          unit, 
+                          geneLength, 
+                          log=FALSE, 
+                          normalize=FALSE,
                           PlotDir,
                           PlotFile,
                           FacetTitles) {
@@ -131,8 +134,8 @@ result <- try({counts <- as.matrix(counts)}, silent=TRUE)
     if (class(result) == "try-error") 
         stop("Couldn't coerce counts to a numeric matrix!")
 
-#Make sure genelength is correct length
-if (length(genelength) != nrow(counts))
+#Make sure geneLength is correct length
+if (length(geneLength) != nrow(counts))
     stop('Length(geneLength) does not match rowcount of counts')
 
 #set defaults

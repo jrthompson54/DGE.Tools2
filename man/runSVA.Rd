@@ -27,4 +27,3 @@ John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{SLOA}
 \keyword{SVA}
-
