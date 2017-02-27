@@ -1,5 +1,5 @@
 ---
-title: "DGE.Tools2"
+title: "DGE_Tools"
 author: "John Thompson (john.thompson@bms.com)"
 date: '`r format.Date(Sys.Date(), "%B %d %Y")`'
 header-includes:
@@ -121,9 +121,7 @@ fpk <- convertCounts(counts,
 idxfpk <- fpk >= 5.0
 frac <- rowSums(fpk) / ncol(fpk)
 idx <- frac >= fracThreshold
-d1 <- dgeObj  #save for testing
 dgeObj <- subset(dgeObj, idx, 1:ncol(dgeObj))
-d2 <- dgeObj
 
 #overlay a mincount filter
 counts <- getItem(dgeObj, "counts")
@@ -131,8 +129,8 @@ genelength <-getItem(dgeObj, "geneData")$ExonLength
 idxmin <- counts >= 10
 frac <- rowSums(idxmin)/ncol(idxmin)
 idx <- frac >= fracThreshold
-dgeObj <- subset(dgeObj, idx,)
-d3 <- dgeObj
+dgeObj <- subset(dgeObj, idx)
+
 ```
 
 Dimensions after filtering:  
@@ -199,7 +197,7 @@ d1 <- runVoom(dgeObj, designMatrixName,
               var.design=vd)
 ```
 
-I'm getting a warning here I don't understand: coming from appendAttributes
+I'm getting a warning here I don't understand: coming from appendAttributes.  However, the resulting DGEobj looks correct.
 
 ```
 Warning messages:  
@@ -251,12 +249,14 @@ variables to your experiments design matrix and then re-run voom/lmfit.
 #sva test
 dgeObj_sva <- runSVA(d1, designMatrixName="Treatment")
 ```
-SVA found 5 surrogate variables in this dataset and created a new design matrix.
+SVA found 0 surrogate variables in this dataset.
 We'll now re-run runVoom with the new designMatrix.
 
 ##Re-Run voom/lmfit
 
-```{r rerunVoom, echo=TRUE, warning=FALSE, message=FALSE}
+If SVA had found surrogate variables, a new design matrix with a "_sva" suffix was created and added to the DGEobj and you would rerun the runVoom function with the new design matrix:
+
+```
 block <- c(1,2,3,1,2,3,4,5,6,4,5,6,7,8,9,7,8,9)
 vd <- model.matrix(as.formula("~ Treatment"), design)
 dgeObj_sva <- runVoom(dgeObj_sva, designMatrixName="Treatment_sva", 
@@ -266,7 +266,10 @@ dgeObj_sva <- runVoom(dgeObj_sva, designMatrixName="Treatment_sva",
 
 ##Re-run Contrasts
 
-```{r rerunContrasts, echo=TRUE, warning=FALSE, message=FALSE}
+After you re-ran runVoom you would also re-run runContrasts as follows:
+
+```
+
 #runContrast testing  
 contrastList  <- list(TGF_Norm = "ReplicateGroupNormal_TGFb - ReplicateGroupNormal_control",
                       TGF_Stable = "ReplicateGroupStable_TGFb - ReplicateGroupStable_control",
@@ -332,13 +335,16 @@ items.
 Simple print:  
 ```{r simplePrint}
 library(knitr)
-kable(print(DgeObj_contrast))
+
+printdf <- print(DgeObj_contrast)
+
 ```
 
 Verbose print:  
 ```{r verbosePrint}
 
-kable(print(DgeObj_contrast, verbose=TRUE))
+printdf <- print(DgeObj_contrast, verbose=TRUE)
+
 ```
 
 
