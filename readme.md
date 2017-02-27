@@ -72,8 +72,11 @@ It is best to run the install from a fresh R session before loading any packages
 	
     #now you should have all the dependencies in place to install DGE.Tools 
 
-    #Install the dev version of DGE.Tools 
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2", branch="dev", repos=BiocInstaller::biocinstallRepos()) 
+    #Install the DGEobj Package
+    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGEobj", repos=BiocInstaller::biocinstallRepos())   
+
+    #Install the DGE.Tools2
+    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2", repos=BiocInstaller::biocinstallRepos()) 
   
 ```   
 
