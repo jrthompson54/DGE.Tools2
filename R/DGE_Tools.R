@@ -28,29 +28,30 @@
 #' file values to use data from a different pipeline.
 #'
 # "GeneData"
-.GeneData = list(
-  Annotation = list(name = "Annotation",
-                    file = "RNA-Seq.Count.Annotation.txt",
-                    type = "rowRanges"),
-  Design = list(name = "Design",
-                file = "RNA-Seq.Design.txt",
-                type = "colData"),
-  Counts = list(name = "Counts",
-                file = "RNA-Seq.Count.Table.txt",
-                type = "Assay"),
-  Level = list(name = "Level",
-               level = "Gene",
-               type = "metadata"),
-  # FPKM = list(name = "FPKM",
-  #             file = "RNA-Seq.FPKM.Table.txt",
-  #             type = "Assay"),
-  # TPM = list(name = "TPM",
-  #             file = "Genes.TPM.Table.txt",
-  #             type = "Assay"),
-  QC.Metrics = list(name = "QC.Metrics",
-            file = "RNA-Seq.QCMetrics.Table.txt",
-            type = "metadata")
-)
+# .GeneData = list(
+#   Annotation = list(name = "Annotation",
+#                     file = "RNA-Seq.Count.Annotation.txt",
+#                     type = "rowRanges"),
+#   Design = list(name = "Design",
+#                 file = "RNA-Seq.Design.txt",
+#                 type = "colData"),
+#   Counts = list(name = "Counts",
+#                 file = "RNA-Seq.Count.Table.txt",
+#                 type = "Assay"),
+#   Level = list(name = "Level",
+#                level = "Gene",
+#                type = "metadata"),
+#   # FPKM = list(name = "FPKM",
+#   #             file = "RNA-Seq.FPKM.Table.txt",
+#   #             type = "Assay"),
+#   # TPM = list(name = "TPM",
+#   #             file = "Genes.TPM.Table.txt",
+#   #             type = "Assay"),
+#   QC.Metrics = list(name = "QC.Metrics",
+#             file = "RNA-Seq.QCMetrics.Table.txt",
+#             type = "metadata")
+# )
+
 # uncomment this block to save changes to this datastructure to be built into the package
 # x = getwd()
 # setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
@@ -65,29 +66,29 @@
 #' is preconfigured for datafiles from the Omicsoft pipeline.  Modify TranscriptData
 #' file values to use data from a different pipeline.
 #'
-.TranscriptData = list(
-  Annotation = list(name = "Annotation",
-                    file = "RNA-Seq.Transcript_Count.Annotation.txt",
-                    type = "rowRanges"),
-  Design = list(name = "Design",
-                file = "RNA-Seq.Design.txt",
-                type = "colData"),
-  Counts = list(name = "Counts",
-                file = "RNA-Seq.Transcript_Count.Table.txt",
-                type = "Assay"),
-  Level = list(name = "Level",
-               level = "Transcript",
-               type = "metadata"),
-  # FPKM = list(name = "FPKM",
-  #             file = "RNA-Seq.Transcript_FPKM.Table.txt",
-  #             type = "Assay"),
-  # TPM = list(name = "TPM",
-  #             file = "Transcripts.TPM.Table.txt",
-  #             type = "Assay"),
-  QC.Metrics = list(name = "QC.Metrics",
-            file = "RNA-Seq.QCMetrics.Table.txt",
-            type = "metadata")
-)
+# .TranscriptData = list(
+#   Annotation = list(name = "Annotation",
+#                     file = "RNA-Seq.Transcript_Count.Annotation.txt",
+#                     type = "rowRanges"),
+#   Design = list(name = "Design",
+#                 file = "RNA-Seq.Design.txt",
+#                 type = "colData"),
+#   Counts = list(name = "Counts",
+#                 file = "RNA-Seq.Transcript_Count.Table.txt",
+#                 type = "Assay"),
+#   Level = list(name = "Level",
+#                level = "Transcript",
+#                type = "metadata"),
+#   # FPKM = list(name = "FPKM",
+#   #             file = "RNA-Seq.Transcript_FPKM.Table.txt",
+#   #             type = "Assay"),
+#   # TPM = list(name = "TPM",
+#   #             file = "Transcripts.TPM.Table.txt",
+#   #             type = "Assay"),
+#   QC.Metrics = list(name = "QC.Metrics",
+#             file = "RNA-Seq.QCMetrics.Table.txt",
+#             type = "metadata")
+# )
 # x = getwd()
 # setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
 # save(TranscriptData, file="./data/TranscriptData.rda")

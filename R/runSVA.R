@@ -42,7 +42,7 @@ runSVA<- function(dgeObj, designMatrixName){
   #pull out the surrogate variables
   sv <- svobj$sv
   
-  if (ncol(sv) > 0) {
+  if (svobj$n.sv > 0) {
       
       #give them a colname
       colnames(sv) <- paste("sva", 1:ncol(sv), sep="")
