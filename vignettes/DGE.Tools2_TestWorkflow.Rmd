@@ -1,5 +1,5 @@
 ---
-title: "DGE_Tools"
+title: "DGE.Tools2"
 author: "John Thompson (john.thompson@bms.com)"
 date: '`r format.Date(Sys.Date(), "%B %d %Y")`'
 header-includes:
@@ -36,7 +36,7 @@ library(DGEobj)
 library(DGE.Tools2)
 ```
 
-#Get raw count data from an Omicsoft project
+#Get raw count data and annotation from an Omicsoft project
 
 This builds a DGEobj with the mimimal set of raw data.  Here raw data is defined 
 as a matrix of counts with associated dataframes to annotate the genes (row) and
@@ -51,6 +51,20 @@ setwd("~/R/lib/pkgsrc/DGE.Tools2")
 rawDataPath <- paste(.libPaths()[[1]], "/DGE.Tools2/extdata", sep="")
 dgeObj <- OmicsoftToDgeObj(path=rawDataPath)
 
+```
+
+#Get raw count data and annotation from an Xpress project
+
+Find your data in Xpress and note the Xpress ID (at the end of the URL):  
+Example: http://xpress.pri.bms.com/CGI/project_summary.cgi?project=20135
+
+Use function Xpress2DGEO from the 
+[Xpress2R package](https://biogit.pri.bms.com/thompj27/Xpress2R)
+to retrieve the counts and annotation.
+
+```{r RetrieveFromXpress, eval=FALSE}
+library(Xpress2R)
+dgeObj20135 = Xpress2DGEO(20135)
 ```
 
 #zFPKM analysis
@@ -136,13 +150,11 @@ dgeObj <- subset(dgeObj, idx)
 Dimensions after filtering:  
 `r dim(dgeObj)`
 
-
 #EdgeR Normalization
 
 ```{r Normalize, echo=TRUE, warning=FALSE, message=FALSE}
 dgeObj <- runEdgeRNorm(dgeObj)
 ```
-
 
 #Define the model
 
@@ -169,11 +181,11 @@ dgeObj <- addItem(dgeObj, item=designMatrix,
 
 #QC: Dispersion Plot
 
-```{r DispersionPlot, echo=TRUE, warning=FALSE, message=FALSE}
+```{r DispersionPlot, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 #this plot takes a few minutes
 #dispersion plot
-# dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
-# dispPlot + baseTheme(18)
+dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
+dispPlot + baseTheme(18)
 ```
 
 #Run Voom and fit the model (lmfit)
@@ -333,17 +345,17 @@ that is useful to inspect the contents of a DGEobj and identify the names of ind
 items.
 
 Simple print:  
-```{r simplePrint}
+```{r simplePrint, results='asis'}
 library(knitr)
-
-printdf <- print(DgeObj_contrast)
-
+print(DgeObj_contrast)
 ```
 
 Verbose print:  
-```{r verbosePrint}
-
-printdf <- print(DgeObj_contrast, verbose=TRUE)
+```{r verbosePrint, results='asis'}
+#results='asis' argument makes the kable output of the DGEobj print methods
+#format nicely as expected.
+ 
+print(DgeObj_contrast, verbose=TRUE)
 
 ```
 
