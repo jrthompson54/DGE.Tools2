@@ -1,7 +1,6 @@
 #DGE.Tools2: RNA-Seq Analysis Package
 
-DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to 
-store DGE data and analysis results.  
+DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to store DGE data and analysis results.  
 
 **Note:** v0.9.* is the beta version.  All functionality seems to be working but testing is still in progress.  Please let me know
 if something isn't working as advertised.  
@@ -67,12 +66,15 @@ It is best to run the install from a fresh R session before loading any packages
     #This one provides Ensembl annotation (used by a few gene ID conversion functions)
     devtools::install_github("stephenturner/annotables")
 
-    #Installs Ron's zFPKM package
+    #Install Xpress2R package if you wish to retrieve Xpress data as a DGEobj
+    devtools::install_git("http://biogit.pri.bms.com/thompj27/Xpress2R", repos=BiocInstaller::biocinstallRepos()) 
+
+    #Install the zFPKM package
     devtools::install_git("http://biogit.pri.bms.com/thompj27/zFPKM")
 	
     #now you should have all the dependencies in place to install DGE.Tools 
 
-    #Install the DGEobj Package
+    #Install the DGEobj Package (The S3 class data structure used by DGE.Tools2
     devtools::install_git("http://biogit.pri.bms.com/thompj27/DGEobj", repos=BiocInstaller::biocinstallRepos())   
 
     #Install the DGE.Tools2
