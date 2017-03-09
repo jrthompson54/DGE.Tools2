@@ -296,7 +296,6 @@ saveRDS(DgeObj_contrast, "../DGEobj.RDS")
 
 ```
 
-
 #Alternative FDR scores
 
 topTable provides a BH FDR value (adj.P.Val).  We provide two functions (runQvalue
