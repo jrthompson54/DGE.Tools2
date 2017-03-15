@@ -14,7 +14,7 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords DGE.Tools, signature summary, gene counts
 #'
-#' @param ContrastList A ContrastList opject produced by runContrasts
+#' @param ContrastList A list of topTable dataframes
 #' @param columns Vector of column names to summarize from topTable dataframes
 #'   Default = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue")
 #' @param sigThresholds Thresholds to use for each column specified in columns
@@ -27,6 +27,9 @@
 #' @import magrittr
 #'
 #' @examples
+#' 
+#' #get a contrast list from a dgeObj
+#' MyContrastList <- getType(dgeObj, "topTable")
 #'
 #' #all default thresholds, no fold change threshold
 #' MySigSummary <- summarizeSigCounts (MyContrastList)
@@ -83,17 +86,19 @@ summarizeSigCounts <- function(ContrastList,
   }
 
   #reduce tableFields to only ones that exist
-  columns <- columns[columns %in% names(ContrastList$TopTableList[[1]])]
-  sigThresholds <- sigThresholds[columns %in% names(ContrastList$TopTableList[[1]])]
+  columns <- columns[columns %in% colnames(ContrastList[[1]])]
+  sigThresholds <- sigThresholds[columns %in% colnames(ContrastList[[1]])]
 
+  #collect the rows in a list
   myrows <-list()
-  for (i in 1:length(ContrastList$TopTableList)){
-    myrows[[i]] <- getSigCounts(ContrastList$TopTableList[[i]], columns, sigThresholds, fcThreshold)
+  for (i in 1:length(ContrastList)){
+    myrows[[i]] <- getSigCounts(ContrastList[[i]], columns, sigThresholds, fcThreshold)
   }
 
  #put rows into a matrix
  DF <- do.call(rbind, myrows)
- rownames(DF) <- names(ContrastList$TopTableList)
+
+ rownames(DF) <- names(ContrastList)
  colnames(DF) <- columns
 
  return(DF)

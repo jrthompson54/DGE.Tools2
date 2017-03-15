@@ -9,7 +9,7 @@ summarizeSigCounts(ContrastList, columns = c("P.Value", "adj.P.Val", "Qvalue",
   0.1), fcThreshold = 0)
 }
 \arguments{
-\item{ContrastList}{A ContrastList opject produced by runContrasts}
+\item{ContrastList}{A list of topTable dataframes}
 
 \item{columns}{Vector of column names to summarize from topTable dataframes
 Default = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue")}
@@ -36,6 +36,9 @@ only have to add a fcThreshold if you want one or modify the pvalue/fdr
 thresholds if you want different thresholds from the defaults.
 }
 \examples{
+
+#get a contrast list from a dgeObj
+MyContrastList <- getType(dgeObj, "topTable")
 
 #all default thresholds, no fold change threshold
 MySigSummary <- summarizeSigCounts (MyContrastList)
