@@ -8,7 +8,7 @@ document()
 load_all()
 #build_vignettes()
 build()
-pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.1.tar.gz"
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.2.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
@@ -37,19 +37,14 @@ function todo
 	JRT_heatmap.R (rewrite to use a list of parameters)
 	extractCol.R  (rewrite to check for matching rownames/order)
 	
-	subset not working with logical idx
+
 
 INC1585521  Avaya softephone ticket
 
-Next:  IHW and qvalue handling  
+Next:  IHW and qvalue handling  (altFDR function)
 These functions work on a contrast list.  
 provide a dgeObj and a contrast list (named)
-add IHW and qvalue as attributes and replace/overwrite the existing contrast objects.
+add IHW and qvalue=TRUE as attributes and replace/overwrite the existing contrast objects.
 
-Stopping point:
-    testing runQvalue, addItems
-But 
-> dgeObj <- runEdgeRNorm(dgeObj)
-Error in .isAllZero(counts) : 
-    count matrix must be integer or double-precision
+
 
