@@ -148,7 +148,8 @@ Txt2DF <- function(filename) {
   if (file.exists(filename)) {
     df = read.table (filename, sep="\t", stringsAsFactors = FALSE,
                      header=TRUE, row.names = 1, comment.char="",
-                     quote="", na.strings=c("NA", "."))
+                     quote="", na.strings=c("NA", "."),
+                     check.names=TRUE)
     return (df)
   } else {
     warning (paste ("Warning: File = ", filename, "not found."))
