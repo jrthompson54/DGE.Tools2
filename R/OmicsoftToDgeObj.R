@@ -69,6 +69,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     seqData <- Txt2DF(file.path(path, seqAnnotation))
 
     designData <- Txt2DF(file.path(path, design))
+    rownames(designData) <- make.names(rownames(designData))
 
     #build the DgeObj
     if (missing(customAttr))
