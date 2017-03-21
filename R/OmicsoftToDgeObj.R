@@ -53,7 +53,7 @@
 #'                                       GeneMobel = "Ensembl.R84")
 #'                              )
 #' 
-#' @import DGEobj magrittr
+#' @import DGEobj magrittr 
 #'
 #' @export
 OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt", 
