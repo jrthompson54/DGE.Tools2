@@ -38,7 +38,7 @@
 #'                       log=FALSE,
 #'                       normalize=FALSE)
 #'                                              
-#' @import edgeR zFPKM dplyr magrittr
+#' @import edgeR zFPKM dplyr magrittr assertthat
 #'
 #' @export
 convertCounts <- function(counts, 
