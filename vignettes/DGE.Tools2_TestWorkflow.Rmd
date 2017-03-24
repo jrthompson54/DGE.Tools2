@@ -45,7 +45,8 @@ samples (col) data (3 tabbed text files).
 ```{r getOmicsoftData, echo=TRUE, warning=FALSE, message=FALSE}
 
 #change this to your working directory
-setwd("~/R/lib/pkgsrc/DGE.Tools2")
+# setwd("~/R/lib/pkgsrc/DGE.Tools2")
+setwd("./")
 
 #this should point to the installed library folder containing sample data
 rawDataPath <- paste(.libPaths()[[1]], "/DGE.Tools2/extdata", sep="")
