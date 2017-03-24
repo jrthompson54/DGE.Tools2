@@ -1,0 +1,7 @@
+[?3/?23/?2017 3:18 PM] Ammar, Ron: 
+ha it's literally a one-liner:
+logCPMCorrected <- ComBat(logCPM[, doe$ObservationID], doe$Plate) 
+or sva::ComBat
+if you want to see my full code, check out the load_data.R script here:
+https://biogit.pri.bms.com/Fibrosis/P00448_scleroderma_systemic_bleo/blob/master/load_data.R 
+ComBat is all the way at the end
