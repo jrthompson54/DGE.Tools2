@@ -11,7 +11,7 @@ ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels, labelSize,
   symColor = "blue2", shapes, colors, ...)
 }
 \arguments{
-\item{DGEdata}{A DGEList object taken after normalization 
+\item{DGEdata}{A DGEList object taken after normalization
 or a DGEobj that contains a DGEList. (Required)}
 
 \item{colorBy}{A grouping vector to color by (e.g. ReplicateGroup) (Required)}
@@ -23,11 +23,11 @@ or a DGEobj that contains a DGEList. (Required)}
 \item{top}{Number of most variant genes to include (default = Inf)}
 
 \item{labels}{Text labels for the samples.  These should be short
-abbreviations of the sample identifiers.  
+abbreviations of the sample identifiers.
 Default = ReplicateGroup or rownames of DGEdata.  Set to NULL to disable
 text labels}
 
-\item{labelSize}{control the Size for the text labels in the plot if you 
+\item{labelSize}{control the Size for the text labels in the plot if you
 don't like the default}
 
 \item{textColor}{Color for the text labels in the plot (default = "blue2")}
@@ -47,7 +47,7 @@ don't like the default}
 
 \item{symShape}{Set the default shape of the symbols if not mapped to a column (Default = 19 solid circle)}
 
-\item{symSize}{Set the default size of the symbols if not mapped to a column 
+\item{symSize}{Set the default size of the symbols if not mapped to a column
 (Default = 5)}
 
 \item{symFill}{Set color for the fill on open symbols (Default = "blue2")}
@@ -72,9 +72,9 @@ ggplot2 instead of base graphics.
 }
 \details{
 colorBy, shapeBy and sizeBy are grouping variables to encode group info by
-color, shape or size.  These are vectors that must be the same length as 
+color, shape or size.  These are vectors that must be the same length as
 ncol(DGEdata).  colorBy and sizeBy will plot as continuous color or size
-changes if a numeric vector is used.  Convert the vector to a factor to 
+changes if a numeric vector is used.  Convert the vector to a factor to
 treat as groups instead of continuous.
 
 The underlying plotMDS function uses a default of top=500 to use the top 500
