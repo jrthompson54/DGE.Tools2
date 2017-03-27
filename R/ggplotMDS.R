@@ -5,11 +5,11 @@
 #' ggplot2 instead of base graphics.
 #'
 #' colorBy, shapeBy and sizeBy are grouping variables to encode group info by
-#' color, shape or size.  These are vectors that must be the same length as 
+#' color, shape or size.  These are vectors that must be the same length as
 #' ncol(DGEdata).  colorBy and sizeBy will plot as continuous color or size
-#' changes if a numeric vector is used.  Convert the vector to a factor to 
+#' changes if a numeric vector is used.  Convert the vector to a factor to
 #' treat as groups instead of continuous.
-#' 
+#'
 #' The underlying plotMDS function uses a default of top=500 to use the top 500
 #' highest fold change genes for the analysis.  The method runs quick and I've
 #' found situations where a larger value produced a more stable result.  Thus
@@ -20,17 +20,17 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
-#' @param DGEdata A DGEList object taken after normalization 
+#' @param DGEdata A DGEList object taken after normalization
 #'   or a DGEobj that contains a DGEList. (Required)
 #' @param colorBy A grouping vector to color by (e.g. ReplicateGroup) (Required)
 #' @param shapeBy A grouping vector to map to shape (Optional)
 #' @param sizeBy A numeric vector to define point size (Optional)
 #' @param top Number of most variant genes to include (default = Inf)
 #' @param labels Text labels for the samples.  These should be short
-#'   abbreviations of the sample identifiers.  
+#'   abbreviations of the sample identifiers.
 #'   Default = ReplicateGroup or rownames of DGEdata.  Set to NULL to disable
 #'   text labels
-#' @param labelSize control the Size for the text labels in the plot if you 
+#' @param labelSize control the Size for the text labels in the plot if you
 #'   don't like the default
 #' @param textColor Color for the text labels in the plot (default = "blue2")
 #' @param vlineIntercept X intercept of vertical line (Optional)
@@ -42,7 +42,7 @@
 #'
 #' @param themeStyle One of "grey" or "bw" (Default = "grey")
 #' @param symShape Set the default shape of the symbols if not mapped to a column (Default = 19 solid circle)
-#' @param symSize Set the default size of the symbols if not mapped to a column 
+#' @param symSize Set the default size of the symbols if not mapped to a column
 #'   (Default = 5)
 #' @param symFill Set color for the fill on open symbols (Default = "blue2")
 #' @param symColor set color for solid symbols or outline for open symbols
@@ -70,7 +70,7 @@
 #'
 #' @export
 ggplotMDS <- function(DGEdata,
-                      colorBy, 
+                      colorBy,
                       shapeBy,
                       sizeBy,
                       top = Inf,
@@ -94,12 +94,13 @@ ggplotMDS <- function(DGEdata,
                         )
 {
 
+
   #default labels to colnames of DGEdata
   addLabels <- TRUE
   if (missing(labels)){ #set default labels
       labels <- colnames(DGEdata)
       # Get labels from ReplicateGroup if present
-      if (class(DGEdata)[[1]] == "DGEobj"){  
+      if (class(DGEdata)[[1]] == "DGEobj"){
           design <- getItem(DGEdata, "design")
           if (exists("design"))
               if (with (design, exists("ReplicateGroup")))
@@ -107,32 +108,32 @@ ggplotMDS <- function(DGEdata,
       }
   } else if (is.null(labels))
       addLabels <- FALSE
- 
+
   #argument checks
   if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
-      DGEdata <- getItem(DGEdata, "DGEList") 
+      DGEdata <- getItem(DGEdata, "DGEList")
   else if (class(DGEdata)[[1]] != "DGEList")
     stop("DGEdata must be class DGEList or DGEobj")
-  
+
   assert_that(!missing(colorBy),
               length(colorBy) == ncol(DGEdata))
   if (!missing(shapeBy))
       assert_that(length(shapeBy) == ncol(DGEdata))
   if (!missing(sizeBy))
       assert_that(length(sizeBy) == ncol(DGEdata))
-  
+
   #shapes: solid circle, square, triangle, diamond, open circle, square, triangle, diamond
   myShapes = c(16, 15, 17, 18, 21, 22, 24, 23)
   if (missing(shapes))
       shapes <- myShapes
-  
-  # ColorBlind palette: 
+
+  # ColorBlind palette:
   # http://www.ucl.ac.uk/~zctpep9/Archived%20webpages/Cookbook%20for%20R%20%C2%BB%20Colors%20(ggplot2).htm
-  # 
+  #
   cbbPalette <- c("#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7", "#E69F00",  "#F0E442", "#000000")
   if (missing(colors))
       colors <- cbbPalette
-    
+
   #defaults for plotMDS arguments
   if (!exists("dim.plot")){
     dim.plot <- c(1,2)
@@ -183,7 +184,7 @@ ggplotMDS <- function(DGEdata,
   if (addLabels == TRUE)
       xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy, Labels=labels)
   else xydat = data.frame(x=mds$x, y=mds$y, ColorCode=colorBy)
-  
+
   byShape <- FALSE
   if (!missing(shapeBy)){
       xydat$Shape <- shapeBy
@@ -194,63 +195,63 @@ ggplotMDS <- function(DGEdata,
       xydat$Size <- sizeBy
       bySize <- TRUE
   }
-  
+
   xylab = list(paste (mds$axislabel, mds$dim.plot[[1]], sep=" "),
                paste (mds$axislabel, mds$dim.plot[[2]], sep=" "))
   if (!is.null(Xlab))
       xylab[[1]] <- Xlab
   if (!is.null(Ylab))
       xylab[[2]] <- Ylab
-  
-  # my_gg <- g + geom_point_interactive(aes(tooltip = labels), size = 2) 
+
+  # my_gg <- g + geom_point_interactive(aes(tooltip = labels), size = 2)
   # ggiraph(code = print(my_gg), width = .7)
-  
+
   #start the plot
   if (byShape == FALSE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode)) +
         # geom_point_interactive(aes(data_id = labels),
         #                        shape=symShape, size=symSize) +
-        geom_point(shape=symShape, size=symSize) 
-  
-  else if (byShape == TRUE & bySize == FALSE)  
-    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
+        geom_point(shape=symShape, size=symSize)
+
+  else if (byShape == TRUE & bySize == FALSE)
+    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                   shape=Shape)) +
         # geom_point_interactive(aes(data_id = labels), size=symSize) +
         geom_point(size=symSize) +
-        scale_shape_manual(values=shapes) 
-  
-  else if (byShape == FALSE & bySize == TRUE)  
-    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
+        scale_shape_manual(values=shapes)
+
+  else if (byShape == FALSE & bySize == TRUE)
+    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                   size=Size)) +
         # geom_point_interactive(aes(data_id = labels), shape=symShape) +
-        geom_point(shape=symShape) 
-  
-  else if (byShape == TRUE & bySize == TRUE)  
-    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, 
+        geom_point(shape=symShape)
+
+  else if (byShape == TRUE & bySize == TRUE)
+    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                   shape=Shape,
                                   size=Size)) +
         # geom_point_interactive(aes(data_id = labels)) +
         geom_point() +
-        scale_shape_manual(values=shapes) 
-  
+        scale_shape_manual(values=shapes)
+
   #add point labels
   if (!is.null(labels)){
       if (missing(labelSize))
-         mdsplot <- mdsplot + 
+         mdsplot <- mdsplot +
                     geom_text_repel(aes(label = Labels))
-      else mdsplot <- mdsplot + 
+      else mdsplot <- mdsplot +
               geom_text_repel(aes(label = Labels), size=labelSize)
-  }    
- 
+  }
+
   #add some other common elements
-  mdsplot <- mdsplot + 
+  mdsplot <- mdsplot +
       scale_fill_manual(values=colors) +
       scale_colour_manual(values=colors) +
       coord_fixed() +
       xlab (xylab[[1]]) +
       ylab (xylab[[2]]) +
       ggtitle (title)
-  
+
   #place an annotation on the bottom left of the plot
   xrange <- getXrange(mdsplot)
   yrange <- getYrange(mdsplot)
@@ -276,7 +277,7 @@ ggplotMDS <- function(DGEdata,
   if (tolower(themeStyle) %in% c("grey", "gray")){
     mdsplot <- mdsplot + theme_grey(baseFontSize)
   } else mdsplot <- mdsplot + theme_bw(baseFontSize)
-  
+
   #print the interactive plot
   #ggiraph(code = print(mdsplot), width = .7)
 

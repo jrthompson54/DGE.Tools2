@@ -17,7 +17,7 @@ must be numeric.}
 employs the edgeR method which uses an average prior of 0.25 moderated by the
    library size.}
 
-\item{normalize}{Default = FALSE. TRUE activates TMM normalization. 
+\item{normalize}{Default = FALSE. TRUE activates TMM normalization.
 Other allowed values are: "TMM","RLE","upperquartile".  Invokes
 edgeR::calcNormFactors for normalization.}
 
@@ -25,7 +25,7 @@ edgeR::calcNormFactors for normalization.}
 
 \item{PlotFile}{Only applies to zFPKM. Default = "zFPKM_Distribution.png"}
 
-\item{FacetTitles}{Only applies to zFPKM. Turn facet titles on or off 
+\item{FacetTitles}{Only applies to zFPKM. Turn facet titles on or off
 (Default = TRUE)}
 }
 \value{
@@ -33,23 +33,25 @@ A matrix in the new unit space
 }
 \description{
 Takes a count matrix as input and converts to other desired units.  Supported
-units include CPM, FPKM, FPK, zFPKM and TPM.  Output units can be logged 
-and/or normalized (edgeR).
+units include CPM, FPKM, FPK, zFPKM and TPM.  Output units can be logged
+and/or normalized.  Calculations are performed using edgeR functions except
+for the conversion to TPM which is converted from FPKM using the formula provided
+by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 }
 \examples{
 #TMM normalized Log2TPM
-Log2TPM = convertCounts(assay(RSE, counts), 
-                      unit="TPM", 
+Log2TPM = convertCounts(assay(RSE, counts),
+                      unit="TPM",
                       geneLength=gene.annotation$ExonLength,
                       log=TRUE,
                       normalize=TRUE)
-                      
-#un-normalized CPM (not logged)                       
-RawCPM = convertCounts(MyCounts, 
-                      unit="CPM", 
+
+#un-normalized CPM (not logged)
+RawCPM = convertCounts(MyCounts,
+                      unit="CPM",
                       log=FALSE,
                       normalize=FALSE)
-                                             
+
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}
