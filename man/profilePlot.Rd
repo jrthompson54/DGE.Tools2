@@ -5,14 +5,15 @@
 \title{Deluxe Profile Plots}
 \usage{
 profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
-  pvalCol = "P.Value", pthreshold = 0.01, rugColor = NULL, rugAlpha = 1,
-  xlab = NULL, ylab = NULL, title = NULL, symbolSize = c(4, 1, 4),
-  symbolShape = c(21, 20, 21), symbolColor = c("black", "grey25", "grey0"),
-  symbolFill = c("red3", "grey25", "deepskyblue4"), alpha = 0.5,
-  sizeBySignificance = FALSE, referenceLine = "grey25",
-  foldChangeLines = log2(1.5), refLineThickness = 1,
-  lineFitType = "loess", lineFitColor = "goldenrod1",
-  legendPosition = "right", baseFontSize = 12, themeStyle = "grey")
+  pvalCol = "P.Value", pthreshold = 0.01, geneSym, rugColor = NULL,
+  rugAlpha = 1, xlab = NULL, ylab = NULL, title = NULL,
+  symbolSize = c(4, 1, 4), symbolShape = c(21, 20, 21),
+  symbolColor = c("black", "grey25", "grey0"), symbolFill = c("red3",
+  "grey25", "deepskyblue4"), alpha = 0.5, sizeBySignificance = FALSE,
+  referenceLine = "grey25", foldChangeLines = log2(1.5),
+  refLineThickness = 1, lineFitType = "loess",
+  lineFitColor = "goldenrod1", legendPosition = "right",
+  baseFontSize = 12, themeStyle = "grey")
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.}
@@ -24,6 +25,11 @@ profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
 \item{pvalCol}{name of the pvalue or FDR column (Default = "P.Value")}
 
 \item{pthreshold}{Used to color points (default = 0.01)}
+
+\item{geneSym}{Name of the gene symbol column in df.  The gene symbol is
+not in topTable output by default so the user has to bind this column
+to the dataframe in advance.  Then this column will be used to label
+significantly changed points}
 
 \item{rugColor}{Specify color for rug density plot along xy axes. Set to NULL
 to disable rug layer. (Default=NULL)}
