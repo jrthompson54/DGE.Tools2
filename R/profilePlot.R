@@ -261,10 +261,11 @@ profilePlot <- function(df,
     #filter df to changed genes
     dfc <- filter(df, group != "No Change")
     profilePlot <- profilePlot +
-      geom_text_repel(data=dfc, aes_string(x=x, y=y, label=geneSym))
+      geom_text_repel(data=dfc, aes_string(x=x, y=y, label=geneSym),
+                      show.legend=FALSE)
   }
 
-  ### Add Labels
+  ### Add axis Labels
 
   if (is.null(xlab)){ #use colname unless supplied as argument
     profilePlot = profilePlot + xlab(xlabel)
