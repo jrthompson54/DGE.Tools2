@@ -279,4 +279,3 @@ profilePlot <- function(df,
 
   return(profilePlot)
 }
-
