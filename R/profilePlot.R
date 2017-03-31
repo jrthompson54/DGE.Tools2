@@ -48,6 +48,10 @@
 #' @param ylab Y axis label (default the LogRatio column name)
 #' @param title Plot title (optional)
 #' @param pthreshold Used to color points (default = 0.01)
+#' @param geneSym Name of the gene symbol column in df.  The gene symbol is
+#'    not in topTable output by default so the user has to bind this column
+#'    to the dataframe in advance.  Then this column will be used to label
+#'    significantly changed points
 #' @param rugColor Specify color for rug density plot along xy axes. Set to NULL
 #'    to disable rug layer. (Default=NULL)
 #' @param rugAlpha Sets the transparency for the rug layer.  An alpha <1.0 takes
@@ -110,6 +114,7 @@ profilePlot <- function(df,
                         logIntCol = "AveExpr",
                         pvalCol = "P.Value",
                         pthreshold=0.01,
+                        geneSym,
                         rugColor = NULL,
                         rugAlpha = 1.0,
                         xlab=NULL, ylab=NULL, title=NULL,
@@ -249,6 +254,14 @@ profilePlot <- function(df,
                   method = tolower(lineFitType),
                   size=refLineThickness, color=lineFitColor, alpha=alpha,
                   se=FALSE, show.legend=FALSE)
+  }
+
+  #Add genesym labels to increased, decreased genes.
+  if (!missing(geneSym)){
+    #filter df to changed genes
+    dfc <- filter(df, group != "No Change")
+    profilePlot <- profilePlot +
+      geom_text_repel(data=dfc, aes_string(x=x, y=y, label=geneSym))
   }
 
   ### Add Labels
