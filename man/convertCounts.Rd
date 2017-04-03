@@ -13,6 +13,8 @@ must be numeric.}
 
 \item{unit}{Required. One of CPM, FPKM, zFPKM, FPK or TPM.}
 
+\item{geneLength}{Required for length-normalizes units (TPM, FPKM, zFPKM or FPK)}
+
 \item{log}{Default = FALSE.  Set TRUE to return Log2 values. Log conversion
 employs the edgeR method which uses an average prior of 0.25 moderated by the
    library size.}
@@ -40,7 +42,7 @@ by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fp
 }
 \examples{
 #TMM normalized Log2TPM
-Log2TPM = convertCounts(assay(RSE, counts),
+Log2TPM = convertCounts(mycounts),
                       unit="TPM",
                       geneLength=gene.annotation$ExonLength,
                       log=TRUE,
