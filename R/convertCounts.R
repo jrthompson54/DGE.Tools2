@@ -13,6 +13,7 @@
 #' @param counts A numeric matrix or dataframe of N genes x M Samples.  All columns
 #' must be numeric.
 #' @param unit  Required. One of CPM, FPKM, zFPKM, FPK or TPM.
+#' @param geneLength Required for length-normalizes units (TPM, FPKM, zFPKM or FPK)
 #' @param log Default = FALSE.  Set TRUE to return Log2 values. Log conversion
 #' employs the edgeR method which uses an average prior of 0.25 moderated by the
 #'    library size.
@@ -28,7 +29,7 @@
 #'
 #' @examples
 #' #TMM normalized Log2TPM
-#' Log2TPM = convertCounts(assay(RSE, counts),
+#' Log2TPM = convertCounts(mycounts),
 #'                       unit="TPM",
 #'                       geneLength=gene.annotation$ExonLength,
 #'                       log=TRUE,
@@ -126,15 +127,16 @@ convertCounts <- function(counts,
       exp(log(fpkm) - log(colSums(fpkm)) + log(1e6))
     }
 
+### MAIN ###
 #counts and unit are absolutely required
 if (missing(counts))
     stop ("counts is a required argument")
 if (missing(unit))
     stop ("unit is a required argument")
-if (toupper(unit) %in% c('FPKM', 'ZFPKM', 'TPM'))
+if (toupper(unit) %in% c('FPKM', 'ZFPKM', 'TPM', 'FPK'))
     #in these cases geneLength is required
     if (missing(geneLength))
-        stop("geneLength is required for unit = FPKM|zFPKM|TPM")
+        stop("geneLength is required for unit = FPK|FPKM|zFPKM|TPM")
 
 #Coerce counts to a matrix
 result <- try({counts <- as.matrix(counts)}, silent=TRUE)
@@ -142,8 +144,9 @@ result <- try({counts <- as.matrix(counts)}, silent=TRUE)
         stop("Couldn't coerce counts to a numeric matrix!")
 
 #Make sure geneLength is correct length
-if (length(geneLength) != nrow(counts))
-    stop('Length(geneLength) does not match rowcount of counts')
+if (!missing(geneLength))
+    if (length(geneLength) != nrow(counts))
+        stop('Length(geneLength) does not match rowcount of counts')
 
 #set defaults
 if (missing(log))
