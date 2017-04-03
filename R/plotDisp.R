@@ -1,8 +1,8 @@
 ### Function Plot Dispersion ###
 #' Function  plotDispersion
 #'
-#' Creates an edgeR dispersion plot for RNA-Seq QC purposes.  Takes a SLOA object
-#' for input after runEdgeRNorm has been executed.  The Biological coefficient
+#' Creates an edgeR dispersion plot for RNA-Seq QC purposes.  Takes a counts matrix
+#' or DGEList for input.  The Biological coefficient
 #' of variation (BCV) is displayed.  BCV is the sqrt of dispersion.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
