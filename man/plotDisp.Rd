@@ -47,8 +47,8 @@ color to enable}
 a ggplot object
 }
 \description{
-Creates an edgeR dispersion plot for RNA-Seq QC purposes.  Takes a SLOA object
-for input after runEdgeRNorm has been executed.  The Biological coefficient
+Creates an edgeR dispersion plot for RNA-Seq QC purposes.  Takes a counts matrix
+or DGEList for input.  The Biological coefficient
 of variation (BCV) is displayed.  BCV is the sqrt of dispersion.
 }
 \examples{
