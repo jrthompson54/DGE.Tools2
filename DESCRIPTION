@@ -1,6 +1,6 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.6
+Version: 0.9.7
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -17,7 +17,7 @@ Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
     GeneSym2Entrez, EnsemblGene2Entrez, Entrez2GeneSym, EnsemblGene2GeneSym, and
     convertCounts.
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.3.1)
 License: BMS Proprietary
 LazyData: true
 Imports:
