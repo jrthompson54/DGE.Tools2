@@ -116,6 +116,7 @@ runPower <- function(counts, designMatrix,
       ggtitle("ROC curves") +
       xlab("\nFDR") +
       ylab("Power") +
+      expand_limits(x=0,y=0) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       theme_gray(18)
 
