@@ -65,7 +65,6 @@ Collate:
     'ggplotMDS.R'
     'obsPlot.R'
     'plotDisp.R'
-    'plotBCV.R'
     'plotPValHist.R'
     'printAndSave.R'
     'profilePlot.R'
