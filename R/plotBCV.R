@@ -1,17 +1,14 @@
-### Function plotDisp ###
-#' Function  plotDisp
+### Function plotBCV ###
+#' Function  plotBCV
 #'
 #' Creates an edgeR dispersion plot for RNA-Seq QC purposes.  Takes a counts matrix
-#' or DGEList for input.  Dispersion is plotted against AveLogCPM.  Optionally,
-#' you can plot Biological Coefficient of Variation instead (BCV is the sqrt of
-#' dispersion).
+#' or DGEList for input.  Dispersion is plotted against AveLogCPM.  
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, dispersion, plot, QC
 #'
 #' @param x A Counts matrix or DGEList (required)
-#' @param designMatrix  A design matrix created limma by model.matrix
-#' @param plotType One of "dispersion" or "BCV" (default = "dispersion") 
+#' @param designMatrix  A design matrix created limma by model.matrix 
 #' @param symbolSize (Default=1)
 #' @param symbolShape see
 #'   http://www.cookbook-r.com/Graphs/Shapes_and_line_types/ (Default = 1)
@@ -34,15 +31,14 @@
 #' @return a ggplot object
 #'
 #' @examples
-#'    MyGgplot <- plotDisp (MyDGElist)
-#'    MyGgplot <- plotDisp (MyDGEobj)
+#'    MyGgplot <- plotBCV (MyDGElist)
+#'    MyGgplot <- plotBCV (MyDGEobj)
 #'
 #' @import assertthat DGEobj
 #'
 #' @export
-plotDisp <- function (x,
+plotBCV <- function (x,
                       designMatrix,
-                      plotType = "dispersion",
                             symbolSize = 1,
                             symbolShape = 1,
                             symbolColor = "darkblue",
@@ -57,7 +53,7 @@ plotDisp <- function (x,
                             rugAlpha = 0.02,
                             ...) {
 # browser()
-  #dispersion: expect 0.4 coef of var for human, 0.1 for inbreed mouse, near 0 for technical reps.
+  #dispersion: expect 0.4  for human, 0.1 for inbreed mouse, near 0 for technical reps.
   #  source("~/R/lib/SubsettableListOfArrays.R")
 
   assert_that(!missing(x),
@@ -73,39 +69,30 @@ plotDisp <- function (x,
       DGEList %>%
       calcNormFactors %>%
       estimateDisp (design=designMatrix, robust=TRUE, ...) 
-
-  if (tolower(plotType == "dispersion"))       
-      plotdata <- data.frame(AveLogCPM=dgelist$AveLogCPM, Dispersion=dgelist$tagwise.dispersion)
-  else 
-      plotdata <- data.frame(AveLogCPM=dgelist$AveLogCPM, Dispersion=sqrt(dgelist$tagwise.dispersion))
-    
-  MyDispPlot <- ggplot(plotdata, aes(x=AveLogCPM, y=Dispersion)) +
-      geom_point (size=symbolSize, shape=symbolShape, fill=symbolFill,
-                  color=symbolColor, alpha=symbolAlpha)
   
+  plotdata <- data.frame(AveLogCPM=dgelist$AveLogCPM, BCV=sqrt(dgelist$tagwise.dispersion))
+
+  MyBCVPlot <- ggplot(plotdata, aes(x=AveLogCPM, y=BCV)) +
+    geom_point (size=symbolSize, shape=symbolShape, fill=symbolFill,
+                color=symbolColor, alpha=symbolAlpha)
+
   if (!is.null(lineFit)){
-   MyDispPlot <- MyDispPlot +
+      MyBCVPlot <- MyBCVPlot +
       geom_smooth(method=lineFit, size=linefitSize, color=linefitColor,
                 linetype=lineType, alpha=lineAlpha)
   }
 
   if (!is.null(rugColor)){
-    MyDispPlot = MyDispPlot + geom_rug(data=plotdata, inherit.aes=FALSE,
+      MyBCVPlot = MyBCVPlot + geom_rug(data=plotdata, inherit.aes=FALSE,
                                          color = rugColor,
                                          alpha=rugAlpha,
                                          show.legend=FALSE,
-                                         aes(x=AveLogCPM, y=Dispersion))
+                                         aes(x=AveLogCPM, y=BCV))
   }
 
-  MyDispPlot <- MyDispPlot +
-    ggtitle ("EdgeR Dispersion Plot") +
-    expand_limits(x=0, y=0) +
+  MyBCVPlot <- MyBCVPlot +
+    ggtitle ("EdgeR BCV Plot") +
     theme_grey()
-  
-  if (tolower(plotType) == "bcv")
-      MyDispPlot <- MyDispPlot + 
-                    ylab("BCV") +
-                    ggtitle("EdgeR BCV Plot")
 
-  return(MyDispPlot)
+  return(MyBCVPlot)
 }
