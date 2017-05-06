@@ -132,11 +132,12 @@ fpk <- convertCounts(counts,
                      unit="FPK", 
                      geneLength=genelength)
 
-#keep FPK >=5 in 75% of samples
+#keep FPK >=5 in fracThreshold of samples
 idxfpk <- fpk >= 5.0
-frac <- rowSums(fpk) / ncol(fpk)
+frac <- rowSums(idxfpk) / ncol(fpk)
 idx <- frac >= fracThreshold
-dgeObj <- subset(dgeObj, idx, 1:ncol(dgeObj))
+#dgeObj <- subset(dgeObj, idx, 1:ncol(dgeObj))
+dgeObj <- dgeObj[idx,]
 
 #overlay a mincount filter
 counts <- getItem(dgeObj, "counts")
@@ -144,7 +145,8 @@ genelength <-getItem(dgeObj, "geneData")$ExonLength
 idxmin <- counts >= 10
 frac <- rowSums(idxmin)/ncol(idxmin)
 idx <- frac >= fracThreshold
-dgeObj <- subset(dgeObj, idx)
+# dgeObj <- subset(dgeObj, idx)
+dgeObj <- dgeObj[idx,]
 
 ```
 
@@ -208,6 +210,9 @@ vd <- model.matrix(as.formula("~ Disease.Status"), design)
 dgeObj <- runVoom(dgeObj, designMatrixName, 
               qualityWeights = TRUE,
               var.design=vd)
+
+dgeObj <- runVoom(dgeObj, designMatrixName, 
+              qualityWeights = TRUE)
 ```
 
 I'm getting a warning here I don't understand: coming from appendAttributes.  However, the resulting DGEobj looks correct.
@@ -263,7 +268,9 @@ variables to your experiments design matrix and then re-run voom/lmfit.
 dgeObj_sva <- runSVA(dgeObj, designMatrixName="Treatment")
 ```
 SVA found 0 surrogate variables in this dataset.
-We'll now re-run runVoom with the new designMatrix.
+
+If SVA found 1 or more variables, it created a new design matrix and you need
+to re-run runVoom with the new design matrix.  We'll now show how to re-run runVoom with the new designMatrix.
 
 ##Re-Run voom/lmfit
 
