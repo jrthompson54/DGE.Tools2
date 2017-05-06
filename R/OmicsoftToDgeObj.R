@@ -62,6 +62,15 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               level = "gene",
                               path = ".",
                               customAttr){
+    #change default filenames if not given and level = isoform
+    if (tolower(level) == "isoform") {
+        if (missing(counts))
+            counts <- "RNA-Seq.Transcript_Count.Table.txt"
+        if (missing(seqAnnotation)) 
+            seqAnnotation <- "RNA-Seq.Transcript_Count.Annotation.txt"
+        if (missing(design))
+            design <- "RNA-Seq.Design.txt"
+    }
     
     #get the data 
     countData <- Txt2DF(file.path(path, counts))
