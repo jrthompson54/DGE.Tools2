@@ -39,5 +39,8 @@ vignettes/*.pdf
 *.PNG
 .Rproj.user
 /.project
+<<<<<<< HEAD
 *.RData
 *.RDS
+=======
+>>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495

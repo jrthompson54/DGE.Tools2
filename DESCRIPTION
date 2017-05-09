@@ -1,6 +1,10 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
+<<<<<<< HEAD
 Version: 0.9.9
+=======
+Version: 0.9.8
+>>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -77,5 +81,8 @@ Collate:
     'runPower.R'
     'summarizeSigCounts.R'
     'volcanoPlot.R'
+<<<<<<< HEAD
     'isoformFrac.R'
+=======
+>>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495
 RoxygenNote: 6.0.1

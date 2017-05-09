@@ -62,6 +62,15 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               level = "gene",
                               path = ".",
                               customAttr){
+    #change default filenames if not given and level = isoform
+    if (tolower(level) == "isoform") {
+        if (missing(counts))
+            counts <- "RNA-Seq.Transcript_Count.Table.txt"
+        if (missing(seqAnnotation)) 
+            seqAnnotation <- "RNA-Seq.Transcript_Count.Annotation.txt"
+        if (missing(design))
+            design <- "RNA-Seq.Design.txt"
+    }
     
     #change default filenames if not given and level = isoform
     if (tolower(level) == "isoform") {
@@ -78,6 +87,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     seqData <- Txt2DF(file.path(path, seqAnnotation))
     designData <- Txt2DF(file.path(path, design))
     rownames(designData) <- make.names(rownames(designData))
+<<<<<<< HEAD
     
     #add source to customAttr
     if (missing(customAttr)) {
@@ -86,6 +96,8 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
         assert_that(class(customAttr)[[1]] == "list")
         customAttr$source <- "Omicsoft"
    }
+=======
+>>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495
 
     #build the DgeObj
     DgeObj <- initDGEobj(counts=countData, rowData=seqData, 

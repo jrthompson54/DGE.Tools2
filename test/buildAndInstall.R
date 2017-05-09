@@ -8,7 +8,11 @@ document()
 load_all()
 build_vignettes()
 build()
+<<<<<<< HEAD
 pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.9.tar.gz"
+=======
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.8.tar.gz"
+>>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
