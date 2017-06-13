@@ -8,7 +8,7 @@ document()
 load_all()
 build_vignettes()
 build()
-pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.9.tar.gz"
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.10.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
@@ -29,10 +29,13 @@ install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
 
+#update BRAN
+library(bmsPackageTools)
+addPackageToRepo() 
+updateBmsRepo() 
+
 function todo
 
-	runQvalue.R
-	runIHW.R
 
 	JRT_heatmap.R (rewrite to use a list of parameters)
 	extractCol.R  (rewrite to check for matching rownames/order)
