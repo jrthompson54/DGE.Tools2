@@ -87,7 +87,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     seqData <- Txt2DF(file.path(path, seqAnnotation))
     designData <- Txt2DF(file.path(path, design))
     rownames(designData) <- make.names(rownames(designData))
-<<<<<<< HEAD
+
     
     #add source to customAttr
     if (missing(customAttr)) {
@@ -96,8 +96,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
         assert_that(class(customAttr)[[1]] == "list")
         customAttr$source <- "Omicsoft"
    }
-=======
->>>>>>> 60afe27f548b32bbf74edbf27fcedddf3f99d495
+
 
     #build the DgeObj
     DgeObj <- initDGEobj(counts=countData, rowData=seqData, 
