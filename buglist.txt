@@ -1,0 +1,12 @@
+ggplotMDS documentation
+	title not documented
+
+	dimensions other than 1,2 not showing
+
+	can't handle a colorby continous variable. (discrete scale)
+	need to examine and use different scale if continuous
+
+	mds[[1]] <- mds[[1]] + coord_equal()
+
+Convert Counts 
+change warning to les than 10k

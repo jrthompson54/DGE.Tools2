@@ -5,7 +5,7 @@
 \title{Function  runVoom (voom then lmFit)}
 \usage{
 runVoom(dgeObj, designMatrixName, dupcorBlock, qualityWeights = TRUE,
-  var.design, mvPlot = TRUE, runEBayes = FALSE, robust = TRUE,
+  var.design, mvPlot = TRUE, runEBayes = TRUE, robust = TRUE,
   proportion = 0.01)
 }
 \arguments{
@@ -27,7 +27,7 @@ VoomWithQualityWeights treats each sample individually.}
 
 \item{mvPlot}{Enables the voom mean-variance plot (Default = TRUE)}
 
-\item{runEBayes}{Runs eBayes after lmfit; default = FALSE}
+\item{runEBayes}{Runs eBayes after lmFit; default = TRUE}
 
 \item{robust}{Used by eBayes (Default = TRUE)}
 

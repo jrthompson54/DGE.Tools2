@@ -42,7 +42,7 @@
 #'    replicate groups (e.g. "~ ReplicateGroup") for quality weight determination. 
 #'    Causes quality weights to be determined on a group basis.  If omitted 
 #'    VoomWithQualityWeights treats each sample individually.
-#' @param runEBayes Runs eBayes after lmfit; default = FALSE
+#' @param runEBayes Runs eBayes after lmFit; default = TRUE
 #' @param robust Used by eBayes (Default = TRUE)
 #' @param proportion Proportion of genes expected to be differentially expressed
 #'   (used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
@@ -60,7 +60,7 @@ runVoom <- function(dgeObj, designMatrixName,
                     qualityWeights = TRUE,
                     var.design,
                     mvPlot = TRUE,
-                    runEBayes = FALSE,
+                    runEBayes = TRUE,
                     robust = TRUE,
                     proportion=0.01
                     ){
