@@ -12,7 +12,7 @@ ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels, labelSize,
 }
 \arguments{
 \item{DGEdata}{A DGEList object taken after normalization
-or a DGEobj that contains a DGEList. (Required)}
+OR a DGEobj that contains a DGEList OR a log2cpm matrix. (Required)}
 
 \item{colorBy}{A grouping vector to color by (e.g. ReplicateGroup) (Required)}
 

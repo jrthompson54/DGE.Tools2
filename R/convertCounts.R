@@ -56,7 +56,7 @@ convertCounts <- function(counts,
 #   https://support.bioconductor.org/p/59846/
 
     .calcCPM <- function(counts, log, normalize){
-        if (nrow(counts) < 25000)
+        if (nrow(counts) < 10000)
             warning('You should use the whole dataset when calculating CPM, not a subset.')
         counts %>%
         DGEList %>%
@@ -65,7 +65,7 @@ convertCounts <- function(counts,
     }
 
     .calcFPKM <- function(counts, log, normalize, geneLength){
-        if (nrow(counts) < 25000)
+        if (nrow(counts) < 10000)
             warning('You should use the whole dataset when calculating FPKM, not a subset.')
         counts %>%
         DGEList %>%
@@ -74,7 +74,7 @@ convertCounts <- function(counts,
     }
 
     .calcTPM <- function(counts, log, normalize, geneLength){
-        if (nrow(counts) < 25000)
+        if (nrow(counts) < 10000)
             warning('You should use the whole dataset when calculating TPM, not a subset.')
         fpkm <- counts %>%
             DGEList %>%

@@ -110,6 +110,12 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
       warning("Warning: File extension not recognized. No file saved.")
     }
   }
+  
+  #make robust against failed plots which leave devices open
+  invisible(
+      while (dev.cur() >1)
+        dev.off()
+  )
 
   if (printPlot == TRUE) {
     return(plotObject)  #print to console or knitr report

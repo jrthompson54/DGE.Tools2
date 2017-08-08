@@ -21,7 +21,7 @@
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
 #' @param DGEdata A DGEList object taken after normalization
-#'   or a DGEobj that contains a DGEList. (Required)
+#'   OR a DGEobj that contains a DGEList OR a log2cpm matrix. (Required)
 #' @param colorBy A grouping vector to color by (e.g. ReplicateGroup) (Required)
 #' @param shapeBy A grouping vector to map to shape (Optional)
 #' @param sizeBy A numeric vector to define point size (Optional)
@@ -112,8 +112,8 @@ ggplotMDS <- function(DGEdata,
   #argument checks
   if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
       DGEdata <- getItem(DGEdata, "DGEList")
-  else if (class(DGEdata)[[1]] != "DGEList")
-    stop("DGEdata must be class DGEList or DGEobj")
+  else if (!class(DGEdata)[[1]] %in% c("DGEList", "matrix"))
+    stop("DGEdata must be class DGEList or DGEobj or matrix")
 
   assert_that(!missing(colorBy),
               length(colorBy) == ncol(DGEdata))
