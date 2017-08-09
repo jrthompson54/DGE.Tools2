@@ -15,7 +15,7 @@ obsPlot(data, block = NULL, obsNames = NULL, sampNames = NULL,
   meanColor = "red2", meanFill = "goldenrod1", meanShape = 22,
   meanAlpha = 0.7, meanSize = 3, legenPosition = "right",
   baseFontSize = 12, themeStyle = "grey", facet = TRUE, facetCol = NULL,
-  xAngle = 30, scales = "free_y")
+  xAngle = 30, scales = "free_y", returnPlotDat = FALSE)
 }
 \arguments{
 \item{data}{matrix or dataframe of whatever data you want to plot with
@@ -100,6 +100,8 @@ respectively. Default = bw"}
 
 \item{scales}{Specify same scales or independent scales for each subplot (Default = "free_y";
 Allowed values: "fixed", "free_x", "free_y", "free")}
+
+\item{returnPlotDat}{Returns the dataframe used for the plot as a list member (default=FALSE)}
 
 \item{violinAlpha}{Transparency for the box layer (Default = 0.5)}
 

@@ -75,6 +75,7 @@
 #' @param xAngle Angle to set the sample labels on the Xaxis. (Default =  30; Range = 0-90)
 #' @param scales Specify same scales or independent scales for each subplot (Default = "free_y";
 #'   Allowed values: "fixed", "free_x", "free_y", "free")
+#' @param returnPlotDat Returns the dataframe used for the plot as a list member (default=FALSE)
 #'
 #' @return ggplot If Facet=TRUE (default) returns a facetted plot object. If
 #'   facet=FALSE, returns a list of ggplot objects indexed by observation (gene)
@@ -131,7 +132,8 @@ obsPlot <- function(data,
                       facet = TRUE,
                       facetCol = NULL,
                       xAngle = 30,
-                      scales = "free_y"
+                      scales = "free_y",
+                      returnPlotDat = FALSE
                       )
 {
 
@@ -268,7 +270,7 @@ obsPlot <- function(data,
       MyPlot <- MyPlot + theme(axis.text.x = element_text(angle = xAngle, hjust = 1))
     }
 
-  } else { #individual plots for each Gene
+  } else { #individual plots for each Gene returned in a list
 
       plotlist <- list()
 
@@ -296,6 +298,15 @@ obsPlot <- function(data,
 
       MyPlot = plotlist
 
+  }
+  
+  # add dataframe as specified by argument returnPlotDat
+  if (returnPlotDat == TRUE){
+      if(class(MyPlot)[[1]] == "list"){
+          MyPlot$PlotDat <- data 
+      } else {
+          MyPlot <- list(MyPlot, data)
+      }
   }
 
   return(MyPlot)
