@@ -112,10 +112,10 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   }
   
   #make robust against failed plots which leave devices open
-  invisible(
-      while (dev.cur() >1)
-        dev.off()
-  )
+  # invisible(
+  #     while (dev.cur() >1)
+  #       dev.off()
+  # )
 
   if (printPlot == TRUE) {
     return(plotObject)  #print to console or knitr report
