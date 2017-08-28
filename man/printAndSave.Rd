@@ -5,8 +5,8 @@
 \title{Function  printAndSave}
 \usage{
 printAndSave(plotObject, filename, width = 7, height = 5, units = "in",
-  res = 300, printFontSize = 12, saveFontSize = 24, scaleLegend = TRUE,
-  printPlot = TRUE, savePlot = TRUE)
+  res = 300, scale = 1, printFontSize = 12, saveFontSize = 24,
+  scaleLegend = TRUE, printPlot = TRUE, savePlot = TRUE)
 }
 \arguments{
 \item{plotObject}{A ggplot2 plotobject}
@@ -17,7 +17,11 @@ printAndSave(plotObject, filename, width = 7, height = 5, units = "in",
 
 \item{height}{Graphic height in inches (default = 5)}
 
+\item{units}{Units for height and width ("in"|"cm"|"mm") (Default = "in")}
+
 \item{res}{Resolution in ppi (default=300)}
+
+\item{scale}{Multiplicative scaling factor (Default = 1)}
 
 \item{printFontSize}{Base font size for the graphic on the console/knitr (default=12)}
 
@@ -27,8 +31,7 @@ printAndSave(plotObject, filename, width = 7, height = 5, units = "in",
 
 \item{printPlot}{Print to console if TRUE (Default=TRUE)}
 
-\item{savePlot}{Print to file if TRUE (Default = TRUE)
-(Default = TRUE)}
+\item{savePlot}{Print to file if TRUE (Default = TRUE)}
 }
 \value{
 The print object
@@ -46,9 +49,9 @@ well to other image sizes.  Set scaleLegend to FALSE to get the default behavior
 back or use legend.key.size in a theme to tweak to your own specifications.
 }
 \examples{
-printAndSave (Myggplot, myfile.png) #all defaults
-printAndSave (Myggplot, myfile.png, width=5, height=4, res=150, printFontSize=10,
-               saveFontSize=18, style="bw")  #set a few options
+printAndSave (Myggplot, "myfile.png") #all defaults
+printAndSave (Myggplot, "myfile.png", width=5, height=4, res=150, printFontSize=10,
+               saveFontSize=18)  #set a few options
 
 }
 \author{

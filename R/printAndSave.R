@@ -18,26 +18,28 @@
 #' @param filename A path/filename for the graphic
 #' @param width Graphic width in inches (default = 7)
 #' @param height Graphic height in inches (default = 5)
+#' @param units Units for height and width ("in"|"cm"|"mm") (Default = "in")
+#' @param scale Multiplicative scaling factor (Default = 1)
 #' @param res Resolution in ppi (default=300)
 #' @param printFontSize Base font size for the graphic on the console/knitr (default=12)
 #' @param saveFontSize Base font size for the graphic file (default=24)
 #' @param scaleLegend Scale the legend smaller if font > 14  (Default = TRUE)
 #' @param printPlot Print to console if TRUE (Default=TRUE)
 #' @param savePlot Print to file if TRUE (Default = TRUE)
-#'        (Default = TRUE)
 #'
 #' @return The print object
 #'
 #' @examples
-#' printAndSave (Myggplot, myfile.png) #all defaults
-#' printAndSave (Myggplot, myfile.png, width=5, height=4, res=150, printFontSize=10,
-#'                saveFontSize=18, style="bw")  #set a few options
+#' printAndSave (Myggplot, "myfile.png") #all defaults
+#' printAndSave (Myggplot, "myfile.png", width=5, height=4, res=150, printFontSize=10,
+#'                saveFontSize=18)  #set a few options
 #'
 #' @import ggplot2 tools grDevices
 #'
 #' @export
 printAndSave <- function (plotObject, filename, width=7, height=5,
-                     units='in', res=300, printFontSize=12, saveFontSize=24,
+                     units='in', res=300, scale=1,
+                     printFontSize=12, saveFontSize=24,
                      scaleLegend = TRUE, printPlot=TRUE, savePlot=TRUE){
 
   #scale the legend text for saved graphics
@@ -45,7 +47,6 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   save.Legend.ScaledFont <- 7/printFontSize
   print.Legend.ScaledSize <- 0.9 #theme_grey defaults
   print.Legend.ScaledFont <- 0.7
-
 
 	LegendPrint = theme(
 	  legend.text = element_text(colour="Black", size=rel(print.Legend.ScaledFont)),
@@ -63,61 +64,33 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
 	  legend.title.align = 0.5
 	)
 
+  #create the output directory if necessary
   if (!file.exists(dirname(filename))) {
     dir.create(dirname(filename), recursive=TRUE)
   }
 
-  filetype = tolower(tools::file_ext(filename))
-
-  if (scaleLegend == TRUE) {
-    plotObject = plotObject + LegendPrint
-  }
-
   #save to file
   if (savePlot==TRUE) {
+    #get the file extension
+    filetype = tolower(tools::file_ext(filename))
+      
     plot = plotObject
 
     if (scaleLegend == TRUE && saveFontSize > 14) {
       plot = plot + LegendSave
     }
-
-    if (filetype == "png") {
-    	png(file=filename, width=width, height=height, units = units, res = res)
-    	print(plot)
-    	invisible ( dev.off() )
-    } else if (filetype == "bmp") {
-      bmp(file=filename, width=width, height=height, units = units, res = res)
-      print(plot)
-      invisible ( dev.off() )
-    } else if (filetype %in% c("tif", "tiff")) {
-      tiff(file=filename, width=width, height=height, units = units, res = res, compression="lzw+p")
-      print(plot)
-      invisible ( dev.off() )
-    } else if (filetype %in% c("jpg", "jpeg")) {
-      jpeg(file=filename, width=width, height=height, units = units, res = res, quality = 90)
-      print(plot)
-      invisible ( dev.off() )
-    } else if (filetype == "pdf") {
-      pdf(file=filename, width=width, height=height, units=units, paper="letter")
-      print(plot)
-      invisible ( dev.off() )
-    } else if (filetype == "svg") {
-      svg(file=filename, width=width, height=height, units = units, res = res,
-          pointsize = printFontSize)
-      print(plot)
-      invisible ( dev.off() )
+    supportedFiletypes <- c("png", "bmp", "tiff", "jpeg", "pdf", "svg", "wmf")
+    if (filetype %in% supportedFiletypes) {
+    	ggsave(filename=basename(filename), plot=plot, 
+    	       device=filetype, path=dirname(filename),
+    	       width=width, height=height, units=units, dpi=res)
     } else {
       warning("Warning: File extension not recognized. No file saved.")
     }
   }
-  
-  #make robust against failed plots which leave devices open
-  # invisible(
-  #     while (dev.cur() >1)
-  #       dev.off()
-  # )
 
   if (printPlot == TRUE) {
+    if (scaleLegend == TRUE) plotObject = plotObject + LegendPrint
     return(plotObject)  #print to console or knitr report
   } else {
     return(NULL)

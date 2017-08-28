@@ -40,14 +40,18 @@
 #'
 #' @export
 runQvalue <- function(contrastList, pvalField="P.Value", ...){
-### Add Qvalues to each topTable dataframe in contrastList$TopTableList ###
+### Add Qvalues to each topTable dataframe in contrastList ###
+
+  assertthat(class(contrastList)[[1]] == "list")
 
   contrastNames = names(contrastList)
 
   for (i in 1:length(contrastList)) {
-    q = qvalue(contrastList[[i]][pvalField], ...)
+    assertthat(exists(pvalField, contrastList[[i]]))
+    p = contrastList[[i]][, pvalField]
+    q = qvalue(p, ...)
     #add the qvalue and lfdr columns to the topTable df
-    contrastList[[i]]$Qvalue = q$qvalues
+    contrastList[[i]]$Qvalue = q$qvaluesq
     contrastList[[i]]$qvalue.lfdr = q$lfdr
     #add documentation
     attr(contrastList[[i]], "qvalue") = TRUE
