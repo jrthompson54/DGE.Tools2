@@ -36,18 +36,18 @@
 #' #The magrittr way:
 #' MyContrastList %<>% runQvalue
 #'
-#' @import qvalue magrittr
+#' @import qvalue magrittr assertthat
 #'
 #' @export
 runQvalue <- function(contrastList, pvalField="P.Value", ...){
 ### Add Qvalues to each topTable dataframe in contrastList ###
 
-  assertthat(class(contrastList)[[1]] == "list")
+  assert_that(class(contrastList)[[1]] == "list")
 
   contrastNames = names(contrastList)
 
   for (i in 1:length(contrastList)) {
-    assertthat(exists(pvalField, contrastList[[i]]))
+    assert_that(exists(pvalField, contrastList[[i]]))
     p = contrastList[[i]][, pvalField]
     q = qvalue(p, ...)
     #add the qvalue and lfdr columns to the topTable df
