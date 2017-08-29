@@ -20,7 +20,7 @@
 #' @param sigThresholds Thresholds to use for each column specified in columns
 #'   Must be same length at columns argument.
 #'   Default = c(0.01, 0.1, 0.1, 0.1, 0.1)
-#' @param fcThreshold vector of thresholds for specified fields
+#' @param fcThreshold fold-change threshold (absolute value, not logged)
 #'
 #' @return data.frame with one summary row per contrast
 #'

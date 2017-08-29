@@ -51,7 +51,7 @@ runQvalue <- function(contrastList, pvalField="P.Value", ...){
     p = contrastList[[i]][, pvalField]
     q = qvalue(p, ...)
     #add the qvalue and lfdr columns to the topTable df
-    contrastList[[i]]$Qvalue = q$qvaluesq
+    contrastList[[i]]$Qvalue = q$qvalues
     contrastList[[i]]$qvalue.lfdr = q$lfdr
     #add documentation
     attr(contrastList[[i]], "qvalue") = TRUE
