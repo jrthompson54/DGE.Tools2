@@ -11,9 +11,9 @@ convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
 must be numeric.}
 
-\item{unit}{Required. One of CPM, FPKM, zFPKM, FPK or TPM.}
+\item{unit}{Required. One of CPM, FPKM, FPK or TPM.}
 
-\item{geneLength}{Required for length-normalizes units (TPM, FPKM, zFPKM or FPK)}
+\item{geneLength}{Required for length-normalizes units (TPM, FPKM or FPK)}
 
 \item{log}{Default = FALSE.  Set TRUE to return Log2 values. Log conversion
 employs the edgeR method which uses an average prior of 0.25 moderated by the
@@ -22,23 +22,20 @@ employs the edgeR method which uses an average prior of 0.25 moderated by the
 \item{normalize}{Default = FALSE. TRUE activates TMM normalization.
 Other allowed values are: "TMM","RLE","upperquartile".  Invokes
 edgeR::calcNormFactors for normalization.}
-
-\item{PlotDir}{Only applies to zFPKM. Specifies folder for zFPKM distribution plot.}
-
-\item{PlotFile}{Only applies to zFPKM. Default = "zFPKM_Distribution.png"}
-
-\item{FacetTitles}{Only applies to zFPKM. Turn facet titles on or off
-(Default = TRUE)}
 }
 \value{
 A matrix in the new unit space
 }
 \description{
 Takes a count matrix as input and converts to other desired units.  Supported
-units include CPM, FPKM, FPK, zFPKM and TPM.  Output units can be logged
+units include CPM, FPKM, FPK and TPM.  Output units can be logged
 and/or normalized.  Calculations are performed using edgeR functions except
 for the conversion to TPM which is converted from FPKM using the formula provided
 by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+}
+\details{
+geneLength is a vector where length(geneLength) == nrow(counts).  If you pass
+an RSEM effectiveLength matrix, rowMeans(effectiveLength) is used.
 }
 \examples{
 #TMM normalized Log2TPM

@@ -18,7 +18,7 @@ Default = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue")}
 Must be same length at columns argument.
 Default = c(0.01, 0.1, 0.1, 0.1, 0.1)}
 
-\item{fcThreshold}{vector of thresholds for specified fields}
+\item{fcThreshold}{fold-change threshold (absolute value, not logged)}
 }
 \value{
 data.frame with one summary row per contrast
