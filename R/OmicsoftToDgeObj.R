@@ -28,6 +28,7 @@
 #' @param design Sample annotation with expt factors and other sample-associated
 #'     data (required) [Default = RNA-Seq.Design.txt"]
 #' @param level One of "gene", "isoform", "exon" (required) [Default = "gene"]
+#' @param source Default = "Omicsoft.  Change if your data if from somewhere else.
 #' @param customAttr A named list of custom attributes to attach to the DGEobj; 
 #'    Optional but highly encouraged;  suggestions: list(PID = "20170101-0001",
 #'    XpressID = "123456", Genome = "Mouse.B38", GeneMobel = "Ensembl.R84")
@@ -60,6 +61,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               seqAnnotation = "RNA-Seq.Count.Annotation.txt",
                               design = "RNA-Seq.Design.txt",
                               level = "gene",
+                              source = "Omicsoft",
                               path = ".",
                               customAttr){
     #change default filenames if not given and level = isoform
@@ -92,11 +94,14 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     #add source to customAttr
     if (missing(customAttr)) {
         customAttr <- list(source="Omicsoft")
-   } else {
+    } else {
         assert_that(class(customAttr)[[1]] == "list")
-        customAttr$source <- "Omicsoft"
-   }
-
+        customAttr$source <- source
+    }
+   
+    #Add DGE.Tools2Version info
+    customAttr$DGE.Tools2 <- packageVersion("DGE.Tools2")
+    customAttr$DGEobj <- packageVersion("DGEobj")
 
     #build the DgeObj
     DgeObj <- initDGEobj(counts=countData, rowData=seqData, 

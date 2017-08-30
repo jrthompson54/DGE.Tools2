@@ -6,7 +6,8 @@
 \usage{
 OmicsoftToDgeObj(counts = "RNA-Seq.Count.Table.txt",
   seqAnnotation = "RNA-Seq.Count.Annotation.txt",
-  design = "RNA-Seq.Design.txt", level = "gene", path = ".", customAttr)
+  design = "RNA-Seq.Design.txt", level = "gene", source = "Omicsoft",
+  path = ".", customAttr)
 }
 \arguments{
 \item{counts}{A matrix or dataframe of R gene by C samples (required)
@@ -19,6 +20,8 @@ OmicsoftToDgeObj(counts = "RNA-Seq.Count.Table.txt",
 data (required) [Default = RNA-Seq.Design.txt"]}
 
 \item{level}{One of "gene", "isoform", "exon" (required) [Default = "gene"]}
+
+\item{source}{Default = "Omicsoft.  Change if your data if from somewhere else.}
 
 \item{path}{File path for the three data files (Default = "./")}
 
