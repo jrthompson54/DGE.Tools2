@@ -162,30 +162,22 @@ return(result)
 ### Function tpm ###
 #' Function tpm
 #'
-#' Takes a DGEObj as input and converts counts_orig to tpm units.  
+#' Takes a DGEObj as input. Uses all data (pre-genefiltering; counts_orig) to
+#' calculate TPM values. Then optionally filters any genes that were already
+#' filtered out.
+#'   
 #' For GeneLength in the calculation, it takes geneData$ExonLength (for Omicsoft data) 
 #' or uses rowMeans(effectiveLength) for data derived from Xpress.
 #' 
-#' Internally it used edgeR::fpkm to calculate fpkm and converts to tpm
-#'  using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+#' Internally it uses edgeR::fpkm to calculate fpkm and converts to tpm
+#' using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, unit conversion
 #'
-#' @param counts A numeric matrix or dataframe of N genes x M Samples.  All columns
-#' must be numeric.
-#' @param unit  Required. One of CPM, FPKM, zFPKM, FPK or TPM.
-#' @param geneLength Required for length-normalizes units (TPM, FPKM, zFPKM or FPK)
-#' @param log Default = FALSE.  Set TRUE to return Log2 values. Log conversion
-#' employs the edgeR method which uses an average prior of 0.25 moderated by the
-#'    library size.
-#' @param normalize Default = FALSE. TRUE activates TMM normalization.
-#'    Other allowed values are: "TMM","RLE","upperquartile".  Invokes
-#'    edgeR::calcNormFactors for normalization.
-#' @param PlotDir Only applies to zFPKM. Specifies folder for zFPKM distribution plot.
-#' @param PlotFile Only applies to zFPKM. Default = "zFPKM_Distribution.png"
-#' @param FacetTitles Only applies to zFPKM. Turn facet titles on or off
-#'    (Default = TRUE)
+#' @param dgeo A DGEobj data structure
+#' @param applyFilter If TRUE, reduces to the filtered gene list. FALSE returns
+#'   all genes in the raw data. [Default = TRUE]
 #'
 #' @return A matrix in the new unit space
 #'
@@ -195,7 +187,7 @@ return(result)
 #' @import DGEobj dplyr magrittr assertthat
 #'
 #' @export
-tpm <- function(dgeo){
+tpm <- function(dgeo, applyFilter=TRUE){
     
     assertthat::assert_that(class(dgeo)[[1]] == "DGEobj")
 
@@ -224,5 +216,66 @@ tpm <- function(dgeo){
 
     TPM <- convertCounts(getItem(dgeo, "counts_orig"), geneLength=geneLength, unit="tpm",
                          log=FALSE, normalize=FALSE)
-        
+    
+    #remove filtered out genes
+    if (applyFilter == TRUE){
+        idx <- rownames(TPM) %in% rownames(getItem(dgeo, "counts"))
+        TPM <- TPM[idx,]
+    }
+    return(TPM)
+}
+
+### Function tpm.classic ###
+#' Function tpm.classic
+#'
+#' Takes a counts and genelength as input and converts to tpm units using the equation from 
+#' [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).  
+#' 
+#' Genelength can be a vector (length == nrow(counts) or a matrix (same dim as counts).
+#' The genelength is used as is, or optionally collapsed to a vector by rowMeans.
+#'
+#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @keywords RNA-Seq, unit conversion
+#'
+#' @param counts A numeric matrix of N genes x M Samples.  All columns
+#' must be numeric.
+#' @param geneLength A vector or matrix of gene lengths. 
+#' @param collapse T/F determines whether to use rowMeans on the genelength matrix [Default = FALSE]
+#'
+#' @return A matrix of TPM values
+#'
+#' @examples
+#' myTPM <- tpm.classic(mycounts, mygenelength) 
+#'
+#' @import dplyr magrittr assertthat
+#'
+#' @export
+tpm.classic <- function (counts, genelength, collapse=FALSE){
+    #equation for TPM from https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/
+    
+    if (!is.matrix(counts)){ #try to coerce
+        result <- try(counts <- as.matrix(counts), silent=TRUE)
+        if (class(result) == "try-error")
+            stop("Couldn't coerce counts to a matrix!")
+    }
+    
+    if (is.vector(genelength)){
+        assert_that(length(genelength) == nrow(counts))
+    } else { #try to coerce
+        if (!is.matrix(genelength)){
+            result <- try(genelength <- as.matrix(genelength), silent=TRUE)
+            if (class(result) == "try-error")
+                stop("Couldn't coerce genelength to a matrix!")
+            assert_that(all(dim(counts) == dim(genelength)))
+        }
+    }
+    
+    if (collapse & is.matrix(genelength)) { #reduce genelength to a vector
+        genelength <- rowMeans(genelength, na.rm=TRUE)
+    }
+    
+    #the calculation  (fpk / colsum(fpk) ) * 10e6
+    fpb <- counts / genelength
+    sumfpb <- colSums(fpb)
+    tpm <- t(t(fpb)/sumfpb) * 1e6   
 }

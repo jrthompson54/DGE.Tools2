@@ -4,42 +4,28 @@
 \alias{tpm}
 \title{Function tpm}
 \usage{
-tpm(dgeo)
+tpm(dgeo, applyFilter = TRUE)
 }
 \arguments{
-\item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
-must be numeric.}
+\item{dgeo}{A DGEobj data structure}
 
-\item{unit}{Required. One of CPM, FPKM, zFPKM, FPK or TPM.}
-
-\item{geneLength}{Required for length-normalizes units (TPM, FPKM, zFPKM or FPK)}
-
-\item{log}{Default = FALSE.  Set TRUE to return Log2 values. Log conversion
-employs the edgeR method which uses an average prior of 0.25 moderated by the
-   library size.}
-
-\item{normalize}{Default = FALSE. TRUE activates TMM normalization.
-Other allowed values are: "TMM","RLE","upperquartile".  Invokes
-edgeR::calcNormFactors for normalization.}
-
-\item{PlotDir}{Only applies to zFPKM. Specifies folder for zFPKM distribution plot.}
-
-\item{PlotFile}{Only applies to zFPKM. Default = "zFPKM_Distribution.png"}
-
-\item{FacetTitles}{Only applies to zFPKM. Turn facet titles on or off
-(Default = TRUE)}
+\item{applyFilter}{If TRUE, reduces to the filtered gene list. FALSE returns
+all genes in the raw data. [Default = TRUE]}
 }
 \value{
 A matrix in the new unit space
 }
 \description{
-Takes a DGEObj as input and converts counts_orig to tpm units.  
+Takes a DGEObj as input. Uses all data (pre-genefiltering; counts_orig) to
+calculate TPM values. Then optionally filters any genes that were already
+filtered out.
+  
 For GeneLength in the calculation, it takes geneData$ExonLength (for Omicsoft data) 
 or uses rowMeans(effectiveLength) for data derived from Xpress.
 }
 \details{
-Internally it used edgeR::fpkm to calculate fpkm and converts to tpm
- using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+Internally it uses edgeR::fpkm to calculate fpkm and converts to tpm
+using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 }
 \examples{
 myTPM <- tpm(dgeobj) 
