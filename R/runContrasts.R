@@ -34,16 +34,18 @@
 #'    contrast analysis  (required)
 #' @param contrastList A named list of contrasts  (required)
 #' @param contrastSetName Name for the set of contrasts specified in contrastList.  Defaults
-#'   to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.
+#'   to "fitName_cf".  Change only if you need to create 2 or more contrast sets from the same fit.
 #' @param runTopTable runs topTable on the specified contrasts (Default = TRUE)
 #' @param runTopTreat runs topTreat on the specified contrasts (Default = FALSE)
 #' @param FoldChangeThreshold Only applies to TopTreat (Default = 1.5)
-#' @param runEBayes Runs eBayes after lmfit (default = TRUE)
+#' @param runEBayes Runs eBayes after contrast.fit (default = TRUE)
 #' @param robust eBayes robust option (default = TRUE)
 #' @param PvalueThreshold Default = 0.01
 #' @param FDRthreshold Default = 0.1
 #' @param proportion Proportion of genes expected to be differentially expressed
 #'   (used by eBayes) (Default = 0.01)
+#' @param Qvalue Set TRUE to include Qvalues in topTable output (Default=FALSE)
+#' @param IHW Set TRUE to add FDR values from the IHW package (Defulat=FALSE)
 #' @return The DGEobj with contrast fits and topTable/topTreat dataframes added.
 #'
 #' @examples
@@ -65,7 +67,9 @@ runContrasts <- function(dgeObj, designMatrixName,
 						FDRthreshold=0.1,
                         runEBayes = TRUE,
                         robust = TRUE,
-                        proportion=0.01) {
+                        proportion=0.01,
+						Qvalue=FALSE,
+						IHW=FALSE) {
 
   assert_that (!missing(dgeObj),
                !missing(designMatrixName),
@@ -111,6 +115,14 @@ runContrasts <- function(dgeObj, designMatrixName,
                               confint=T, number=Inf, p.value=1, sort.by="none")))
     #transfer the contrast names
     names(TopTableList) = names(contrastList)
+    
+    if (Qvalue == TRUE){
+        TopTableList <- runQvalue(TopTableList)
+    }
+    if (IHW == TRUE){
+        IHW_result <- runIHW(TopTableList)
+        TopTableList <- IHW_result[[1]]
+    }
   }
 
   if (runTopTreat == TRUE) {
@@ -125,12 +137,14 @@ runContrasts <- function(dgeObj, designMatrixName,
 
 #capture the contrastMatrix, MyFit.Contrasts and the contrast DFs
 
+ #put results into the dgeobj
  #capture the contrast matrix
  dgeObj <- addItem(dgeObj, item=ContrastMatrix, 
                    itemName=paste(contrastSetName, "_cm", sep=""),
                    itemType="contrastMatrix", funArgs=funArgs,
                    parent=fitName)
  
+
  if (runTopTable){
     #add the contrast fit
     dgeObj <- addItem(dgeObj, item=MyFit.Contrasts,

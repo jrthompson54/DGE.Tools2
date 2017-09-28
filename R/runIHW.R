@@ -67,7 +67,7 @@
   ihwList <- list()
   contrastNames <- names(contrastList)
   for (i in 1:length(contrastList)){
-    message(paste("Running ihw on contrast", contrastNames[i], sep=" "))
+    # message(paste("Running ihw on contrast", contrastNames[i], sep=" "))
 
     ihwResult <- runIHWon1DF(contrastList[[i]],
                             alpha=alpha,
