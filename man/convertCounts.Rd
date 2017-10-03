@@ -5,7 +5,7 @@
 \title{Function convertCounts}
 \usage{
 convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
-  PlotDir, PlotFile, FacetTitles, prior.count = 0.25)
+  prior.count = 0.25)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -13,17 +13,18 @@ must be numeric.}
 
 \item{unit}{Required. One of CPM, FPKM, FPK or TPM.}
 
-\item{geneLength}{Required for length-normalizes units (TPM, FPKM or FPK)}
+\item{geneLength}{A vector or matri of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
+If you supply a matrix, the rowMeans are calculated and used.}
 
-\item{log}{Default = FALSE.  Set TRUE to return Log2 values. Log conversion
-employs the edgeR method which uses an average prior of 0.25 moderated by the
-   library size.}
+\item{log}{Default = FALSE.  Set TRUE to return Log2 values. 
+Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.}
 
 \item{normalize}{Default = FALSE. TRUE activates TMM normalization.
 Other allowed values are: "TMM","RLE","upperquartile".  Invokes
 edgeR::calcNormFactors for normalization.}
 
-\item{prior.count}{average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.}
+\item{prior.count}{Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default-0.25)
+the prior.count is passed to edgeR cpm and rpkm functions.}
 }
 \value{
 A matrix in the new unit space

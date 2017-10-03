@@ -54,7 +54,7 @@ plot(logtpm[,1], log2(tpm[,1]))
 # 10            NAN        0
 # Note that Zero counts converts  -Inf logtpm  as it should
 
-#Check that TPM is the same as TMM TPM
+#Confirm that TPM is the same as TMM TPM
 tmmtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE)
 tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="none")
 plot(log2(tmmtpm[,1]), log2(tpm[,1]))

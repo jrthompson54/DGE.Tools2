@@ -16,14 +16,15 @@
 #' @param counts A numeric matrix or dataframe of N genes x M Samples.  All columns
 #' must be numeric.
 #' @param unit  Required. One of CPM, FPKM, FPK or TPM.
-#' @param geneLength Required for length-normalizes units (TPM, FPKM or FPK)
-#' @param log Default = FALSE.  Set TRUE to return Log2 values. Log conversion
-#' employs the edgeR method which uses an average prior of 0.25 moderated by the
-#'    library size.
+#' @param geneLength A vector or matri of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
+#'    If you supply a matrix, the rowMeans are calculated and used.
+#' @param log Default = FALSE.  Set TRUE to return Log2 values. 
+#'    Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.
 #' @param normalize Default = FALSE. TRUE activates TMM normalization.
 #'    Other allowed values are: "TMM","RLE","upperquartile".  Invokes
 #'    edgeR::calcNormFactors for normalization.
-#' @param prior.count average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. 
+#' @param prior.count Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default-0.25)
+#'    the prior.count is passed to edgeR cpm and rpkm functions. 
 #'
 #' @return A matrix in the new unit space
 #'
@@ -41,7 +42,7 @@
 #'                       log=FALSE,
 #'                       normalize=FALSE)
 #'
-#' @import edgeR zFPKM dplyr magrittr assertthat glue
+#' @import edgeR dplyr magrittr assertthat glue
 #'
 #' @export
 convertCounts <- function(counts,
@@ -49,9 +50,6 @@ convertCounts <- function(counts,
                           geneLength,
                           log=FALSE,
                           normalize=FALSE,
-                          PlotDir,
-                          PlotFile,
-                          FacetTitles,
                           prior.count=0.25) {
 #   Good explanation of prior values in edgeR vs. voom CPM/elist values:
 #   https://support.bioconductor.org/p/59846/
@@ -62,7 +60,7 @@ convertCounts <- function(counts,
         counts %>%
         DGEList %>%
         calcNormFactors(method=normalize) %>%
-        cpm(log=log)
+        cpm(log=log, prior.count=prior.count)
     }
 
     .calcFPKM <- function(counts, log, normalize, geneLength){
@@ -71,7 +69,7 @@ convertCounts <- function(counts,
         counts %>%
         DGEList %>%
         calcNormFactors(method=normalize) %>%
-        rpkm(log=log, gene.length=geneLength)
+        rpkm(log=log, gene.length=geneLength, prior.count=prior.count)
     }
 
     .calcTPM <- function(counts, log, normalize, geneLength){

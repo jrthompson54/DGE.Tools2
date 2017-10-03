@@ -28,7 +28,6 @@ pkg = "~/R/lib/pkgsrc/DGEobj_0.2.0.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
-
 #update BRAN
 library(bmsPackageTools)
 addPackageToRepo() 
@@ -36,8 +35,6 @@ updateBmsRepo()
 
 function todo
 
-
-	JRT_heatmap.R (rewrite to use a list of parameters)
 	extractCol.R  (rewrite to check for matching rownames/order)
 
 
