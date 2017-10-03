@@ -7,7 +7,8 @@
 runContrasts(dgeObj, designMatrixName, contrastList,
   contrastSetName = fitName, runTopTable = TRUE, runTopTreat = FALSE,
   FoldChangeThreshold = 1.5, PvalueThreshold = 0.01, FDRthreshold = 0.1,
-  runEBayes = TRUE, robust = TRUE, proportion = 0.01)
+  runEBayes = TRUE, robust = TRUE, proportion = 0.01, Qvalue = FALSE,
+  IHW = FALSE)
 }
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
@@ -18,7 +19,7 @@ contrast analysis  (required)}
 \item{contrastList}{A named list of contrasts  (required)}
 
 \item{contrastSetName}{Name for the set of contrasts specified in contrastList.  Defaults
-to "fitName_cf".  Change if you need to create 2 or more contrast sets from the same fit.}
+to "fitName_cf".  Change only if you need to create 2 or more contrast sets from the same fit.}
 
 \item{runTopTable}{runs topTable on the specified contrasts (Default = TRUE)}
 
@@ -30,12 +31,16 @@ to "fitName_cf".  Change if you need to create 2 or more contrast sets from the 
 
 \item{FDRthreshold}{Default = 0.1}
 
-\item{runEBayes}{Runs eBayes after lmfit (default = TRUE)}
+\item{runEBayes}{Runs eBayes after contrast.fit (default = TRUE)}
 
 \item{robust}{eBayes robust option (default = TRUE)}
 
 \item{proportion}{Proportion of genes expected to be differentially expressed
 (used by eBayes) (Default = 0.01)}
+
+\item{Qvalue}{Set TRUE to include Qvalues in topTable output (Default=FALSE)}
+
+\item{IHW}{Set TRUE to add FDR values from the IHW package (Defulat=FALSE)}
 }
 \value{
 The DGEobj with contrast fits and topTable/topTreat dataframes added.

@@ -5,7 +5,7 @@
 \title{Function convertCounts}
 \usage{
 convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
-  PlotDir, PlotFile, FacetTitles)
+  PlotDir, PlotFile, FacetTitles, prior.count = 0.25)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -22,6 +22,8 @@ employs the edgeR method which uses an average prior of 0.25 moderated by the
 \item{normalize}{Default = FALSE. TRUE activates TMM normalization.
 Other allowed values are: "TMM","RLE","upperquartile".  Invokes
 edgeR::calcNormFactors for normalization.}
+
+\item{prior.count}{average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.}
 }
 \value{
 A matrix in the new unit space

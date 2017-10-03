@@ -8,5 +8,13 @@ ggplotMDS documentation
 
 	mds[[1]] <- mds[[1]] + coord_equal()
 
-Convert Counts 
-change warning to les than 10k
+	check DGEobj for presence of DGEList else create one from counts.
+	add support for transparency (alpha)
+
+
+
+zfpkmPlot failure: 
+	zeros in the matrix are crashing zFPKM
+	
+	make an example for Ron (from columbia heart rmd)
+	dparse/dput
