@@ -2,88 +2,142 @@ library(DGEobj)
 library(DGE.Tools2)
 library(JRTutil)
 
+
 #omicsoft DGEobj
 dge_as <- readRDS("../DGEobj.RDS")
 counts <- getItem(dge_as, "counts")
 geneData <- getItem(dge_as, "geneData")
 design <- getItem(dge_as, "design")
-tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE)
-logtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE, log=TRUE)
-fpkm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize=TRUE)
+tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="tmm", debug=T)
+logtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="tmm", log=TRUE, debug=T)
+fpkm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="none", debug=T)
+fpkm_tmm  <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="tmm", debug=T)
+logfpkm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="none", log=TRUE, debug=T)
+logfpkm_tmm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="tmm", log=TRUE, debug=T)
+
 inspect(counts)
 inspect(tpm)
 inspect(logtpm)
-hist(logtpm[,1], breaks=100)
+inspect(fpkm)
+inspect(fpkm_tmm)
+inspect(logfpkm)
+inspect(logfpkm_tmm)
 
+#what happens to tpm=0 cells (prior should force them to a low log value)
+idx <- tpm==0
+head(logtpm[idx])
+
+#check distributions (expect medians around 3-5 (logged))
+hist(log2(tpm[,1]), breaks=100)
+hist(logtpm[,1], breaks=100)
+hist(log2(fpkm[,1]), breaks=100)
+hist(log2(fpkm_tmm[,1]), breaks=100)
+hist(logfpkm[,1], breaks=100)
+hist(logtpm[,1], breaks=100)
+hist(logfpkm_tmm[,1], breaks=100)
+
+#Show effect of prior.count on logtpm
 plot(logtpm[,1], log2(tpm[,1]))
-# > inspect(counts)
-# Item    Value
-# 1           Class   matrix
-# 2          Length   260964
-# 3             Dim 14498:18
-# 4  complete.cases    14498
-# 5              ZC     1441
-# 6              ZF    0.006
-# 7             Inf        0
-# 8          NegInf        0
-# 9              NA        0
-# 10            NAN        0
-# > inspect(tpm)
-# Item    Value
-# 1           Class   matrix
-# 2          Length   260964
-# 3             Dim 14498:18
-# 4  complete.cases    14498
-# 5              ZC     1441
-# 6              ZF    0.006
-# 7             Inf        0
-# 8          NegInf        0
-# 9              NA        0
-# 10            NAN        0
-# > inspect(logtpm)
-# Item    Value
-# 1           Class   matrix
-# 2          Length   260964
-# 3             Dim 14498:18
-# 4  complete.cases    14498
-# 5              ZC        0
-# 6              ZF        0
-# 7             Inf        0
-# 8          NegInf     1441
-# 9              NA        0
-# 10            NAN        0
-# Note that Zero counts converts  -Inf logtpm  as it should
+#note the prior.count squeezes the lowest values (-10 to -20) to above -10 otherwise effect is negligible.
+
 
 #Confirm that TPM is the same as TMM TPM
-tmmtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE)
-tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="none")
+tmmtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="tmm", debug=T)
+tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="none", debug=T)
 plot(log2(tmmtpm[,1]), log2(tpm[,1]))
 diff <- tmmtpm - tpm
 hist(diff[,1]) #not all zeros but very close.
+max(diff)  #biggest diff is 10e-11
+inspect(diff)
+cor(tmmtpm[,1], tpm[,1])  # = 1
 
 #check colsums after setting -Inf to zero; should total 1e+06
-idx <- tpm == -Inf
-tpm[idx] <- 0
-colSums(tpm)
+colSums(tmmtpm) #all 1e06
+colSums(tpm)  ##all 1e06
 
-idx <- tmmtpm == -Inf
-tmmtpm[idx] <- 0
-colSums(tmmtpm)
-
+#just for fun; how different are tpm and fpkm
+plot(log2(fpkm[,1]), log2(tpm[,1]))
+#other comparisons
+plot(logfpkm_tmm[,1], logtpm[,1])
+cor(logfpkm_tmm[,1], logfpkm[,1])
+fit <- lm(logfpkm_tmm[,1] ~ logtpm[,1])
+summary(fit)
+plot(logfpkm_tmm[,1], logfpkm[,1])
+cor(logfpkm_tmm[,1], logfpkm[,1])
+fit <- lm(logfpkm_tmm[,1] ~ logfpkm[,1])
+summary(fit)
 #Do the same tests with an xpress count matrix
-#
+
+###################################
+
 #Xpress DGEobj
+rm(list=ls())
 dge_x <- readRDS("../X20200Gene_dgeobj.RDS")
+#filter out genelength=0 genes
+el <- getItem(dge_x, "effectiveLength")
+el <- rowMeans(el)
+idx <- el == 0
+print(glue::glue("zerolength gene count = {sum(idx)}."))
+dim(dge_x)
+dge_zerolength <- dge_x[idx,]
+dge_x <- dge_x[!idx,]
+dim(dge_x)
+
+#look at counts for zerolength genes
+hist(getItem(dge_zerolength, "counts"))
+max(getItem(dge_zerolength, "counts"))
+summary(getItem(dge_zerolength, "counts")[,1])
+View(getItem(dge_zerolength, "counts"))
+#So vast majority of zerolenght genes have zero counts
+
+#Now look at the non-zero genelengths
 counts <- getItem(dge_x, "counts")
 geneData <- getItem(dge_x, "geneData")
 design <- getItem(dge_x, "design")
-effectiveLength <- getItem(dge_x, "effectiveLength")
-tpm1 <- convertCounts(counts, unit="tpm", geneLength=effectiveLength, normalize=TRUE)
-tpm2 <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE)
-logtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize=TRUE, log=TRUE)
-inspect(counts)
-inspect(tpm1)
-inspect(logtpm)
+tpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="tmm", debug=T)
+logtpm <- convertCounts(counts, unit="tpm", geneLength=geneData$ExonLength, normalize="tmm", log=TRUE, debug=T)
+fpkm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="none", debug=T)
+fpkm_tmm  <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="tmm", debug=T)
+logfpkm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="none", log=TRUE, debug=T)
+logfpkm_tmm <- convertCounts(counts, unit="fpkm", geneLength=geneData$ExonLength, normalize="tmm", log=TRUE, debug=T)
 
-tpmc <- tpm.classic(counts, genelength = effectiveLength, collapse=F)
-inspect(tpmc)
+inspect(counts)
+inspect(tpm)
+inspect(logtpm)
+inspect(fpkm)
+inspect(fpkm_tmm)
+inspect(logfpkm)
+inspect(logfpkm_tmm)
+#zeros go away for logged data because of the prior.
+
+#the tpm.direct function calculates tpm by the equation without help from any edgeR functions
+effectiveLength <- getItem(dge_x, "effectiveLength")
+tpm_direct <- tpm.direct(counts, genelength = effectiveLength, collapse=T)
+inspect(tpm_direct)
+plot(log2(tpm[,1]), log2(tpm_direct[,1]))
+diff <- tpm[,1] - tpm_direct[,1]
+hist(diff)
+max(diff)
+#independently calculate tpms agree to 2e-13
+
+################################
+
+#compare to Xpress TPM data
+
+##get TPM from Xpress
+library(rXpress)
+projectNumber <- 20200
+variables <- rXpress::getVariables(projectNumber)
+#which genemodel
+variables$projectInfo$DESIGNS
+#which attributes
+variables$projectInfo$ATTRIBUTES
+#241=isoformPct, 203=fpkm, 201=tpm, 205=counts, 207=normalizedCounts, 227=effectiveLength
+attributes <- getAttributes(projectNumber)
+#retrieve counts (attribute 201 TPM)
+xpressData <- rXpress::getXpressData(projectNumber, attribute=201)
+varSetNames <- rXpress::getVarSetNames(projectNumber)
+Level <- varSetNames[1]  #1 for gene, 2 for isoforms
+# MyRowData <- xpressData$varSets[[Level]]$z
+# MyColData <- xpressData$varSets[[Level]]$x
+TPM_xpress = xpressData$varSets[[Level]]$y

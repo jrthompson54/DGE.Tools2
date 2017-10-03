@@ -5,7 +5,7 @@
 \title{Function convertCounts}
 \usage{
 convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
-  prior.count = 0.25)
+  prior.count = 0.25, debug = FALSE)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -19,12 +19,11 @@ If you supply a matrix, the rowMeans are calculated and used.}
 \item{log}{Default = FALSE.  Set TRUE to return Log2 values. 
 Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.}
 
-\item{normalize}{Default = FALSE. TRUE activates TMM normalization.
-Other allowed values are: "TMM","RLE","upperquartile".  Invokes
-edgeR::calcNormFactors for normalization.}
+\item{normalize}{Default = "none". Other options: "TMM", "RLE", "upperquartile"
+Invokes edgeR::calcNormFactors for normalization. Upperquartile uses the 75% percentile.  Normalize settings are case insensitive.}
 
 \item{prior.count}{Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default-0.25)
-the prior.count is passed to edgeR cpm and rpkm functions.}
+The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM and logFPKM calculations.}
 }
 \value{
 A matrix in the new unit space
@@ -38,21 +37,24 @@ by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fp
 }
 \details{
 geneLength is a vector where length(geneLength) == nrow(counts).  If you pass
-an RSEM effectiveLength matrix, rowMeans(effectiveLength) is used.
+an RSEM effectiveLength matrix, rowMeans(effectiveLength) is used (because edgeR functions 
+only accept a vector for effectiveLength).
+
+Note that log2 values for CPM, TPM and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 }
 \examples{
-#TMM normalized Log2TPM
-Log2TPM = convertCounts(mycounts),
-                      unit="TPM",
+#TMM normalized Log2FPKM
+Log2FPKM = convertCounts(mycounts),
+                      unit="fpkm",
                       geneLength=gene.annotation$ExonLength,
                       log=TRUE,
-                      normalize=TRUE)
+                      normalize="tmm")
 
 #un-normalized CPM (not logged)
 RawCPM = convertCounts(MyCounts,
                       unit="CPM",
                       log=FALSE,
-                      normalize=FALSE)
+                      normalize="none")
 
 }
 \author{
