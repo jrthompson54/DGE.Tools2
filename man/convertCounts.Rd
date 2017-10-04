@@ -4,8 +4,8 @@
 \alias{convertCounts}
 \title{Function convertCounts}
 \usage{
-convertCounts(counts, unit, geneLength, log = FALSE, normalize = FALSE,
-  prior.count = 0.25, debug = FALSE)
+convertCounts(counts, unit, geneLength, log = FALSE, normalize = "none",
+  prior.count = NULL, debug = FALSE)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -20,9 +20,10 @@ If you supply a matrix, the rowMeans are calculated and used.}
 Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.}
 
 \item{normalize}{Default = "none". Other options: "TMM", "RLE", "upperquartile"
-Invokes edgeR::calcNormFactors for normalization. Upperquartile uses the 75% percentile.  Normalize settings are case insensitive.}
+Invokes edgeR::calcNormFactors for normalization. Upperquartile uses the 75th percentile.  Normalize settings are case insensitive.}
 
-\item{prior.count}{Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default-0.25)
+\item{prior.count}{Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default dependent on method; 
+0 for TPM, 0.25 for CPM and FPKM)
 The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM and logFPKM calculations.}
 }
 \value{

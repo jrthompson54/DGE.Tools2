@@ -24,9 +24,10 @@
 #' @param log Default = FALSE.  Set TRUE to return Log2 values. 
 #'    Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.
 #' @param normalize Default = "none". Other options: "TMM", "RLE", "upperquartile"
-#'  Invokes edgeR::calcNormFactors for normalization. Upperquartile uses the 75% percentile.  Normalize settings are case insensitive.
-#' @param prior.count Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default-0.25)
-#'    The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM and logFPKM calculations. 
+#'  Invokes edgeR::calcNormFactors for normalization. Upperquartile uses the 75th percentile.  Normalize settings are case insensitive.
+#' @param prior.count Average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE. (Default dependent on method; 
+#'   0 for TPM, 0.25 for CPM and FPKM)
+#'   The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM and logFPKM calculations. 
 #'
 #' @return A matrix in the new unit space
 #'
@@ -44,89 +45,22 @@
 #'                       log=FALSE,
 #'                       normalize="none")
 #'
-#' @import edgeR dplyr magrittr assertthat glue
+#' @import magrittr
+#' @importFrom edgeR cpm rpkm expandAsMatrix calcNormFactors
+#' @importFrom assertthat assert_that
+#' @importFrom glue glue
 #'
 #' @export
 convertCounts <- function(counts,
                           unit,
                           geneLength,
                           log=FALSE,
-                          normalize=FALSE,
-                          prior.count=0.25,
+                          normalize="none",
+                          prior.count=NULL,
                           debug=FALSE) {
-#   Good explanation of prior values in edgeR vs. voom CPM/elist values:
-#   https://support.bioconductor.org/p/59846/
-
-    .calcCPM <- function(counts, log, normalize, prior.count){
-        #debug
-        if (debug) print(glue("CPM; log= {log}; normalize={normalize}; prior={prior.count}"))
-        if (nrow(counts) < 10000)
-            warning('You should use the whole dataset when calculating CPM, not a subset.')
-        counts %>%
-        DGEList %>%
-        calcNormFactors(method=normalize) %>%
-        cpm(log=log, prior.count=prior.count)
-    }
-
-    .calcFPKM <- function(counts, log, normalize, geneLength, prior.count){
-        #debug
-        if (debug) print(glue("FPKM; log= {log}; normalize={normalize}; prior={prior.count}"))
-        if (nrow(counts) < 10000)
-            warning('You should use the whole dataset when calculating FPKM, not a subset.')
-        counts %>%
-        DGEList %>%
-        calcNormFactors(method=normalize) %>%
-        rpkm(log=log, gene.length=geneLength, prior.count=prior.count)
-    }
-
-    .calcTPM <- function(counts, log, normalize, geneLength, prior.count){
-        #debug
-        if (debug) print(glue("TPM; log= {log}; normalize={normalize}; prior={prior.count}"))
-        if (nrow(counts) < 10000)
-            warning('You should use the whole dataset when calculating TPM, not a subset.')
-        if (normalize != "none")
-            warning(glue('TPM normalization overides {normalize} normalization!'))
-        fpkm <- .calcFPKM(counts, log=log, normalize=normalize, 
-                          geneLength = geneLength, prior.count=prior.count)
-        
-        if (log==FALSE){
-            TPM <- .fpkmToTpm(fpkm)
-        } else {
-            TPM <- log2(.fpkmToTpm(2^fpkm))
-        }
-        return(TPM)
-    }
-
-    .calcFPK <- function(counts, log, normalize, geneLength){
-        #debug
-        if (debug) print(glue("FPK; log= {log}; normalize={normalize}; prior={prior.count}"))
-        if (tolower(normalize) == 'none'){
-            #check for zero geneLength just in case
-            if (min(geneLength) == 0) geneLength <- geneLength + 1
-
-            FPK <- counts / (geneLength/1000)
-
-            if (log == TRUE)
-                FPK <- log2(FPK + 0.5)
-        } else {
-            #why would you want normalized FPK???
-            #See Mark Robinson response on how to get normalized counts
-            #from edgeR
-            #https://stat.ethz.ch/pipermail/bioconductor/2012-July/046795.html
-            #JRT: I haven't validated this because I can think of no reason
-            #why you'd want normalized FPK
-            stop("FPK should not be normalized")
-        }
-        return(FPK)
-    }
-
-    .fpkmToTpm <- function(fpkm)
-    {
-        colSumMat <- expandAsMatrix(colSums(fpkm, na.rm=TRUE), byrow=TRUE, dim=dim(fpkm))
-        #exp(log(fpkm) - log(colSumMat) + log(1e6)) #only works with fpkm vector
-        fpkm / colSumMat * 1e6
-    }
-
+    #   Good explanation of prior values in edgeR vs. voom CPM/elist values:
+    #   https://support.bioconductor.org/p/59846/
+    
     ### MAIN ###
     #counts and unit are absolutely required
     if (missing(counts))
@@ -135,7 +69,8 @@ convertCounts <- function(counts,
     if (missing(unit))
         stop ("unit is a required argument")
     
-    if (toupper(unit) %in% c('FPKM', 'TPM', 'FPK')){ 
+    unit <- toupper(unit)
+    if (unit %in% c('FPKM', 'TPM', 'FPK')){ 
         #in these cases geneLength is required
         if (missing(geneLength))
             stop("geneLength is required for unit = FPK|FPKM|TPM")
@@ -148,7 +83,7 @@ convertCounts <- function(counts,
         normalize <- toupper(normalize)
     if (toupper(normalize) %in% c("UPPERQUARTILE", "NONE")) #these have to be lowercase
         normalize <- tolower(normalize)
-
+    
     #Coerce counts to a matrix
     result <- try({counts <- as.matrix(counts)}, silent=TRUE)
     if (class(result)[[1]] == "try-error")
@@ -170,14 +105,100 @@ convertCounts <- function(counts,
         if (normalize == FALSE)
             normalize <- 'none'
     }
-
+    
+    if (is.null(prior.count)) {
+        if (log == FALSE){
+            prior.count <- 0 #not used when log=F
+        }
+        else if (unit == "TPM") {
+            prior.count <- 0
+        }
+        else {
+            prior.count <- 0.25
+        }
+    }
+    
     result <- switch(toupper(unit),
-                     "CPM" = .calcCPM(counts, log, normalize, prior.count),
-                     "FPKM" = .calcFPKM(counts, log, normalize, geneLength, prior.count),
-                     "FPK" = .calcFPK(counts, log, normalize, geneLength),
-                     "TPM" = .calcTPM(counts, log, normalize, geneLength, prior.count)
+                     "CPM" = calcCPM(counts, log, normalize, prior.count, debug),
+                     "FPKM" = calcFPKM(counts, log, normalize, geneLength, prior.count, debug),
+                     "FPK" = calcFPK(counts, log, normalize, geneLength, prior.count, debug),
+                     "TPM" = calcTPM(counts, log, normalize, geneLength, prior.count, debug)
     )
     return(result)
+}
+
+############### Helper Functions
+
+calcCPM <- function(counts, log, normalize, prior.count, debug){
+    #debug
+    if (debug) print(glue("CPM; log= {log}; normalize={normalize}; prior={prior.count}"))
+    if (nrow(counts) < 10000)
+        warning('You should use the whole dataset when calculating CPM, not a subset.')
+    counts %>%
+        DGEList %>%
+        calcNormFactors(method=normalize) %>%
+        cpm(log=log, prior.count=prior.count)
+}
+
+calcFPKM <- function(counts, log, normalize, geneLength, prior.count, debug){
+    #debug
+    if (debug) print(glue("FPKM; log= {log}; normalize={normalize}; prior={prior.count}"))
+    if (nrow(counts) < 10000)
+        warning('You should use the whole dataset when calculating FPKM, not a subset.')
+    counts %>%
+        DGEList %>%
+        calcNormFactors(method=normalize) %>%
+        rpkm(log=log, gene.length=geneLength, prior.count=prior.count)
+}
+
+calcTPM <- function(counts, log, normalize, geneLength, prior.count, debug){
+    #debug
+    if (debug) print(glue("TPM; log= {log}; normalize={normalize}; prior={prior.count}"))
+    if (nrow(counts) < 10000)
+        warning('You should use the whole dataset when calculating TPM, not a subset.')
+    if (normalize != "none")
+        warning(glue('TPM normalization overides {normalize} normalization!'))
+    if (prior.count != 0 && log == TRUE)
+        warning("Using a prior.count for logtpm calculations is not recommended and may produce unpredictable results!")
+    fpkm <- calcFPKM(counts, log=log, normalize=normalize, 
+                     geneLength = geneLength, prior.count=prior.count, debug)
+    
+    if (log==FALSE){
+        TPM <- fpkmToTpm(fpkm)
+    } else {
+        TPM <- log2(fpkmToTpm(2^fpkm))
+    }
+    return(TPM)
+}
+
+calcFPK <- function(counts, log, normalize, geneLength, prior.count, debug){
+    #debug
+    if (debug) print(glue("FPK; log= {log}; normalize={normalize}; prior={prior.count}"))
+    if (tolower(normalize) == 'none'){
+        #check for zero geneLength just in case
+        if (min(geneLength) == 0) geneLength <- geneLength + 1
+        
+        FPK <- counts / (geneLength/1000)
+        
+        if (log == TRUE)
+            FPK <- log2(FPK + prior.count)
+    } else {
+        #why would you want normalized FPK???
+        #See Mark Robinson response on how to get normalized counts
+        #from edgeR
+        #https://stat.ethz.ch/pipermail/bioconductor/2012-July/046795.html
+        #JRT: I haven't validated this because I can think of no reason
+        #why you'd want normalized FPK
+        stop("FPK should not be normalized")
+    }
+    return(FPK)
+}
+
+fpkmToTpm <- function(fpkm)
+{
+    colSumMat <- expandAsMatrix(colSums(fpkm, na.rm=TRUE), byrow=TRUE, dim=dim(fpkm))
+    #exp(log(fpkm) - log(colSumMat) + log(1e6)) #only works with fpkm vector
+    fpkm / colSumMat * 1e6
 }
 
 ### Function tpm.on.subset ###
@@ -208,13 +229,13 @@ convertCounts <- function(counts,
 #' @examples
 #' myTPM <- tpm(dgeobj) 
 #'
-#' @import DGEobj dplyr magrittr assertthat
-#'
+#' @import DGEobj magrittr 
+#' @importFrom assertthat assert_that
 #' @export
 tpm.on.subset <- function(dgeo, applyFilter=TRUE){
     
     assertthat::assert_that(class(dgeo)[[1]] == "DGEobj")
-
+    
     #default to gene level
     level <- "gene"
     if (attr(dgeo, "level") == "isoform")
@@ -237,7 +258,7 @@ tpm.on.subset <- function(dgeo, applyFilter=TRUE){
     } else {
         stop("Couldn't find gene/isoform length data in DGEobj")
     }
-
+    
     TPM <- convertCounts(getItem(dgeo, "counts_orig"), geneLength=geneLength, unit="tpm",
                          log=FALSE, normalize=FALSE)
     
@@ -273,8 +294,9 @@ tpm.on.subset <- function(dgeo, applyFilter=TRUE){
 #' @examples
 #' myTPM <- tpm.classic(mycounts, mygenelength) 
 #'
-#' @import dplyr magrittr assertthat
-#'
+#' @import magrittr 
+#' @importFrom edgeR expandAsMatrix
+#' @importFrom assertthat assert_that
 #' @export
 tpm.direct <- function (counts, genelength, collapse=FALSE){
     #equation for TPM from https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/

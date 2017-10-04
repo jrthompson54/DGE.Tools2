@@ -1,6 +1,8 @@
+rm(list=ls())
 library(DGEobj)
 library(DGE.Tools2)
 library(JRTutil)
+
 
 
 #omicsoft DGEobj
@@ -118,7 +120,7 @@ plot(log2(tpm[,1]), log2(tpm_direct[,1]))
 diff <- tpm[,1] - tpm_direct[,1]
 hist(diff)
 max(diff)
-#independently calculate tpms agree to 2e-13
+#independently calculated TPMs agree to 2e-13
 
 ################################
 
@@ -141,3 +143,38 @@ Level <- varSetNames[1]  #1 for gene, 2 for isoforms
 # MyRowData <- xpressData$varSets[[Level]]$z
 # MyColData <- xpressData$varSets[[Level]]$x
 TPM_xpress = xpressData$varSets[[Level]]$y
+
+# Remove zero length genes
+dge_x <- readRDS("../X20200Gene_dgeobj.RDS")
+dim(TPM_xpress)
+dim(dge_x)
+
+effectiveLength <- getItem(dge_x, "effectiveLength")
+el <- rowMeans(effectiveLength)
+idx <- el == 0
+sum(idx)
+
+#remove zerolength genes from both sets
+TPM_xpress <- TPM_xpress[!idx,]
+dge_x_zerolengenes <- dge_x[idx,]
+dge_x <- dge_x[!idx,]
+dim(TPM_xpress)
+dim(dge_x)
+#same length? 
+
+#filter TPM_xpress to only gene in common with dge_x)
+idx <- rownames(TPM_xpress) %in% rownames(dge_x)
+sum(idx)
+TPM_xpress <- TPM_xpress[idx,]
+dim(TPM_xpress)
+dim(dge_x)
+#check for same order # confirm sort and compare.
+all(rownames(TPM_xpress) == rownames(dge_x))
+
+logtpm <- convertCounts(getItem(dge_x, "counts"), unit="tpm", 
+                     geneLength=getItem(dge_x, "geneData")$ExonLength, 
+                     normalize="none", log=TRUE, debug=T, prior.count=0.25)
+all(rownames(TPM_xpress) == rownames(logtpm))
+plot(log2(TPM_xpress[,1]), logtpm[,1])
+
+#compare TPM_xpress to tpm.direct next
