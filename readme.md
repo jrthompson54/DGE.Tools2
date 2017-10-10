@@ -2,9 +2,6 @@
 
 DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to store DGE data and analysis results.  
 
-**Note:** v0.9.* is the beta version.  All functionality seems to be working but testing is still in progress.  Please let me know
-if something isn't working as advertised.  
-
 
 ## DGE workflow:
 
@@ -75,7 +72,7 @@ One time setup :
 ```
     #Install Charles' bmsPackageTools to enable the BMS BRAN 
     #repository (modifies your ~/.Rprofile file)
-    install.packages("bmsPackageTools", repos="http://kraken.pri.bms.com/biohtml/nositeminder/BRAN/")
+    install.packages("bmsPackageTools", repos="http://BRAN.pri.bms.com")
     library('bmsPackageTools')
     setBmsRepo(rprofile=TRUE)
 
@@ -97,7 +94,7 @@ few pre-requisites before installing DGE.Tools.
     devtools::install_github("stephenturner/annotables")
 ```
 
-Then install or update DGE.Tools and related packages with the following commands:  
+Then install or update DGE.Tools2 and related packages with the following commands:  
 
 ```
     install.packages("JRTutil")
@@ -126,8 +123,8 @@ reason.
     devtools::install_git("http://biogit.pri.bms.com/thompj27/Xpress2R",
                            repos=BiocInstaller::biocinstallRepos())   
 
-    #Install the zFPKM package
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/zFPKM")
+    #Install the zFPKM package from CRAN
+    install.packages("zFPKM")  
 	
     #now you should have all the dependencies in place to install DGE.Tools 
 
@@ -138,6 +135,13 @@ reason.
     #Install the DGE.Tools2
     devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2",
                             repos=BiocInstaller::biocinstallRepos()) 
-```   
 
+```   
+    If the install fails, inspect the error messages. For reasons we don't understand, certain
+    dependencies don't get installed.  The error messages will name the missing packages and they can
+    be installed manually before installing DGE.Tools2.
+
+# Mac install
+ 
+    Ron Ammar reported that the XQuartz (X11) package had to be installed before DGE.Tools2 would install.
 

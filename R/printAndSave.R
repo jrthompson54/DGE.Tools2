@@ -41,6 +41,9 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
                      units='in', res=300, scale=1,
                      printFontSize=12, saveFontSize=24,
                      scaleLegend = TRUE, printPlot=TRUE, savePlot=TRUE){
+    
+  #Save the starting dev level
+  startDev <- dev.cur()
 
   #scale the legend text for saved graphics
   save.Legend.ScaledSize <- 10/printFontSize
@@ -95,5 +98,10 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   } else {
     return(NULL)
   }
+  
+  #Reset to starting dev level before exit (traps for a malformed ggplot that opens a device and never closes)
+  while (cur.dev() > startDev)
+      devoff()
+	
 }
 
