@@ -4,23 +4,23 @@
 #' Provides a summary plot for each observation (gene), showing data for each
 #' experiment group. The plot can optionally include one or more of the
 #' following layers: boxplot, violin plot, individual points and/or mean of all
-#' points.  The layers are built up in the order lists with user settable
+#' points.  The layers are built up in the order listed with user settable
 #' transparency, colors etc.  By default, the Boxplot, Point and Mean layers are
 #' active. Also, by default, the plots are faceted.  Facet plot can be turned
-#' off to return a list of individual graphics for each gene.
+#' off to return a list of individual ggplot graphics for each gene.
 #'
 #' Input is a dataframe or matrix of observations (rows; usually genes) by
 #' Samples (columns) and requires rownames to identify the observations (genes).
 #' A Block vector is required to define which Samples (columns) belong to the
-#' same group. and generate a summary plot by group with a separate plot for
+#' same group and generate a summary plot by group with a separate plot for
 #' each observation (gene).
 #'
 #' Rownames are required and all the data columns should be numeric.  Each
 #' observation (gene) generates a separate plot, so you should pass a smallish
 #' list of genes unless you want alot of output.  By default the plot is
 #' faceted. You should turn facet off if you have more than ~25 genes to plot.
-#' Colnames and Rownames will be used to label the plots by default but can also
-#' be supplied as separate vectors.
+#' Colnames and Rownames will be used to label the plots by default but custom
+#' col/row names can also be supplied as separate vectors.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords boxplot violinplot ggplot2 logratio
@@ -31,6 +31,9 @@
 #'   length as ncol(data).  Assign the same value to each member of a group.
 #'   Note that the block values are used to label the X Axis to identify the
 #'   groups.  Thus short pneumonic labels are useful here.
+#' @param blockOrder Use this to explicitly set the display order of the blocks
+#'   in the plots.  blockOrder should contain unique(block) in the order you
+#'   wish to items to be arranged along the X-axis.  (optional)
 #' @param obsNames list of row (observation) names to use instead of actual
 #'   rownames. (Default = NULL)
 #' @param sampNames list of column (sample) names to use instead of actual
@@ -77,9 +80,10 @@
 #'   Allowed values: "fixed", "free_x", "free_y", "free")
 #' @param returnPlotDat Returns the dataframe used for the plot as a list member (default=FALSE)
 #'
-#' @return ggplot If Facet=TRUE (default) returns a facetted plot object. If
-#'   facet=FALSE, returns a list of ggplot objects indexed by observation (gene)
-#'   names.
+#' @return ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
+#'   facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed 
+#'   by observation (gene) names. If returnPlotDat=TRUE, the last element
+#'   of the list is the dataframe used to generate the plot.
 #'
 #' @examples
 #'    Simple faceted plot with custom title
@@ -93,11 +97,12 @@
 #'    MyBlock = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6)
 #'    MyPlot = obsPlot(genes, MyBlock, title = "Plot Title")
 #'
-#' @import ggplot2 magrittr dplyr reshape2
+#' @import ggplot2 magrittr dplyr reshape2 assertthat
 #'
 #' @export
 obsPlot <- function(data,
                       block = NULL,
+                      blockOrder = NULL,
                       obsNames = NULL,  #e.g. rownames(data)
                       sampNames = NULL,
                       plotBy = "Gene",  #separate plot for each of these
@@ -213,6 +218,10 @@ obsPlot <- function(data,
       stop ("obsNames length must match number of rows in data.")
     }
   }
+  
+  if(!is.null(blockOrder)){
+      assert_that(length(blockOrder) == length(unique(block)))
+  }
 
   #reduce box outliers to a dot if geom_points turned on.
   outlier.size <- 1.5
@@ -237,7 +246,11 @@ obsPlot <- function(data,
   #attach the group info
   data %<>% dplyr::left_join(groupdf)
   data$Block %<>% as.character %>% as.factor
-
+  #optionally set the block order for the plot
+  if (!is.null(blockOrder)){
+      data$Block <- factor(data$Block, levels=blockOrder) 
+  }
+  
 ### Plot code here
   if (facet) {
 
