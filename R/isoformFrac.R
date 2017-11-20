@@ -1,24 +1,31 @@
 ### Function isoformFrac ###
 #' Function isoformFrac
 #'
-#' Takes a DGEobj as input  and adds an item containing isoform fraction data.
+#' Takes a DGEobj as input and adds an assay item containing isoform fraction data.
 #'
-#' Isoform Fraction is calculated using TPM data, as length normalized data
-#' is required since different isoforms have different total exon lengths.  Isoform
-#' fraction is calculated simply as the isoform TPM divided by the total TPM
-#' for all isoforms of a given gene.
-#' 
-#' TPM is calculated from counts using the ExonLength column from the gene/isoform
-#' data.  If normalization is specified, TMM or other selected normalization
-#' is applied to CPM data (using edgeR functions) before converting to TMM.
+#' Isoform Fraction is calculated using length normalized data (FPKM or TPM), as
+#' length normalized data is required because different isoforms have different
+#' total exon lengths.  If FPKM is specified, you can also specify a
+#' normalization (via edgeR::calcNormFactors). Isoform fraction is calculated
+#' simply as the isoform intensity divided by the total gene intensity for all isoforms of
+#' a given gene.
+#'
+#' TPM or FPKM are calculated directly from counts using all data in the dgeObj.
+#' I recommend performing low intensity gene filtering before running isoformFrac.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, DGEobj
 #'
-#' @param dgeObj  A isoform level dgeObj created by function initDGEobj
-#' @param normalize Default = TRUE and invokes TMM normalization. FALSE uses
-#' TPM without TMM normalization.  Other allowed values are: "TMM","RLE","upperquartile". 
-#' Invokes edgeR::calcNormFactors for normalization.
+#' @param dgeObj  An isoform level DGEobj created by function initDGEobj,
+#'   Xpress2DGEO or OmicsoftToDgeObj.  Counts and isoformData must be present
+#'   in the DGEobj (required).  isoformData$ExonLength must be present or assay =
+#'   "effectiveLength" must be present.
+#' @param dataType One of "fpkm" or "tpm" (default="fpkm")
+#' @param normalize Default = "TMM" and invokes TMM normalization. Other allowed
+#'   values are: "RLE","upperquartile", "none". Invokes edgeR::calcNormFactors for
+#'   normalization.  Only invoked when dataType="fpkm".  This is because
+#'   applying TPM essentially erases any prior column scaling so TMM and similar
+#'   normalizations have no effect.
 #'
 #' @return A DGEobj with an isoform fraction dataframe added
 #'
@@ -28,46 +35,67 @@
 #' @import dplyr tidyr DGEobj magrittr assertthat
 #'
 #' @export
-isoformFrac <- function(dgeObj){
+isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
 
     assertthat::assert_that(class(dgeObj)[[1]] == "DGEobj",
                           attr(dgeObj, "level") == "isoform")
 
-    #calculate sum of isoform TPM for each gene and sample
+    #calculate sum of isoforms for each gene and sample
     counts <- getItem(dgeObj, "counts")
-    tData <- getItem(dgeObj, "isoformData")
-    tpm <- convertCounts(counts, unit="TPM", geneLength=tData$ExonLength) %>%
-      as.data.frame
-    tpm$GeneID <- tData$GeneID
-    tpm$TranscriptID <- rownames(tpm)
+    isoformData <- getItem(dgeObj, "isoformData")
+
+    #Xpress support:
+    #If present, Need to take rowMeans of assay=effectiveLength and create
+    #isoformData$ExonLength.
+    if (tolower(attr(dgeObj, "source")) == "xpress"){#It's an Xpress dataset
+      efflen <- getItem(dgeObj, "effectiveLength")
+      if (!is.null(efflen)){
+        isoformData <- getItem(dgeObj, "isoformData")
+        isoformData$ExonLength <- rowMeans(efflen, na.rm=TRUE)
+      } else {
+        stop ("Effective Length data not found in Xpress DGEobj!")
+      }
+    }
+
+    omicData <- switch (tolower(dataType),
+      "fpkm" = convertCounts(counts, unit="fpkm",
+                             geneLength=isoformData$ExonLength,
+                             normalize = normalize),
+      "tpm" = convertCounts(counts, unit="TPM",
+                            geneLength=isoformData$ExonLength,
+                            normalize = "none")
+    ) %>% as.data.frame()
+
+    omicData$GeneID <- isoformData$GeneID
+    omicData$TranscriptID <- rownames(omicData)
 
     #Calculate isoform fraction
-    tpmtidy <- tidyr::gather(tpm, key=sample, value=tpm, -GeneID, -TranscriptID) %>%
+    omictidy <- tidyr::gather(omicData, key=sample, value=intensity, -GeneID, -TranscriptID) %>%
       dplyr::group_by (sample, GeneID) %>%
-      dplyr::mutate (geneTPM = sum(tpm),
-              isofrac = tpm/geneTPM)
+      dplyr::mutate (geneTotal = sum(intensity),
+              isofrac = intensity/geneTotal)
 
     #drop uneeded columns
-    tpmtidy$tpm <- NULL
-    tpmtidy$geneTPM <- NULL
+    omictidy$intensity <- NULL
+    omictidy$geneTotal <- NULL
 
     #now spread to an isoformPct matrix
-    IsoformFrac <- spread(tpmtidy, sample, isofrac) %>% as.data.frame
+    IsoformFrac <- spread(omictidy, sample, isofrac) %>% as.data.frame
     #set rownames to transcript ID and remove ID columns
     rownames(IsoformFrac) <- IsoformFrac$TranscriptID
     IsoformFrac$GeneID <- NULL
     IsoformFrac$TranscriptID <- NULL
-    
+
     #debug
     # saveRDS(IsoformFrac, "isoformFraction.RDS")
-    
+
     #add isoform fraction to assays.
     funArgs <- match.call()
-    dgeObj <- addItem(dgeObj, IsoformFrac, itemName="isoformFrac",
+    dgeObj <- addItem(dgeObj, IsoformFrac,
+                      itemName=paste("isoformFrac", dataType, sep="_"),
                       itemType="assay", funArgs=funArgs,
                       parent="counts")
 
-    
     return(dgeObj)
 }
 

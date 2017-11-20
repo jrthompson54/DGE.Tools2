@@ -4,30 +4,38 @@
 \alias{isoformFrac}
 \title{Function isoformFrac}
 \usage{
-isoformFrac(dgeObj)
+isoformFrac(dgeObj, dataType = "fpkm", normalize = "tmm")
 }
 \arguments{
-\item{dgeObj}{A isoform level dgeObj created by function initDGEobj}
+\item{dgeObj}{An isoform level DGEobj created by function initDGEobj,
+Xpress2DGEO or OmicsoftToDgeObj.  Counts and isoformData must be present
+in the DGEobj (required).  isoformData$ExonLength must be present or assay =
+"effectiveLength" must be present.}
 
-\item{normalize}{Default = TRUE and invokes TMM normalization. FALSE uses
-TPM without TMM normalization.  Other allowed values are: "TMM","RLE","upperquartile". 
-Invokes edgeR::calcNormFactors for normalization.}
+\item{dataType}{One of "fpkm" or "tpm" (default="fpkm")}
+
+\item{normalize}{Default = "TMM" and invokes TMM normalization. Other allowed
+values are: "RLE","upperquartile", "none". Invokes edgeR::calcNormFactors for
+normalization.  Only invoked when dataType="fpkm".  This is because
+applying TPM essentially erases any prior column scaling so TMM and similar
+normalizations have no effect.}
 }
 \value{
 A DGEobj with an isoform fraction dataframe added
 }
 \description{
-Takes a DGEobj as input  and adds an item containing isoform fraction data.
+Takes a DGEobj as input and adds an assay item containing isoform fraction data.
 }
 \details{
-Isoform Fraction is calculated using TPM data, as length normalized data
-is required since different isoforms have different total exon lengths.  Isoform
-fraction is calculated simply as the isoform TPM divided by the total TPM
-for all isoforms of a given gene.
+Isoform Fraction is calculated using length normalized data (FPKM or TPM), as
+length normalized data is required because different isoforms have different
+total exon lengths.  If FPKM is specified, you can also specify a
+normalization (via edgeR::calcNormFactors). Isoform fraction is calculated
+simply as the isoform intensity divided by the total gene intensity for all isoforms of
+a given gene.
 
-TPM is calculated from counts using the ExonLength column from the gene/isoform
-data.  If normalization is specified, TMM or other selected normalization
-is applied to CPM data (using edgeR functions) before converting to TMM.
+TPM or FPKM are calculated directly from counts using all data in the dgeObj.
+I recommend performing low intensity gene filtering before running isoformFrac.
 }
 \examples{
    MyDgeObj <- isoformFrac(MyDgeObj)

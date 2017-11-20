@@ -8,7 +8,7 @@ document()
 load_all()
 build_vignettes()
 build()
-pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.30.tar.gz"
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.32.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
@@ -23,8 +23,8 @@ install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools", branch="dev", repos=
 
 #update BRAN
 library(bmsPackageTools)
-addPackageToRepo() 
-updateBmsRepo() 
+addPackageToRepo()
+updateBmsRepo()
 
 function todo
 
