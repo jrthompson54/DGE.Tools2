@@ -86,6 +86,9 @@ isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
     IsoformFrac$GeneID <- NULL
     IsoformFrac$TranscriptID <- NULL
 
+    #put isoform fraction data in same order as dgeobj
+    IsoformFrac <- IsoformFrac[rownames(dgeObj),]
+
     #debug
     # saveRDS(IsoformFrac, "isoformFraction.RDS")
 
