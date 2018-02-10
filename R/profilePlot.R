@@ -154,12 +154,13 @@ profilePlot <- function(df,
     stop("symbol arguments must be length=3 (symbolSize, SymbolShape, SymbolColor, symbolFill)")
   }
 
-  names(symbolShape) = c("Increased", "No Change", "Decreased")
-  names(symbolSize) = c("Increased", "No Change", "Decreased")
-  names(symbolColor) = c("Increased", "No Change", "Decreased")
-  names(symbolFill) = c("Increased", "No Change", "Decreased")
+  groupNames <- c("Increased", "No Change", "Decreased")
+  names(symbolShape) = groupNames
+  names(symbolSize) = groupNames
+  names(symbolColor) = groupNames
+  names(symbolFill) = groupNames
 
-  ssc = data.frame(group = c("Increased", "No Change", "Decreased"),
+  ssc = data.frame(group = groupNames,
                    symbolShape = symbolShape,
                    symbolSize = symbolSize,
                    symbolColor = symbolColor,

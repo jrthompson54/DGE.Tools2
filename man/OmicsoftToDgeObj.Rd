@@ -7,7 +7,7 @@
 OmicsoftToDgeObj(counts = "RNA-Seq.Count.Table.txt",
   seqAnnotation = "RNA-Seq.Count.Annotation.txt",
   design = "RNA-Seq.Design.txt", level = "gene", source = "Omicsoft",
-  path = ".", customAttr)
+  path = ".", customAttr, gz = FALSE)
 }
 \arguments{
 \item{counts}{A matrix or dataframe of R gene by C samples (required)
@@ -25,7 +25,7 @@ data (required) [Default = RNA-Seq.Design.txt"]}
 
 \item{path}{File path for the three data files (Default = "./")}
 
-\item{customAttr}{A named list of custom attributes to attach to the DGEobj; 
+\item{customAttr}{A named list of custom attributes to attach to the DGEobj;
 Optional but highly encouraged;  suggestions: list(PID = "20170101-0001",
 XpressID = "123456", Genome = "Mouse.B38", GeneMobel = "Ensembl.R84")}
 }
@@ -39,7 +39,7 @@ Build a DGEobj from Omicsoft output or tabbed text files.
 User provides separate tab-delimited text files for row (gene) annotation,
 column (sample) anotation and "assays" (matrices of RxC e.g. counts, FPKM, etc).
 
-Two global variables hold the names of the Omicsoft data files; .geneData 
+Two global variables hold the names of the Omicsoft data files; .geneData
 and .isoformData.
 
 Data Requirements:
@@ -55,17 +55,17 @@ start, end, strand).
 #Defaults set for an omicsoft dataset:
 MyDgeObj <- OmicsoftToDgeObj (customAttr=list(
                                    PID = "20170101-0001",
-                                   XpressID = "123456", 
-                                   Genome = "Mouse.B38", 
+                                   XpressID = "123456",
+                                   Genome = "Mouse.B38",
                                    GeneMobel = "Ensembl.R84")
 
-#I have data files from somewhere else                                   
+#I have data files from somewhere else
 MyDgeObj = OmicsoftToDgeObj (MyCounts, MyGeneAnnotation, MyDesign,
                                    level = "gene",
                                    customAttr = list(
                                       PID = "20170101-0001",
-                                      XpressID = "123456", 
-                                      Genome = "Mouse.B38", 
+                                      XpressID = "123456",
+                                      Genome = "Mouse.B38",
                                       GeneMobel = "Ensembl.R84")
                              )
 
