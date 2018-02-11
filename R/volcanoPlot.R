@@ -84,6 +84,10 @@
 #'   respectively. Default = bw"
 #' @param refLineThickness Set the thickness for all reference lines (Default =
 #'   1)
+#' @param footnote optional string placed right justified at bottom of plot.
+#' @param footnoteSize applies to footnote. (default = 3)
+#' @param footnoteColor applies to footnote. (default = "black")
+#' @param footnoteJust Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)
 #'
 #' @return ggplot object
 #'
@@ -125,7 +129,11 @@ volcanoPlot <- function(df,
                         rugColor = NULL,
                         rugAlpha = 1.0,
                         baseFontSize = 12,
-                        themeStyle = "grey"
+                        themeStyle = "grey",
+                        footnote,
+                        footnoteSize=3,
+                        footnoteColor="black",
+                        footnoteJust=1
                         ) {
 
 #   basetheme = theme(  #base size is the axis tick mark labels; other elements are scaled
@@ -301,6 +309,13 @@ volcanoPlot <- function(df,
   }
 
   volcanoPlot = setLegendPosition(volcanoPlot, legendPosition, themeStyle)
+
+  #footnote
+  if (!missing(footnote))
+    volcanoPlot <- volcanoPlot (CompPlot, footnoteText=footnote,
+                                footnoteSize=footnoteSize,
+                                footnoteColor="black",
+                                footnoteJust=footnoteJust)
 
   return(volcanoPlot)
 }

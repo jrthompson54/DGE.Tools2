@@ -11,7 +11,8 @@ volcanoPlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
   "grey25", "deepskyblue4"), alpha = 0.5, sizeByIntensity = TRUE,
   pthresholdLine = NULL, foldChangeLines = log2(1.5),
   refLineThickness = 1, legendPosition = "right", rugColor = NULL,
-  rugAlpha = 1, baseFontSize = 12, themeStyle = "grey")
+  rugAlpha = 1, baseFontSize = 12, themeStyle = "grey", footnote,
+  footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a
@@ -77,6 +78,14 @@ but for a final plot try 0.1 or 0.2 for alpha for a more informative rug.}
 
 \item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey
 respectively. Default = bw"}
+
+\item{footnote}{optional string placed right justified at bottom of plot.}
+
+\item{footnoteSize}{applies to footnote. (default = 3)}
+
+\item{footnoteColor}{applies to footnote. (default = "black")}
+
+\item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
 
 \item{scaleByIntensity}{Set point size as a function of Intensity (Default =
 TRUE). Takes logIntCol and sets a floor and ceiling at 0 and 10, then uses

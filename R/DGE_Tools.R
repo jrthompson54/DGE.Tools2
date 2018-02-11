@@ -1,12 +1,12 @@
 # DGE_Tools.R
 # Author: JRT 07Feb2017
 #
-# A set of functions to facilitate differential gene expression analysis. 
+# A set of functions to facilitate differential gene expression analysis.
 
 
 
 #Need separate data objects for Gene and Transcript level because they have
-#different row counts 
+#different row counts
 #
 #The GeneData list of lists defines: the datafiles to load into
 #a DGEobj, the standard name they will be given in the SummarizedExperiment
@@ -107,7 +107,7 @@ tsmsg <- function(...) {
 #df2GR is obsolete.  Can now use:  gr <- as(geneInfoDF, "GRanges")
 ### Function df2GR ###
 #' @import magrittr IRanges GenomicRanges
-df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"), 
+df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"),
                   start="start", end="end", strand="strand",
                   start.offset=1, end.offset=start.offset) {
   #Convert a Annotation DF to a genomic Ranges object
@@ -192,5 +192,28 @@ eBayes_autoprop <- function(..., prop.method="lfdr") {
   eb <- eBayes(...)
   ptn <- propTrueNull(eb$p.value, method=prop.method)
   eBayes(..., proportion=1-ptn)
+}
+
+#https://gist.github.com/tomhopper/9076152
+yrange <- function(my.ggp) #pass a ggplot object, return yrange
+  ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
+
+xrange <- function(my.ggp)
+  ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
+
+#footnote
+addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, footnoteJust=1){
+  #add a right justified (by default) footnote at the bottom plot.
+  #footnoteJust: value = 0.1; <0.5 is left justified; > 0.5 is right justified; 0.5 is centered
+  yr <- yrange(my.ggp)
+  xr <- xrange(my.ggp)
+  xcoord <- ifelse(footnoteJust<0.50, xr[1], xr[2])
+  if (footnoteJust == 0.5) #special case = center
+  xcoord <- xr[1] + ((xr[2]-xr[1])/2)
+  my.ggp <- my.ggp +
+    annotate("text", label = footnote, x = xcoord, y = yr[1],
+             size = footnoteSize,
+             colour = footnoteColor,
+             hjust=footnoteJust)
 }
 

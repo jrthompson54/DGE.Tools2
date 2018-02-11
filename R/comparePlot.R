@@ -75,6 +75,10 @@
 #' @param baseFontSize The smallest size font in the figure in points. Default = 12
 #' @param themeStyle "bw" or "grey" which corresponds to theme_bw or theme_grey respectively.
 #'        Default = bw"
+#' @param footnote optional string placed right justified at bottom of plot.
+#' @param footnoteSize applies to footnote. (default = 3)
+#' @param footnoteColor applies to footnote. (default = "black")
+#' @param footnoteJust Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)
 #'
 #' @return ggplot object
 #'
@@ -110,7 +114,11 @@ comparePlot <- function(df, pthreshold=0.01,
                         dens2D = TRUE,
                         legendPosition = "right",
                         baseFontSize = 12,
-                        themeStyle = "bw"
+                        themeStyle = "bw",
+                        footnote,
+                        footnoteSize=3,
+                        footnoteColor="black",
+                        footnoteJust=1
                         ) {
 
   with.seed <- function(seed, expr) {
@@ -270,6 +278,13 @@ comparePlot <- function(df, pthreshold=0.01,
   }
 
   CompPlot = setLegendPosition(CompPlot, legendPosition, themeStyle)
+
+  #footnote
+  if (!missing(footnote))
+    CompPlot <- addFootnote (CompPlot, footnoteText=footnote,
+                             footnoteSize=footnoteSize,
+                             footnoteColor="black",
+                             footnoteJust=footnoteJust)
 
   return(CompPlot)
 }

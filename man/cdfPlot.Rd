@@ -10,7 +10,8 @@ cdfPlot(df, pvalCol = "P.Value", pthreshold = 0.01, xlab = NULL,
   symbolFill = c("red3", "deepskyblue4"), alpha = 1, referenceLine = NULL,
   refLineThickness = 1, legendPosition = "se", baseFontSize = 12,
   viewportX = 0.15, viewportY = 0.93, viewportWidth = 0.35,
-  themeStyle = "grey", pvalMax = 0.1, printPlot = TRUE, plotFile = NULL)
+  themeStyle = "grey", pvalMax = 0.1, printPlot = TRUE, plotFile = NULL,
+  footnote, footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.}
@@ -66,6 +67,14 @@ respectively. Default = "grey"}
 
 \item{plotFile}{Provide a filename with .PNG extension to save the an image
 file. Font size doubled for PNG file output.}
+
+\item{footnote}{optional string placed right justified at bottom of plot.}
+
+\item{footnoteSize}{applies to footnote. (default = 3)}
+
+\item{footnoteColor}{applies to footnote. (default = "black")}
+
+\item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
 }
 \value{
 A list containing mainplot, insetplot and viewport. You can then

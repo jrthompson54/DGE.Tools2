@@ -10,7 +10,8 @@ comparePlot(df, pthreshold = 0.01, xlab = NULL, ylab = NULL,
   symbolFill = c("darkgoldenrod1", "deepskyblue4", "red3", "grey25"),
   alpha = 0.5, rugColor = NULL, rugAlpha = 1, crosshair = "grey50",
   referenceLine = "darkgoldenrod1", refLineThickness = 1, dens2D = TRUE,
-  legendPosition = "right", baseFontSize = 12, themeStyle = "bw")
+  legendPosition = "right", baseFontSize = 12, themeStyle = "bw",
+  footnote, footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with the first two columns representing the x and y variables.
@@ -63,6 +64,14 @@ inside the figure. NULL disables the legend. Default = "right"}
 
 \item{themeStyle}{"bw" or "grey" which corresponds to theme_bw or theme_grey respectively.
 Default = bw"}
+
+\item{footnote}{optional string placed right justified at bottom of plot.}
+
+\item{footnoteSize}{applies to footnote. (default = 3)}
+
+\item{footnoteColor}{applies to footnote. (default = "black")}
+
+\item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
 }
 \value{
 ggplot object

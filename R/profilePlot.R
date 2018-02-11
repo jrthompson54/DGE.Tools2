@@ -87,6 +87,10 @@
 #' @param baseFontSize The smallest size font in the figure in points. Default = 12
 #' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey respectively.
 #'        Default = bw"
+#' @param footnote optional string placed right justified at bottom of plot.
+#' @param footnoteSize applies to footnote. (default = 3)
+#' @param footnoteColor applies to footnote. (default = "black")
+#' @param footnoteJust Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)
 #'
 #' @return ggplot object
 #'
@@ -106,7 +110,7 @@
 #'      referenceLine = "blue",
 #'      legendPosition="ne")
 #'
-#' @import ggplot2 magrittr dplyr
+#' @import ggplot2 magrittr dplyr assert_that
 #'
 #' @export
 profilePlot <- function(df,
@@ -131,22 +135,31 @@ profilePlot <- function(df,
                         lineFitColor = "goldenrod1",
                         legendPosition = "right",
                         baseFontSize = 12,
-                        themeStyle = "grey"
+                        themeStyle = "grey",
+                        footnote,
+                        footnoteSize=3,
+                        footnoteColor="black",
+                        footnoteJust=1
                         )
 {
+  #JRT 11Feb2018: fails when trying to override default column choices.
 
   #argument checks
   #
   # Make sure specified columns exist
-  if (!logRatioCol %in% colnames(df)) {
-    stop("LogRatio column not found.")
-  }
-  if (!logIntCol %in% colnames(df)) {
-    stop("LogIntensity column not found.")
-  }
-  if (!pvalCol %in% colnames(df)) {
-    stop("Significance measure column not found.")
-  }
+  assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
+  assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
+  assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
+
+  # if (!logRatioCol %in% colnames(df)) {
+  #   stop("LogRatio column not found.")
+  # }
+  # if (!logIntCol %in% colnames(df)) {
+  #   stop("LogIntensity column not found.")
+  # }
+  # if (!pvalCol %in% colnames(df)) {
+  #   stop("Significance measure column not found.")
+  # }
 
   #symbol parameters must all be length=3
   if (!length(symbolSize)==3 || !length(symbolShape)==3 ||
@@ -289,6 +302,13 @@ profilePlot <- function(df,
   } else {
     profilePlot = profilePlot + theme_grey() + baseTheme(baseFontSize)
   }
+
+  #footnote
+  if (!missing(footnote))
+    profilePlot <- addFootnote (profilePlot, footnoteText=footnote,
+                                footnoteSize=footnoteSize,
+                                footnoteColor="black",
+                                footnoteJust=footnoteJust)
 
   profilePlot = setLegendPosition(profilePlot, legendPosition, themeStyle)
 

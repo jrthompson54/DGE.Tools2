@@ -72,6 +72,10 @@
 #'   (Default = TRUE)
 #' @param plotFile Provide a filename with .PNG extension to save the an image
 #'   file. Font size doubled for PNG file output.
+#' @param footnote optional string placed right justified at bottom of plot.
+#' @param footnoteSize applies to footnote. (default = 3)
+#' @param footnoteColor applies to footnote. (default = "black")
+#' @param footnoteJust Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)
 #'
 #' @return A list containing mainplot, insetplot and viewport. You can then
 #'   reconstruct the plot with: print(MyList$main); print(inset,
@@ -104,7 +108,11 @@ cdfPlot <- function(df,
                         themeStyle = "grey",
                         pvalMax = 0.10,
                         printPlot = TRUE,
-                        plotFile = NULL
+                        plotFile = NULL,
+                        footnote,
+                        footnoteSize=3,
+                        footnoteColor="black",
+                        footnoteJust=1
                         )
 {
 
@@ -218,6 +226,13 @@ cdfPlot <- function(df,
   }
 
   cdfMain <- setLegendPosition(cdfMain, legendPosition, themeStyle)
+
+  #footnote
+  if (!missing(footnote))
+    cdfMain <- addFootnote (cdfMain, footnoteText=footnote,
+                            footnoteSize=footnoteSize,
+                            footnoteColor="black",
+                            footnoteJust=footnoteJust)
 
   ###end Main PLOT
 

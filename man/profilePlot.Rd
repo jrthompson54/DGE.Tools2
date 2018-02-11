@@ -13,7 +13,8 @@ profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
   referenceLine = "grey25", foldChangeLines = log2(1.5),
   refLineThickness = 1, lineFitType = "loess",
   lineFitColor = "goldenrod1", legendPosition = "right",
-  baseFontSize = 12, themeStyle = "grey")
+  baseFontSize = 12, themeStyle = "grey", footnote, footnoteSize = 3,
+  footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.}
@@ -86,6 +87,14 @@ inside the figure. NULL disables the legend. Default = "right"}
 
 \item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey respectively.
 Default = bw"}
+
+\item{footnote}{optional string placed right justified at bottom of plot.}
+
+\item{footnoteSize}{applies to footnote. (default = 3)}
+
+\item{footnoteColor}{applies to footnote. (default = "black")}
+
+\item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
 }
 \value{
 ggplot object
