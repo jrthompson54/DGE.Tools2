@@ -284,7 +284,8 @@ comparePlot <- function(df, pthreshold=0.01,
     CompPlot <- addFootnote (CompPlot, footnoteText=footnote,
                              footnoteSize=footnoteSize,
                              footnoteColor="black",
-                             footnoteJust=footnoteJust)
+                             footnoteJust=footnoteJust,
+                             yoffset = 0.05)
 
   return(CompPlot)
 }

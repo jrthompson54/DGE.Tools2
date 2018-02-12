@@ -202,18 +202,22 @@ xrange <- function(my.ggp)
   ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
 
 #footnote
-addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, footnoteJust=1){
+addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, footnoteJust=1, yoffset=0){
   #add a right justified (by default) footnote at the bottom plot.
   #footnoteJust: value = 0.1; <0.5 is left justified; > 0.5 is right justified; 0.5 is centered
+  #yoffset is fraction of y delta to add to yr[1]
+
   yr <- yrange(my.ggp)
   xr <- xrange(my.ggp)
+  yoffset <- yoffset * (yr[2]-yr[1])
   xcoord <- ifelse(footnoteJust<0.50, xr[1], xr[2])
   if (footnoteJust == 0.5) #special case = center
   xcoord <- xr[1] + ((xr[2]-xr[1])/2)
   my.ggp <- my.ggp +
-    annotate("text", label = footnote, x = xcoord, y = yr[1],
+    annotate("text", label = footnote, x = xcoord, y = yr[1]+yoffset,
              size = footnoteSize,
              colour = footnoteColor,
-             hjust=footnoteJust)
+             hjust=footnoteJust,
+             vjust=1)
 }
 
