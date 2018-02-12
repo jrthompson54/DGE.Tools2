@@ -110,7 +110,7 @@
 #'      referenceLine = "blue",
 #'      legendPosition="ne")
 #'
-#' @import ggplot2 magrittr dplyr assert_that
+#' @import ggplot2 magrittr dplyr assertthat
 #'
 #' @export
 profilePlot <- function(df,
