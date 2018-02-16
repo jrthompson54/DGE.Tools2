@@ -1,4 +1,4 @@
-#DGE.Tools2: RNA-Seq Analysis Package
+# DGE.Tools2: RNA-Seq Analysis Package
 
 DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to store DGE data and analysis results.  
 
@@ -31,7 +31,7 @@ Several QC plots are availble to monitor the quality of your results. These incl
 **plotPvalHist**: Faceted plot of pvalue distributions for each contrast to evaluate quality of your Fit.   
 **cdfPlot**: Faceted plot of pvalue distributions for each contrast to evaluate quality of your Fit.   
 
-##Data Exploration Plots:
+## Data Exploration Plots:
 
 **profilePlot**: Plot LogIntensity vs. LogRatio from topTable dataframes with highlighting of significantly regulated genes.  
 **volcanoPlot**: Plot LogRatio vs. NegLogPvalue from topTable dataframes with highlighting of significantly regulated genes.  
@@ -59,26 +59,13 @@ A sample analysis markdown is being prepared using this dataset and will be
 added to the package as a vignette.  The draft (and fairly complete) version
 is [found here](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.Tools2_TestWorkflow.Rmd)
 
-## Installation (New!)
+## Installation
 
 It is best to run the install from a fresh R session before loading any
 packages because loaded packages cannot be updated.
 
-Charles Tilford has created a BMS repository.  Packages from the BMS repository
-can now be installed simply with install.packages (after a little setup).
 
 One time setup :
-
-```
-    #Install Charles' bmsPackageTools to enable the BMS BRAN 
-    #repository (modifies your ~/.Rprofile file)
-    install.packages("bmsPackageTools", repos="http://BRAN.pri.bms.com")
-    library('bmsPackageTools')
-    setBmsRepo(rprofile=TRUE)
-
-    #if you don't have the devtools package already
-    install.packages("devtools")
-```
 
 CRAN and Bioconductor package dependencies should be installed automatically. 
 However, we use a few tools not yet deposited in those places.  So there are a
@@ -97,11 +84,11 @@ few pre-requisites before installing DGE.Tools.
 Then install or update DGE.Tools2 and related packages with the following commands:  
 
 ```
-    install.packages("JRTutil")
+    install.packages("JRTutil", repos="http://BRAN.pri.bms.com")
     install.packages("zFPKM")
-    install.packages("DGEobj")
-    install.packages("DGE.Tools2")
-    install.packages("Xpress2R")
+    install.packages("DGEobj", repos="http://BRAN.pri.bms.com")
+    install.packages("DGE.Tools2", repos="http://BRAN.pri.bms.com")
+    install.packages("Xpress2R", repos="http://BRAN.pri.bms.com")
 ```
 
 # Installation directly from BioGit (Backup method)
