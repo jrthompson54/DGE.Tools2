@@ -97,6 +97,9 @@ You can also install directly from BioGit if the BMS repository is down for some
 reason.
 
 ```
+    #if you don't have the devtools package already
+    install.packages("devtools")
+
     #next line required so that missing Bioconductor packages will install  
     source("https://bioconductor.org/biocLite.R")
 
