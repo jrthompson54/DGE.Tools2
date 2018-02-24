@@ -76,7 +76,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
 
   if (tolower(plotType == "box")){
     #Box  plot
-    resultPlot <- ggplot(tall, aes(x = SampleID, y=Log2CPM, color=SampleID, fill=SampleID)) +
+    resultPlot <- ggplot(tall, aes(x = SampleID, y=Log2CPM, color=SampleID)) +
       geom_boxplot(alpha=0.5) +
       # geom_violin(alpha=0.5) +
       facet_grid (~ Normalization) +

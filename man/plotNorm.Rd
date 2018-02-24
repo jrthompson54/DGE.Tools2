@@ -21,12 +21,13 @@ normalization.}
 A  facetted ggplot plot showing before/after normalization
 }
 \description{
-Takes a DGEobj or counts matrixas input returns ggplot object containing
-a faceted plot of before/after normalization.
+Takes a DGEobj or counts matrix as input. Returns ggplot object containing
+a faceted plot of before/after normalization. Either a box plot or density plot
+type can be chosen.
 }
 \examples{
-   MyggPlot <- plotNormc(MyDgeObj)
-   MyggPlot <- plotNormc(counts)
+   MyggPlot <- plotNorm(MyDgeObj, plotType="box")
+   MyggPlot <- plotNorm(counts, plotType="density")
 
 }
 \author{
