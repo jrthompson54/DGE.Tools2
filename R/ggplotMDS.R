@@ -49,8 +49,7 @@
 #'   (Default = "blue2")
 #' @param shapes A vector of shapes to override the default 8 shapes used in shapeBy (optional)
 #' @param colors A color pallet to substitute for the default 8 color pallet used by colorBy (optional)
-#' @param ... arguments passed through to plotMDS function (see ?plotMDS in package
-#'    edgeR)
+#' @param dim.plot Define which dimension to plot (default = c(1,2))
 #'
 #' @return A list with two elements, the ggplot object and the mds object returned
 #'    by the plotMDS function.
@@ -90,7 +89,7 @@ ggplotMDS <- function(DGEdata,
                       symColor = "blue2",
                       shapes,
                       colors,
-                      ...
+                      dim.plot = c(1,2)
                         )
 {
 
@@ -135,12 +134,13 @@ ggplotMDS <- function(DGEdata,
       colors <- cbbPalette
 
   #defaults for plotMDS arguments
-  if (!exists("dim.plot")){
-    dim.plot <- c(1,2)
-  }
-  if (!exists("ndim")){
-    ndim <- 2
-  }
+  # if (missing("dim.plot")){
+  #   print("dim.plot was missing. dim.plot defaults applied")
+  #   dim.plot <- c(1,2)
+  # }
+  # if (!exists("ndim")){
+  #   ndim <- max(dim.plot)
+  # }
   if (!exists("gene.selection")){
     gene.selection <- "pairwise"
   }
@@ -175,7 +175,7 @@ ggplotMDS <- function(DGEdata,
   #                gene.selection = gene.selection,
   #                xlab = Xlab, ylab = Ylab)
   mds <- plotMDS(DGEdata, top = top, pch = pch,
-                 cex = cex, dim.plot = dim.plot, ndim = ndim,
+                 cex = cex, dim.plot = dim.plot, ndim = max(dim.plot),
                  gene.selection = gene.selection,
                  xlab = Xlab, ylab = Ylab)
   invisible(dev.off())
