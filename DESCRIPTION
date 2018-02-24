@@ -85,4 +85,5 @@ Collate:
     'volcanoPlot.R'
     'isoformFrac.R'
     'plotNorm.R'
+    'checkSex.R'
 RoxygenNote: 6.0.1
