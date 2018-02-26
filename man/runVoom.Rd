@@ -13,16 +13,16 @@ runVoom(dgeObj, designMatrixName, dupcorBlock, qualityWeights = TRUE,
 
 \item{designMatrixName}{Name of a design matrix within dgeObj (required)}
 
-\item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional). 
+\item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional).
 Should be a vector the same length as ncol with values to indicate common
 group membership for duplicateCorrelation.}
 
 \item{qualityWeights}{Runs VoomWithQualityWeights if set to TRUE (default=TRUE).
 This should normally be set to TRUE.}
 
-\item{var.design}{Provide a design matrix (from model.matrix) to identify 
-replicate groups (e.g. "~ ReplicateGroup") for quality weight determination. 
-Causes quality weights to be determined on a group basis.  If omitted 
+\item{var.design}{Provide a design matrix (from model.matrix) to identify
+replicate groups (e.g. "~ ReplicateGroup") for quality weight determination.
+Causes quality weights to be determined on a group basis.  If omitted
 VoomWithQualityWeights treats each sample individually.}
 
 \item{mvPlot}{Enables the voom mean-variance plot (Default = TRUE)}
@@ -32,7 +32,7 @@ VoomWithQualityWeights treats each sample individually.}
 \item{robust}{Used by eBayes (Default = TRUE)}
 
 \item{proportion}{Proportion of genes expected to be differentially expressed
-(used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows 
+(used by eBayes) (Default = 0.01) Modify the prior accordingly if your 1st pass analysis shows
 a significantly higher or lower proportion of genes regulated than the default.}
 }
 \value{
@@ -46,7 +46,7 @@ contrasts.fit downstream, you should run eBayes after that step instead. In
 other words, run eBayes last.
 }
 \details{
-Input is minimally a DGEobj containing a DGEList (typically TMM-normalized), 
+Input is minimally a DGEobj containing a DGEList (typically TMM-normalized),
 and a formula (text representation).  Other arguments can invoke
 duplicateCorrelation and modify use of quality weights.
 
@@ -54,17 +54,17 @@ Returns a DGEobj class object containing the designMatrix, VoomElist (voom
 output) and Fit object (lmfit output). Appends data items to the input
 DGEobj.
 
-Quality weights should be left enabled unless you have a good reason to turn it 
-off.  If all samples are equal quality, the weights will all approach 1.0 with no 
+Quality weights should be left enabled unless you have a good reason to turn it
+off.  If all samples are equal quality, the weights will all approach 1.0 with no
 consequence on the results.  More typically,  some samples are better than others
 and using quality weights improves the overall result.
 
 Use var.design when you notice that quality weights are correlated with some
-factor in the experiment.  This will cause the quality weights to be 
+factor in the experiment.  This will cause the quality weights to be
 calculated as a group instead of individually.
 
 Use duplicate correlattion when you have subjects that have been sampled more
-than once (e.g. before and after some treatment).  This calculates a within 
+than once (e.g. before and after some treatment).  This calculates a within
 subject correlation and includes this in the model.
 }
 \examples{
