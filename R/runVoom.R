@@ -188,7 +188,7 @@ runVoom <- function(dgeObj, designMatrixName,
     } else itemAttr <- list(eBayes = FALSE)
 
     if (exists("corfit")) { #duplicate correlation was used; capture the correlation value
-      print (str_c("Duplicate Correlation = ", corfit$consensus.correlation))
+      print (str_c("Duplicate Correlation = ", round(corfit$consensus.correlation, 4)))
       attr(VoomElist, "DupCor") <- corfit$consensus.correlation
       attr(fit, "DupCor") <- corfit$consensus.correlation
     }
