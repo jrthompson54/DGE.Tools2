@@ -32,12 +32,7 @@ function todo
 
 
 
-INC1585521  Avaya softephone ticket
 
-Next:  IHW and qvalue handling  (altFDR function)
-These functions work on a contrast list.
-provide a dgeObj and a contrast list (named)
-add IHW and qvalue=TRUE as attributes and replace/overwrite the existing contrast objects.
 
 
 

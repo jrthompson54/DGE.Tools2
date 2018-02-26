@@ -41,7 +41,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
                      units='in', res=300, scale=1,
                      printFontSize=12, saveFontSize=24,
                      scaleLegend = TRUE, printPlot=TRUE, savePlot=TRUE){
-    
+
   #Save the starting dev level
   startDev <- dev.cur()
 
@@ -76,7 +76,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   if (savePlot==TRUE) {
     #get the file extension
     filetype = tolower(tools::file_ext(filename))
-      
+
     plot = plotObject
 
     if (scaleLegend == TRUE && saveFontSize > 14) {
@@ -84,7 +84,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
     }
     supportedFiletypes <- c("png", "bmp", "tiff", "jpeg", "pdf", "svg", "wmf")
     if (filetype %in% supportedFiletypes) {
-    	ggsave(filename=basename(filename), plot=plot, 
+    	ggsave(filename=basename(filename), plot=plot,
     	       device=filetype, path=dirname(filename),
     	       width=width, height=height, units=units, dpi=res)
     } else {
@@ -98,10 +98,59 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   } else {
     return(NULL)
   }
-  
+
   #Reset to starting dev level before exit (traps for a malformed ggplot that opens a device and never closes)
   while (cur.dev() > startDev)
       devoff()
-	
+
 }
 
+
+### Function printWithFootnote ###
+#' Function  printWithFootnote
+#'
+#' Print a ggplot2 object to the console/knitr report adding footnote text
+#' under the plot.  Use when you want the footnot to be underneath the plot
+#' labels.  Only prints the footnote once on a facetted plot.
+#'
+#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
+#'
+#' @param plotObject A ggplot2 plotobject
+#' @param filename A path/filename for the graphic
+#' @param width Graphic width in inches (default = 7)
+#' @param height Graphic height in inches (default = 5)
+#' @param units Units for height and width ("in"|"cm"|"mm") (Default = "in")
+#' @param scale Multiplicative scaling factor (Default = 1)
+#' @param res Resolution in ppi (default=300)
+#' @param printFontSize Base font size for the graphic on the console/knitr (default=12)
+#' @param saveFontSize Base font size for the graphic file (default=24)
+#' @param scaleLegend Scale the legend smaller if font > 14  (Default = TRUE)
+#' @param printPlot Print to console if TRUE (Default=TRUE)
+#' @param savePlot Print to file if TRUE (Default = TRUE)
+#'
+#' @return The print object
+#'
+#' @examples
+#'     #Write to the console or knitr report
+#'     printWithFootnote(Myggplot, footnote = "Footnote Text")
+#'
+#'     #Capture to a file
+#'     png ("myplot.png", width=5, height=4, unit="in")
+#'     printWithFootnote(Myggplot, footnote = "Footnote Text")
+#'     invisible(dev.off())
+#'
+#' @import ggplot2 tools grDevices
+#' @importFrom grid grid.newpage grid.draw textGrob gpar
+#' @importFrom assertthat assert_that
+#' @importFrom gridExtra arrangeGrob
+#'
+#' @export
+printWithFootnote <- function(plotObject, footnote, fontface="plain", fontsize=10, hjust=-0.1){
+  #fontfact values = "plain", "bold", "italic"
+  assertthat::assert_that("ggplot" %in% class(plotObject))
+  assertthat::assert_that(class(footnote)[[1]] == "character")
+  grid.newpage()
+  g <- arrangeGrob(plotObject, bottom = textGrob(footnote, x = 0, hjust = hjust, vjust=0.1, gp = gpar(fontface = fontface, fontsize = fontsize)))
+  grid.draw(g)
+}

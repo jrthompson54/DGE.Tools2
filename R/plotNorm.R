@@ -55,7 +55,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
     gather (SampleID, Log2CPM, -GeneID)
   tall$Normalization = "none"
 
-  tall_tmm <- log2cpm_tmm %>%
+  tall_tmm <- log2CPM_tmm %>%
     as.data.frame %>%
     rownames_to_column(var="GeneID") %>%
     gather (SampleID, Log2CPM, -GeneID)
