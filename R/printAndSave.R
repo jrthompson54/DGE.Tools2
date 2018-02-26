@@ -102,9 +102,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   #Reset to starting dev level before exit (traps for a malformed ggplot that opens a device and never closes)
   while (cur.dev() > startDev)
       devoff()
-
 }
-
 
 ### Function printWithFootnote ###
 #' Function  printWithFootnote
@@ -117,19 +115,12 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
 #' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
 #'
 #' @param plotObject A ggplot2 plotobject
-#' @param filename A path/filename for the graphic
-#' @param width Graphic width in inches (default = 7)
-#' @param height Graphic height in inches (default = 5)
-#' @param units Units for height and width ("in"|"cm"|"mm") (Default = "in")
-#' @param scale Multiplicative scaling factor (Default = 1)
-#' @param res Resolution in ppi (default=300)
-#' @param printFontSize Base font size for the graphic on the console/knitr (default=12)
-#' @param saveFontSize Base font size for the graphic file (default=24)
-#' @param scaleLegend Scale the legend smaller if font > 14  (Default = TRUE)
-#' @param printPlot Print to console if TRUE (Default=TRUE)
-#' @param savePlot Print to file if TRUE (Default = TRUE)
+#' @param footnote A path/filename for the graphic
+#' @param fontface fontface for the footnotw (default = "plain")
+#' @param fontsize size of the footnote font (default = 10)
+#' @param hjust  Specify horizontal justification (Default = -0.1)
 #'
-#' @return The print object
+#' @return Prints the graphic object to the console
 #'
 #' @examples
 #'     #Write to the console or knitr report

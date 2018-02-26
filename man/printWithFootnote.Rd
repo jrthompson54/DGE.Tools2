@@ -10,30 +10,16 @@ printWithFootnote(plotObject, footnote, fontface = "plain", fontsize = 10,
 \arguments{
 \item{plotObject}{A ggplot2 plotobject}
 
-\item{filename}{A path/filename for the graphic}
+\item{footnote}{A path/filename for the graphic}
 
-\item{width}{Graphic width in inches (default = 7)}
+\item{fontface}{fontface for the footnotw (default = "plain")}
 
-\item{height}{Graphic height in inches (default = 5)}
+\item{fontsize}{size of the footnote font (default = 10)}
 
-\item{units}{Units for height and width ("in"|"cm"|"mm") (Default = "in")}
-
-\item{scale}{Multiplicative scaling factor (Default = 1)}
-
-\item{res}{Resolution in ppi (default=300)}
-
-\item{printFontSize}{Base font size for the graphic on the console/knitr (default=12)}
-
-\item{saveFontSize}{Base font size for the graphic file (default=24)}
-
-\item{scaleLegend}{Scale the legend smaller if font > 14  (Default = TRUE)}
-
-\item{printPlot}{Print to console if TRUE (Default=TRUE)}
-
-\item{savePlot}{Print to file if TRUE (Default = TRUE)}
+\item{hjust}{Specify horizontal justification (Default = -0.1)}
 }
 \value{
-The print object
+Prints the graphic object to the console
 }
 \description{
 Print a ggplot2 object to the console/knitr report adding footnote text
