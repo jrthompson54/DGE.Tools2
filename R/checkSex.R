@@ -20,6 +20,8 @@
 #'
 #' @examples
 #'
+#'    checkSex(dgeObj, species="human")
+#'
 #' @import dplyr ggplot2 magrittr edgeR ggrepel ggiraph tibble
 #' @importFrom assertthat assert_that
 #'
