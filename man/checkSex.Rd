@@ -5,24 +5,26 @@
 \title{Function checkSex}
 \usage{
 checkSex(dgeObj, species, sexCol, labelCol, showLabels = FALSE, chrX = "X",
-  chrY = "Y", baseFontSize = 14)
+  chrY = "Y", baseFontSize = 14, orig = TRUE)
 }
 \arguments{
 \item{dgeObj}{A DGEobj (Required)}
 
 \item{species}{One of "human", "mouse", "rat"}
 
-\item{sexCol}{Name of the sex annotation column in the design table within the dgeObj}
+\item{sexCol}{Character string name of the sex annotation column in the design table within the dgeObj (optional)}
 
-\item{labelCol}{Name of the design column to use to label points}
+\item{labelCol}{Character string name of the design column to use to label points with ggrepel (optional if showLabels=FALSE)}
 
-\item{chrX}{Name of the X chromosome in the gene annotation within the geneData object (Default = "X")}
+\item{showLabels}{Set TRUE to turn on ggrepel labels (default = FALSE)}
 
-\item{chrY}{Name of the Y chromosome in the gene annotation within the geneData object (Default = "Y")}
+\item{chrX}{Character string name of the X chromosome in the gene annotation within the geneData object (Default = "X")}
+
+\item{chrY}{Character string name of the Y chromosome in the gene annotation within the geneData object (Default = "Y")}
 
 \item{baseFontSize}{Sets the base font size for ggplot themes (Default = 14)}
 
-\item{showLables}{Set TRUE to label points with labelcol (default = FALSE)}
+\item{orig}{Set to FALSE to use your filtered DGEobj data.  Set to TRUE to use original unfiltered data (Default = TRUE)}
 }
 \value{
 A ggplot object
