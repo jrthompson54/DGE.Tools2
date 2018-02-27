@@ -20,7 +20,8 @@
 #'
 #' @examples
 #'
-#' @import ggplot2 magrittr edgeR assertthat ggrepel ggiraph
+#' @import dplyr ggplot2 magrittr edgeR ggrepel ggiraph tibble
+#' @importFrom assertthat assert_that
 #'
 #' @export
 checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
@@ -29,8 +30,10 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #convert this to a function in DGE.Tools2
   #input dgeObj, optionally specify x and y genes
   ##if genes not specified, pick highest expressed of each x and y gene
-  assert_that(tolower(species) %in% c("human", "mouse", "rat"),
-              !missing(species))
+  assert_that(!missing(species),
+              !missing(dgeObj),
+              tolower(species) %in% c("human", "mouse", "rat")
+              )
 
   if (tolower(species) == "rat") { #no XIST in Rat
     x <- .getTopExpressedGene(dgeObj, chr=chrX, orig=TRUE)
@@ -52,24 +55,32 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   }
 
   idx <- rownames(log2CPM) %in% c(x$gene, y$gene)
-  plotdat <- t(log2CPM[idx,]) %>%
+  plotDat <- t(log2CPM[idx,]) %>%
     as.data.frame %>%
     rownames_to_column(var="rowname")
 
   #add sample identifier data
   dtemp <- getItem(dgeObj, "design_orig") %>%
-    rownames_to_column(var="rowname") %>%
-    select(rowname, labelCol=labelCol, sexCol=sexCol)
-  plotdat2 <- left_join(plotdat, dtemp)
-
-  colnames(plotdat2) <- c("SampID", x$genename, y$genename, labelCol, sexCol)
-
+    rownames_to_column(var="rowname")
+  #add labelCo and sexCol data as needed
   if (!missing(labelCol) & !missing(sexCol)){
-    sexPlot <- ggplot(plotdat2, aes_string(x=x$genename, y=y$genename, label=labelCol, color=sexCol))
+    dtemp %<>% select(rowname, labelCol=labelCol, sexCol=sexCol)
+    plotDat <- left_join(plotDat, dtemp)
+    colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol, sexCol)
+    sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol, color=sexCol))
   } else if (!missing(labelCol) & missing(sexCol)){
-    sexPlot <- ggplot(plotdat2, aes_string(x=x$genename, y=y$genename, label=labelCol))
+    dtemp %<>% select(rowname, labelCol=labelCol)
+    plotDat <- left_join(plotDat, dtemp)
+    colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol)
+    sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol))
   } else if (missing(labelCol) & !missing(sexCol)){
-    sexPlot <- ggplot(plotdat2, aes_string(x=x$genename, y=y$genename, color=sexCol))
+    dtemp %<>% select(rowname, sexCol=sexCol)
+    plotDat <- left_join(plotDat, dtemp)
+    colnames(plotDat) <- c("SampID", x$genename, y$genename, sexCol)
+    sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, color=sexCol))
+  } else if (missing(labelCol) & missing(sexCol)){
+    colnames(plotDat) <- c("SampID", x$genename, y$genename)
+    sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename))
   }
 
   sexPlot <- sexPlot +
