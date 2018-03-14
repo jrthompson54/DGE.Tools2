@@ -34,6 +34,8 @@ Take a DGEobj as input and plot expression of XIST vs the highest expressed Y ch
 }
 \examples{
 
+   checkSex(dgeObj, species="human")
+
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}

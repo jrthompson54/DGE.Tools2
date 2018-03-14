@@ -108,7 +108,7 @@ cdfPlot <- function(df,
                         themeStyle = "grey",
                         pvalMax = 0.10,
                         printPlot = TRUE,
-                        plotFile = NULL,
+                        plotFile,
                         footnote,
                         footnoteSize=3,
                         footnoteColor="black",
@@ -303,7 +303,7 @@ cdfPlot <- function(df,
   }
 
   ### PNG file output
-  if (!is.null(plotFile)){
+  if (!missing(plotFile)){
 
     #increase font size for PNG file
     pngFontSize <- baseFontSize * 1.5
@@ -330,7 +330,7 @@ cdfPlot <- function(df,
     vp <- viewport(width = viewportWidth, height = viewportWidth,
                    x = viewportX, y = vy,
                    just = c("left", "top"))
-    png(file="CDFplot.PNG", width=6, height=4, units = "in", res = 300)
+    png(file=plotFile, width=6, height=4, units = "in", res = 300)
     print(cdfMain + baseFont(pngFontSize))
     print(cdfInset + baseFont(pngFontSize/3), vp=vp)
     invisible ( dev.off() )
