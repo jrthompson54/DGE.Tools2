@@ -81,14 +81,14 @@
 #' @param returnPlotDat Returns the dataframe used for the plot as a list member (default=FALSE)
 #'
 #' @return ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
-#'   facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed 
+#'   facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed
 #'   by observation (gene) names. If returnPlotDat=TRUE, the last element
 #'   of the list is the dataframe used to generate the plot.
 #'
 #' @examples
 #'    Simple faceted plot with custom title
 #'
-#'    #get Log2CPM from an SLOA object
+#'    #get Log2CPM from an DGEobj object
 #'    dgeObj = readRDS("MyDGEobj.RDS")
 #'    dgelist <- getItem(dgeObj, "DGEList")
 #'    Log2CPM <- cpm(dgelist, log=TRUE)
@@ -101,10 +101,10 @@
 #'
 #' @export
 obsPlot <- function(data,
-                      block = NULL,
-                      blockOrder = NULL,
-                      obsNames = NULL,  #e.g. rownames(data)
-                      sampNames = NULL,
+                      block,
+                      blockOrder,
+                      obsNames,  #e.g. rownames(data)
+                      sampNames,
                       plotBy = "Gene",  #separate plot for each of these
                       valType = "Log2CPM",  #value being plotted
                       boxLayer = TRUE,
@@ -192,34 +192,28 @@ obsPlot <- function(data,
 
   ### Argument checks
   ###
-  if (is.null(block) | is.null(data)){
-    stop("data and block are required arguments")
-  }
+  assert_that(!missing(block),
+              !missing(data))
 
   if (is.matrix(data)){ #ggplot likes dataframes
     data <- as.data.frame(data, stringsAsFactors=FALSE)
   }
 
-  if (!length(block) == ncol(data)){
-    stop ("Length of block must match number of columns in data")
-  }
+  assert_that(length(block) == ncol(data))
 
-  if (is.null(sampNames)){
+  if (missing(sampNames)){
     sampNames = colnames(data)
   } else {
-    if (!length(sampNames) == ncol(data)){
-      stop("sampNames length must match number of columns in data")
-    }
+    assert_that(length(sampNames) == ncol(data))
   }
-  if (is.null(obsNames)){
-   obsNames = rownames(data)
+
+  if (missing(obsNames)){
+    obsNames = rownames(data)
   } else {
-    if (!length(obsNames) == nrow(data)){
-      stop ("obsNames length must match number of rows in data.")
-    }
+    assert_that(length(obsNames) == nrow(data))
   }
-  
-  if(!is.null(blockOrder)){
+
+  if(!missing(blockOrder)){
       assert_that(length(blockOrder) == length(unique(block)))
   }
 
@@ -248,9 +242,9 @@ obsPlot <- function(data,
   data$Block %<>% as.character %>% as.factor
   #optionally set the block order for the plot
   if (!is.null(blockOrder)){
-      data$Block <- factor(data$Block, levels=blockOrder) 
+      data$Block <- factor(data$Block, levels=blockOrder)
   }
-  
+
 ### Plot code here
   if (facet) {
 
@@ -296,7 +290,7 @@ obsPlot <- function(data,
           ggtitle(obs) +
           theme_grey() + facetTheme(baseFontSize)
         aplot <- addGeoms(aplot)
-        if (mean == TRUE){
+        if (meanLayer == TRUE){
           aplot <- aplot +
             stat_summary(fun.y=mean, geom="point", shape=22, size=8,
                          color="red", fill = "goldenrod1", alpha=1.0)
@@ -312,11 +306,11 @@ obsPlot <- function(data,
       MyPlot = plotlist
 
   }
-  
+
   # add dataframe as specified by argument returnPlotDat
   if (returnPlotDat == TRUE){
       if(class(MyPlot)[[1]] == "list"){
-          MyPlot$PlotDat <- data 
+          MyPlot$PlotDat <- data
       } else {
           MyPlot <- list(MyPlot, data)
       }

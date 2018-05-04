@@ -25,7 +25,7 @@
 #' @param return One of "dataframe", "plots", "both" (default = "both").
 #' Two plots are generated; a ROC curve (FDR vs Power) and a plot of N vs Power.
 #'
-#' @return A DGEobj with a modified object definition embedded.
+#' @return A list of result objects defined by the "return" argument.
 #'
 #' @examples
 #'    MyResults <- runPower(counts, designMatrix)
@@ -142,7 +142,7 @@ runPower <- function(counts, designMatrix,
       ylab("Power") +
       expand_limits(x=0,y=0) +
       theme_gray()
-    
+
     result$NvP <- NvP
   }
   return(result)

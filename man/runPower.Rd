@@ -24,7 +24,7 @@ expression and median expression levels, express in readcount units.}
 Two plots are generated; a ROC curve (FDR vs Power) and a plot of N vs Power.}
 }
 \value{
-A DGEobj with a modified object definition embedded.
+A list of result objects defined by the "return" argument.
 }
 \description{
 Take a counts matrix and design matrix and return a power analysis using

@@ -4,15 +4,14 @@
 \alias{obsPlot}
 \title{Deluxe obsPlot}
 \usage{
-obsPlot(data, block = NULL, blockOrder = NULL, obsNames = NULL,
-  sampNames = NULL, plotBy = "Gene", valType = "Log2CPM",
-  boxLayer = TRUE, violinLayer = FALSE, pointLayer = TRUE,
-  meanLayer = TRUE, xlab = NULL, ylab = NULL, title = NULL,
-  boxColor = "grey30", boxFill = "deepskyblue3", boxAlpha = 0.5,
-  boxNotch = FALSE, boxNotchWidth = 0.8, violinColor = "grey30",
-  violinFill = "goldenrod1", ViolinAlpha = 0.5, pointColor = "grey30",
-  pointFill = "dodgerblue4", pointShape = 21, pointAlpha = 1,
-  pointSize = 2, pointJitter = 0, meanColor = "red2",
+obsPlot(data, block, blockOrder, obsNames, sampNames, plotBy = "Gene",
+  valType = "Log2CPM", boxLayer = TRUE, violinLayer = FALSE,
+  pointLayer = TRUE, meanLayer = TRUE, xlab = NULL, ylab = NULL,
+  title = NULL, boxColor = "grey30", boxFill = "deepskyblue3",
+  boxAlpha = 0.5, boxNotch = FALSE, boxNotchWidth = 0.8,
+  violinColor = "grey30", violinFill = "goldenrod1", ViolinAlpha = 0.5,
+  pointColor = "grey30", pointFill = "dodgerblue4", pointShape = 21,
+  pointAlpha = 1, pointSize = 2, pointJitter = 0, meanColor = "red2",
   meanFill = "goldenrod1", meanShape = 22, meanAlpha = 0.7,
   meanSize = 3, legenPosition = "right", baseFontSize = 12,
   themeStyle = "grey", facet = TRUE, facetCol = NULL, xAngle = 30,
@@ -115,7 +114,7 @@ Default behavior will automatically set the columns. (Default = NULL)}
 }
 \value{
 ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
-  facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed 
+  facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed
   by observation (gene) names. If returnPlotDat=TRUE, the last element
   of the list is the dataframe used to generate the plot.
 }
@@ -145,7 +144,7 @@ col/row names can also be supplied as separate vectors.
 \examples{
    Simple faceted plot with custom title
 
-   #get Log2CPM from an SLOA object
+   #get Log2CPM from an DGEobj object
    dgeObj = readRDS("MyDGEobj.RDS")
    dgelist <- getItem(dgeObj, "DGEList")
    Log2CPM <- cpm(dgelist, log=TRUE)

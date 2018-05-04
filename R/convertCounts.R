@@ -19,7 +19,7 @@
 #' @param counts A numeric matrix or dataframe of N genes x M Samples.  All columns
 #' must be numeric.
 #' @param unit  Required. One of CPM, FPKM, FPK or TPM.
-#' @param geneLength A vector or matri of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
+#' @param geneLength A vector or matrix of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
 #'    If you supply a matrix, the rowMeans are calculated and used.
 #' @param log Default = FALSE.  Set TRUE to return Log2 values. 
 #'    Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.

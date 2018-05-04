@@ -200,22 +200,22 @@ profilePlot <- function(df,
   ### DELUXE PLOT: plot groups in different colors/shapes
 
   #Let's plot the subsets
-  DEup = df[[pvalCol]] <= pthreshold & df[[logRatioCol]] > 0
-  DEdn = df[[pvalCol]] <= pthreshold & df[[logRatioCol]] < 0
-  DEnot = !DEup & !DEdn
+  DEup <- df[[pvalCol]] <= pthreshold & df[[logRatioCol]] > 0
+  DEdn <- df[[pvalCol]] <= pthreshold & df[[logRatioCol]] < 0
+  DEnot <- !DEup & !DEdn
   #create group factor column in df
-  df$group=NA
-  df$group[DEup] = "Increased"
-  df$group[DEdn] = "Decreased"
-  df$group[DEnot] = "No Change"
+  df$group <- NA
+  df$group[DEup] <- "Increased"
+  df$group[DEdn] <- "Decreased"
+  df$group[DEnot] <- "No Change"
   df %<>% left_join(ssc)
   df$group %<>% factor(levels=c("Increased", "Decreased", "No Change"))
 
   #set an order field to force plotting of NoChange first
-  df$order = NA
-  df$order[DEup] = 1
-  df$order[DEdn] = 1
-  df$order[DEnot] = 0
+  df$order <- NA
+  df$order[DEup] <- 1
+  df$order[DEdn] <- 1
+  df$order[DEnot] <- 0
 
   profilePlot <- ggplot (df, aes_string(x=x, y=y)) +
                     aes(shape=group, size=group,
@@ -236,7 +236,7 @@ profilePlot <- function(df,
 
   ### Optional Decorations
   if (!is.null(rugColor)){
-    profilePlot = profilePlot + geom_rug(data=df, inherit.aes=FALSE,
+    profilePlot <- profilePlot + geom_rug(data=df, inherit.aes=FALSE,
                                          color = rugColor,
                                          alpha=rugAlpha,
                                          show.legend=FALSE,
@@ -244,18 +244,18 @@ profilePlot <- function(df,
   }
 
   if (sizeBySignificance==TRUE) {
-    profilePlot = profilePlot + aes(size=negLog10P) +
+    profilePlot <- profilePlot + aes(size=negLog10P) +
       scale_size_continuous()
   }
 
   if (!is.null(referenceLine)){
-    profilePlot = profilePlot +
+    profilePlot <- profilePlot +
       geom_hline(yintercept=0, color=referenceLine,
                  size=refLineThickness, alpha=0.5)
   }
 
   if (!is.null(foldChangeLines)){
-    profilePlot = profilePlot +
+    profilePlot <- profilePlot +
       geom_hline(yintercept=foldChangeLines, color=symbolFill["Increased"],
                  size=refLineThickness, alpha=0.5) +
       geom_hline(yintercept=-foldChangeLines, color=symbolFill["Decreased"],
@@ -263,7 +263,7 @@ profilePlot <- function(df,
   }
 
   if (!is.null(lineFitType)){
-    profilePlot = profilePlot +
+    profilePlot <- profilePlot +
       geom_smooth(aes(group=NULL, shape=NULL, size=NULL, color=NULL, fill=NULL),
                   method = tolower(lineFitType),
                   size=refLineThickness, color=lineFitColor, alpha=alpha,
@@ -282,25 +282,25 @@ profilePlot <- function(df,
   ### Add axis Labels
 
   if (is.null(xlab)){ #use colname unless supplied as argument
-    profilePlot = profilePlot + xlab(xlabel)
+    profilePlot <- profilePlot + xlab(xlabel)
   } else {
-    profilePlot = profilePlot + xlab(xlab)
+    profilePlot <- profilePlot + xlab(xlab)
   }
   if (is.null(ylab)){
-    profilePlot = profilePlot + ylab(ylabel)
+    profilePlot <- profilePlot + ylab(ylabel)
   } else {
-    profilePlot = profilePlot + ylab(ylab)
+    profilePlot <- profilePlot + ylab(ylab)
   }
   if (!is.null(title)){
-    profilePlot = profilePlot +
+    profilePlot <- profilePlot +
       ggtitle(title)
   }
 
   #Set the font size before placing the legend
   if (tolower(themeStyle) == "bw") {
-    profilePlot = profilePlot + theme_bw() + baseTheme(baseFontSize)
+    profilePlot <- profilePlot + theme_bw() + baseTheme(baseFontSize)
   } else {
-    profilePlot = profilePlot + theme_grey() + baseTheme(baseFontSize)
+    profilePlot <- profilePlot + theme_grey() + baseTheme(baseFontSize)
   }
 
   #footnote
@@ -310,7 +310,7 @@ profilePlot <- function(df,
                                 footnoteColor="black",
                                 footnoteJust=footnoteJust)
 
-  profilePlot = setLegendPosition(profilePlot, legendPosition, themeStyle)
+  profilePlot <- setLegendPosition(profilePlot, legendPosition, themeStyle)
 
   return(profilePlot)
 }

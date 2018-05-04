@@ -13,7 +13,7 @@ must be numeric.}
 
 \item{unit}{Required. One of CPM, FPKM, FPK or TPM.}
 
-\item{geneLength}{A vector or matri of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
+\item{geneLength}{A vector or matrix of gene lengths. Required for length-normalizes units (TPM, FPKM or FPK).
 If you supply a matrix, the rowMeans are calculated and used.}
 
 \item{log}{Default = FALSE.  Set TRUE to return Log2 values. 
