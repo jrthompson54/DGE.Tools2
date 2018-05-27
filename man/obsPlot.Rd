@@ -81,15 +81,15 @@ colnames. (Default = NULL)}
 \item{pointJitter}{Amount to jitter the points (Default = 0) Try 0.2 if you
 have alot of points.}
 
-\item{meanColor}{Color for the point layer (Default = "red2")}
+\item{meanColor}{Color for the mean layer (Default = "red2")}
 
-\item{meanFill}{Fill color for the point layer (Default = "goldenrod1")}
+\item{meanFill}{Fill color for the mean layer (Default = "goldenrod1")}
 
-\item{meanShape}{Shape for the point layer (Default = 21; fillable circle)}
+\item{meanShape}{Shape for the mean layer (Default = 21; fillable circle)}
 
-\item{meanAlpha}{Transparency for the box layer (Default = 0.7)}
+\item{meanAlpha}{Transparency for the mean layer (Default = 0.7)}
 
-\item{meanSize}{Size of the points (Default = 6)}
+\item{meanSize}{Size of the mean points (Default = 3)}
 
 \item{baseFontSize}{The smallest size font in the figure in points. (Default =
 12)}

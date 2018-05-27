@@ -62,11 +62,11 @@
 #' @param pointSize Size of the points (Default = 4)
 #' @param pointJitter Amount to jitter the points (Default = 0) Try 0.2 if you
 #'   have alot of points.
-#' @param meanColor Color for the point layer (Default = "red2")
-#' @param meanFill Fill color for the point layer (Default = "goldenrod1")
-#' @param meanShape Shape for the point layer (Default = 21; fillable circle)
-#' @param meanAlpha Transparency for the box layer (Default = 0.7)
-#' @param meanSize Size of the points (Default = 6)
+#' @param meanColor Color for the mean layer (Default = "red2")
+#' @param meanFill Fill color for the mean layer (Default = "goldenrod1")
+#' @param meanShape Shape for the mean layer (Default = 21; fillable circle)
+#' @param meanAlpha Transparency for the mean layer (Default = 0.7)
+#' @param meanSize Size of the mean points (Default = 3)
 #' @param baseFontSize The smallest size font in the figure in points. (Default =
 #'   12)
 #' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey
@@ -142,7 +142,7 @@ obsPlot <- function(data,
                       )
 {
 
-  addGeoms <- function(MyPlot)
+  .addGeoms <- function(MyPlot)
     #note uses global values except for MyPlot
   {
 
@@ -260,7 +260,7 @@ obsPlot <- function(data,
     }
 
     MyPlot <- ggplot2::ggplot (data, aes_string(x="Block", y=valType))
-    MyPlot <- addGeoms(MyPlot)
+    MyPlot <- .addGeoms(MyPlot)
     MyPlot <- MyPlot + ggplot2::facet_wrap(~ Gene, nrow=numcol, scales=scales)
 
     MyPlot <- MyPlot + ggplot2::xlab(xlab)
@@ -289,10 +289,10 @@ obsPlot <- function(data,
           ylab(ylab) +
           ggtitle(obs) +
           theme_grey() + facetTheme(baseFontSize)
-        aplot <- addGeoms(aplot)
+        aplot <- .addGeoms(aplot)
         if (meanLayer == TRUE){
           aplot <- aplot +
-            stat_summary(fun.y=mean, geom="point", shape=22, size=8,
+            stat_summary(fun.y=mean, geom="point", shape=meanShape, size=meanSize,
                          color="red", fill = "goldenrod1", alpha=1.0)
         }
         #rotate xaxis group labels
