@@ -16,7 +16,7 @@ The dataframes in the list should have rownames (geneIDs).}
 A matrix containing the extracted columns
 }
 \description{
-Take a list of dataframes where each dataframe has the same
+Take a named list of dataframes where each dataframe has the same
 column names (e.g. a list of topTable dataframes). Extract
 the named column from each dataframe and return a matrix.
 }
@@ -24,6 +24,8 @@ the named column from each dataframe and return a matrix.
 The common use case for this is to provide a list of topTable
 data frames and extract one column from each file to create
 a matrix of LogRatios or Pvalues.
+
+Note: all dataframes must have the same rownames/order
 }
 \examples{
 MyPvalues  = ExtractCol (MySLOA$TopTableList, "P.Value")
