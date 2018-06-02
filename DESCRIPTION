@@ -1,21 +1,20 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.41
+Version: 0.9.42
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
     analysis and improve TBio "branding" by standardizing several types of commmon
     plots. The functions can be grouped into three categories (DGE workflow, DGE
     plotting tools and mapping/unit conversion functions. The DGE workflow functions
-    include: Funtion initDgeObj which builds a DGEobj data structure from counts and
+    include: Function initDgeObj which builds a DGEobj data structure from counts and
     annotation; Function runEdgeRNorm which normalizes counts; Function runVoom runs
     limma voom and lmfit adding additional data to the DGEobj; Function runSVA for
     detrending unknown covariates. A variety of QC plots are produced to evaluate
     data quality. The DGE Plotting tools are suitable for downstream analysis
     visualizations and include: profilePlot, volcanoPlot, comparePlot, plotPvalHist,
-    ggplotMDS and JRT_heatmap. Mapping and conversion functions include:
-    GeneSym2Entrez, EnsemblGene2Entrez, Entrez2GeneSym, EnsemblGene2GeneSym, and
-    convertCounts.
+    ggplotMDS and JRT_heatmap. Function convertCounts is supplied to convert a counts
+    matrix and produce CPM/TPM/FPKM, logged or not, normalized or not.
 Depends:
     R (>= 3.3.1)
 License: BMS Proprietary
@@ -54,7 +53,8 @@ Imports:
     DGEobj (>= 0.9.0),
     checkmate,
     IHW,
-    glue
+    glue,
+    openxlsx
 Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,

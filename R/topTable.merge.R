@@ -46,14 +46,16 @@ topTable.merge <- function(ttlist,
   contrastNames <- names(ttlist)
 
   #get the first set of columns.
-  dat <- extractCol2(ttlist, colNames[1]) %>% as.data.frame
+  dat <- extractCol(ttlist, colName=colNames[1], robust=TRUE) %>%
+    as.data.frame
   colnames(dat) <- str_c(colNames[1], "_", colnames(dat))
   dat <- round(dat, digits[1])
   dat %<>% rownames_to_column(var="rowid")
 
   if (length(colNames)  > 1) {
     for (i in 2:length(colNames)){
-      dat2 <- extractCol2(ttlist, colNames[i]) %>% as.data.frame
+      dat2 <- extractCol(ttlist, colName=colNames[i], robust=TRUE) %>%
+        as.data.frame
       colnames(dat2) <- str_c(colNames[i], "_", colnames(dat2))
       dat2 <- round(dat2, digits[i])
       dat2 %<>% rownames_to_column(var="rowid")

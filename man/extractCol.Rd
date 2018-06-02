@@ -4,13 +4,20 @@
 \alias{extractCol}
 \title{Function  extractCol}
 \usage{
-extractCol(dflist, ColName)
+extractCol(dflist, colName, robust = "TRUE")
 }
 \arguments{
 \item{dflist}{A list of data.frames which all have the same colnames and same row counts.
 The dataframes in the list should have rownames (geneIDs).}
 
-\item{ColName}{The name of the data column to extract to a matrix}
+\item{colName}{The name of the data column to extract to a matrix}
+
+\item{robust}{Default = TRUE;  TRUE forces use of a joins to merge columns
+which is more reliable, allows you to combine contrasts from different
+projects but may nor return items in the same row order as the source
+table.  Setting to false invokes a cbind approach that requires all
+dataframes to have the same row count and row order but preserves the
+original row order}
 }
 \value{
 A matrix containing the extracted columns
@@ -25,10 +32,14 @@ The common use case for this is to provide a list of topTable
 data frames and extract one column from each file to create
 a matrix of LogRatios or Pvalues.
 
-Note: all dataframes must have the same rownames/order
+Technically, this should work as long as the requested colName is present
+in each dataframe.  The default robust = TRUE should be used unless you
+are absolutely certain each dataframe in the input list has the same row count
+and row order.
 }
 \examples{
-MyPvalues  = ExtractCol (MySLOA$TopTableList, "P.Value")
+
+  MyPvalues  = ExtractCol (TopTableList, colName="P.Value")
 
 }
 \author{
