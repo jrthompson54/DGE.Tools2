@@ -53,13 +53,18 @@ topTable.merge <- function(ttlist,
   dat %<>% rownames_to_column(var="rowid")
 
   if (length(colNames)  > 1) {
-    for (i in 2:length(colNames)){
+    for (i in 1:length(colNames)){
       dat2 <- extractCol(ttlist, colName=colNames[i], robust=TRUE) %>%
         as.data.frame
+      #add datatype as prefix on colname e.g. logFC_contrastname
       colnames(dat2) <- str_c(colNames[i], "_", colnames(dat2))
       dat2 <- round(dat2, digits[i])
       dat2 %<>% rownames_to_column(var="rowid")
-      dat %<>% left_join(dat2, by="rowid")
+      if (i == 1) {
+        dat <- dat2
+      } else {
+        dat %<>% left_join(dat2, by="rowid")
+      }
     }
   }
   dat %<>% column_to_rownames(var="rowid")

@@ -39,8 +39,8 @@
 extractCol <- function(dflist, colName, robust="TRUE"){
 
   ifelse(robust,
-         .extracCol2(dflist, colName),
-         .extracCol1(dflist, colName)
+         return(.extractCol2(dflist, colName)),
+         return(.extractCol1(dflist, colName))
   )
 }
 
