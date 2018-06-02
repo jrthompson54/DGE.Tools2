@@ -27,13 +27,11 @@
 #'   dataframes to have the same row count and row order but preserves the
 #'   original row order
 #'
-#' @return A matrix containing the extracted columns
+#' @return A dataframe containing the extracted columns
 #'
 #' @examples
 #'
 #'   MyPvalues  = ExtractCol (TopTableList, colName="P.Value")
-#'
-#' @import magrittr
 #'
 #' @export
 extractCol <- function(dflist, colName, robust="TRUE"){
@@ -44,18 +42,18 @@ extractCol <- function(dflist, colName, robust="TRUE"){
   )
 }
 
-### Function extractCol1 ###
-#' Function  extractCol1
+### Function .extractCol1 ###
+#' Function  .extractCol1
 #'
 #' Take a named list of dataframes where each dataframe has the same
-#' column names (e.g. a list of topTable dataframes). Extract
+#' column names (typically a list of topTable dataframes). Extract
 #' the named column from each dataframe and return a matrix.
 #'
 #' The common use case for this is to provide a list of topTable
 #' data frames and extract one column from each file to create
 #' a matrix of LogRatios or Pvalues.
 #'
-#' Note: all dataframes must have the same rownames/order
+#' NOTE: all dataframes must have the same rownames and roworder
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords topTable
@@ -64,24 +62,29 @@ extractCol <- function(dflist, colName, robust="TRUE"){
 #' The dataframes in the list should have rownames (geneIDs).
 #' @param colName The name of the data column to extract to a matrix
 #'
-#' @return A matrix containing the extracted columns
+#' @return A dataframe containing the extracted columns
 #'
 #' @examples
 #' MyPvalues  = ExtractCol1 (TopTableList, colName="P.Value")
 #'
 #' @import magrittr
+#' @importFrom assertthat assert_that
 #'
 .extractCol1 <- function(dflist, colName){
+  assertthat::assert_that(class(dflist)[[1]] == "list",
+                          class(colName)[[1]] == "character",
+                          !is.null(names(dflist)))
+
   MyMatrix = lapply (dflist, `[[`, colName) %>% do.call(what=cbind)
   #get gene ids from first df
-  rownames(MyMatrix) = rownames(dflist[[1]])
+  rownames(MyMatrix) <- rownames(dflist[[1]])
   #transfer the contrast names
-  colnames(MyMatrix) = names(dflist)
-  return(MyMatrix)
+  colnames(MyMatrix) <- names(dflist)
+  return(as.data.frame(MyMatrix))
 }
 
-### Function extractCol2 ###
-#' Function  extractCol2
+### Function .extractCol2 ###
+#' Function  .extractCol2
 #'
 #' Take a named list of dataframes where each dataframe has the same
 #' column names (e.g. a list of topTable dataframes). Extract
@@ -94,18 +97,28 @@ extractCol <- function(dflist, colName, robust="TRUE"){
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords topTable
 #'
-#' @param dflist A list of data.frames which all have the same colnames and same row counts.
-#' The dataframes in the list should have rownames (geneIDs).
-#' @param colName The name of the data column to extract to a matrix
+#' @param dflist A named list of dataframes which all have some common colnames and
+#'   some overlap on rownames (genes). and same row counts. The dataframes in
+#'   the list should have rownames (geneIDs).
+#' @param colName The name of the data column to extract to a matrix.  This
+#'   column must be present in all dataframes on the list.
 #'
-#' @return A matrix containing the extracted columns
+#' @return A dataframe containing the extracted columns
 #'
 #' @examples
-#' MyPvalues  = ExtractCol TopTableList, "P.Value")
+#'
+#'     MyPvalues  = .extractCol2(TopTableList, "P.Value")
 #'
 #' @import magrittr dplyr tibble
+#' @importFrom assertthat assert_that
+#'
 .extractCol2 <- function(dflist, colName){
   #support combining topTable data from different DGEobjs
+
+  assertthat::assert_that(class(dflist)[[1]] == "list",
+                          class(colName)[[1]] == "character",
+                          !is.null(names(dflist)))
+
   for (i in 1:length(dflist)){
 
     newdat <- dflist[[i]] %>%

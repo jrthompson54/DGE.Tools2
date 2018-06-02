@@ -20,7 +20,7 @@ dataframes to have the same row count and row order but preserves the
 original row order}
 }
 \value{
-A matrix containing the extracted columns
+A dataframe containing the extracted columns
 }
 \description{
 Take a named list of dataframes where each dataframe has the same

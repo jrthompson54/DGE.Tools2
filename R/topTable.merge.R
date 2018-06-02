@@ -36,6 +36,7 @@ topTable.merge <- function(ttlist,
   assertthat::assert_that(!missing(ttlist),
                           class(ttlist)[[1]] == "list",
                           class(ttlist[[1]])[[1]] == "data.frame",
+                          !is.null(names(ttlist)),
                           length(digits) %in% c(1, length(colNames))
   )
   if (length(digits) == 1){ #expand the digits vector
