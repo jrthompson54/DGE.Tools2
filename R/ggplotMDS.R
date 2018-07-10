@@ -50,6 +50,9 @@
 #' @param shapes A vector of shapes to override the default 8 shapes used in shapeBy (optional)
 #' @param colors A color pallet to substitute for the default 8 color pallet used by colorBy (optional)
 #' @param dim.plot Define which dimension to plot (default = c(1,2))
+#' @param shapeName Legend title for shape (optional)
+#' @param colorName Legend title for color (optional)
+#' @param sizeName Legend title for size (optional)
 #'
 #' @return A list with two elements, the ggplot object and the mds object returned
 #'    by the plotMDS function.
@@ -89,7 +92,10 @@ ggplotMDS <- function(DGEdata,
                       symColor = "blue2",
                       shapes,
                       colors,
-                      dim.plot = c(1,2)
+                      dim.plot = c(1,2),
+                      colorName,
+                      shapeName,
+                      sizeName
                         )
 {
 
@@ -273,6 +279,11 @@ ggplotMDS <- function(DGEdata,
                                      color = reflineColor,
                                      size=reflineSize)
   }
+
+  #edit legend titles
+  if (!missing(colorName)) mdsplot <- mdsplot + labs(color=colorName)
+  if (!missing(shapeName) && byShape == TRUE) mdsplot <- mdsplot + labs(shape=shapeName)
+  if (!missing(sizeName) && bySize == TRUE) mdsplot <- mdsplot + labs(size=shapeName)
 
   if (tolower(themeStyle) %in% c("grey", "gray")){
     mdsplot <- mdsplot + theme_grey(baseFontSize)

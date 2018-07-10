@@ -8,7 +8,7 @@ document()
 load_all()
 build_vignettes()
 build()
-pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.42.tar.gz"
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.43.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
@@ -25,9 +25,7 @@ library(bmsPackageTools)
 addPackageToRepo()
 updateBmsRepo()
 
-function todo
 
-	extractCol.R  (rewrite to check for matching rownames/order)
 
 
 

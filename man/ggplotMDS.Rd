@@ -8,7 +8,8 @@ ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels, labelSize,
   title, textColor = "blue2", hlineIntercept, vlineIntercept,
   reflineColor = "darkgoldenrod1", reflineSize = 0.5, baseFontSize = 12,
   themeStyle = "grey", symShape = 16, symSize = 5, symFill = "blue2",
-  symColor = "blue2", shapes, colors, dim.plot = c(1, 2))
+  symColor = "blue2", shapes, colors, dim.plot = c(1, 2), colorName,
+  shapeName, sizeName)
 }
 \arguments{
 \item{DGEdata}{A DGEList object taken after normalization
@@ -60,6 +61,12 @@ don't like the default}
 \item{colors}{A color pallet to substitute for the default 8 color pallet used by colorBy (optional)}
 
 \item{dim.plot}{Define which dimension to plot (default = c(1,2))}
+
+\item{colorName}{Legend title for color (optional)}
+
+\item{shapeName}{Legend title for shape (optional)}
+
+\item{sizeName}{Legend title for size (optional)}
 }
 \value{
 A list with two elements, the ggplot object and the mds object returned
