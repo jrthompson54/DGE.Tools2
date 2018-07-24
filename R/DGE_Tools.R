@@ -194,12 +194,55 @@ eBayes_autoprop <- function(..., prop.method="lfdr") {
   eBayes(..., proportion=1-ptn)
 }
 
-#https://gist.github.com/tomhopper/9076152
-yrange <- function(my.ggp) #pass a ggplot object, return yrange
-  ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
 
-xrange <- function(my.ggp)
-  ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
+#' Function  yrange
+#'
+#' extract the Y upper and lower limits from a ggplot2 v3 plot object.
+#'
+#' @author John Thompson, \email{rct@@thompsonclan.org}
+#' @keywords ggplot, ranges, limits
+#'
+#' @param g A ggplot plot object (ggplot2 v3 or higher)
+#'
+#' @return A vector length 2
+#'
+#' @examples
+#' myYrange = yrange (myggplot)
+#'
+#' @import ggplot2
+#'
+#' @export
+#https://gist.github.com/tomhopper/9076152  ranges for ggplot2 v2
+yrange <- function(my.ggp){ #pass a ggplot object, return yrange
+  # ggplot2 v2 solution:
+  # ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
+  # ggplot2 v3 solution:
+  ggplot_build(my.ggp)$layout$panel_params[[1]]$y.range
+}
+
+#' Function  xrange
+#'
+#' extract the X upper and lower limits from a ggplot2 v3 plot object.
+#'
+#' @author John Thompson, \email{rct@@thompsonclan.org}
+#' @keywords ggplot, ranges, limits
+#'
+#' @param g A ggplot plot object (ggplot2 v3 or higher)
+#'
+#' @return A vector length 2
+#'
+#' @examples
+#' myYrange = yrange (myggplot)
+#'
+#' @import ggplot2
+#'
+#' @export
+xrange <- function(my.ggp){
+  # ggplot2 v2:
+  # ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
+  # ggplot2 v3 solution:
+  ggplot_build(my.ggp)$layout$panel_params[[1]]$x.range
+}
 
 #footnote
 addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, footnoteJust=1, yoffset=0){
@@ -210,9 +253,9 @@ addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, foot
   yr <- yrange(my.ggp)
   xr <- xrange(my.ggp)
   yoffset <- yoffset * (yr[2]-yr[1])
-  xcoord <- ifelse(footnoteJust<0.50, xr[1], xr[2])
+  xcoord <- ifelse(footnoteJust < 0.50, xr[1], xr[2])
   if (footnoteJust == 0.5) #special case = center
-  xcoord <- xr[1] + ((xr[2]-xr[1])/2)
+    xcoord <- xr[1] + ((xr[2]-xr[1])/2)
   my.ggp <- my.ggp +
     annotate("text", label = footnote, x = xcoord, y = yr[1]+yoffset,
              size = footnoteSize,
