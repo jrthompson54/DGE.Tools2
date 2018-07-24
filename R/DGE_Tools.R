@@ -209,15 +209,24 @@ eBayes_autoprop <- function(..., prop.method="lfdr") {
 #' @examples
 #' myYrange = yrange (myggplot)
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot_build
+#' @importFrom stringr str_sub
+#' @importFrom assertthat assert_that
 #'
 #' @export
 #https://gist.github.com/tomhopper/9076152  ranges for ggplot2 v2
 yrange <- function(my.ggp){ #pass a ggplot object, return yrange
-  # ggplot2 v2 solution:
-  # ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
-  # ggplot2 v3 solution:
-  ggplot_build(my.ggp)$layout$panel_params[[1]]$y.range
+  assertthat::assert_that(class(my.ggp)[[2]] == "ggplot")
+  #method used is ggplot2 version-dependent
+  ggplot_version <- stringr::str_sub(as.character(packageVersion("ggplot2")),1,1)
+  if (ggplot_version == 2) {
+    # ggplot2 v2 solution:
+    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
+  } else {
+    # ggplot2 v3 solution:
+    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_params[[1]]$y.range
+  }
+  return(range)
 }
 
 #' Function  xrange
@@ -234,14 +243,23 @@ yrange <- function(my.ggp){ #pass a ggplot object, return yrange
 #' @examples
 #' myYrange = yrange (myggplot)
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot_build
+#' @importFrom stringr str_sub
+#' @importFrom assertthat assert_that
 #'
 #' @export
 xrange <- function(my.ggp){
+  assertthat::assert_that(class(my.ggp)[[2]] == "ggplot")
+  #method used is ggplot2 version-dependent
+  ggplot_version <- stringr::str_sub(as.character(packageVersion("ggplot2")),1,1)
+  if (ggplot_version == 2) {
   # ggplot2 v2:
-  # ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
+    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
+  } else {
   # ggplot2 v3 solution:
-  ggplot_build(my.ggp)$layout$panel_params[[1]]$x.range
+    range <-  ggplot2::ggplot_build(my.ggp)$layout$panel_params[[1]]$x.range
+  }
+  return(range)
 }
 
 #footnote
@@ -257,7 +275,7 @@ addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, foot
   if (footnoteJust == 0.5) #special case = center
     xcoord <- xr[1] + ((xr[2]-xr[1])/2)
   my.ggp <- my.ggp +
-    annotate("text", label = footnote, x = xcoord, y = yr[1]+yoffset,
+    annotate("text", label = footnoteText, x = xcoord, y = yr[1]+yoffset,
              size = footnoteSize,
              colour = footnoteColor,
              hjust=footnoteJust,

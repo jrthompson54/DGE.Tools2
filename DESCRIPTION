@@ -1,6 +1,6 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.44
+Version: 0.9.47
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -27,7 +27,7 @@ Imports:
     edgeR,
     gdata,
     GenomicRanges,
-    ggplot2 (>= 3.0.0),
+    ggplot2 (>= 2.0.0),
     ggrepel,
     ggiraph,
     grDevices,
