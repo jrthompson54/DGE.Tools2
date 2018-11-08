@@ -33,7 +33,7 @@ returns a reasonable-looking value, which you can verify by looking at
 the p-value distribution.
 }
 \examples{
-MyFit = eBayes_autoprop (MyFit)
+     MyFit = eBayes_autoprop (MyFit)
 
 }
 \author{

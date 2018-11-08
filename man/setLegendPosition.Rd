@@ -4,7 +4,8 @@
 \alias{setLegendPosition}
 \title{Function  setLegendPosition}
 \usage{
-setLegendPosition(ggplot, legendPosition = "right", themeStyle = "grey")
+setLegendPosition(ggplot, legendPosition = "right",
+  themeStyle = "grey")
 }
 \arguments{
 \item{ggplot}{A ggplot plot object}

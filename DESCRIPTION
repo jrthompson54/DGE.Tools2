@@ -1,6 +1,6 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.47
+Version: 0.9.48
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -54,7 +54,8 @@ Imports:
     checkmate,
     IHW,
     glue,
-    openxlsx
+    openxlsx,
+    tibble
 Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,
@@ -88,4 +89,4 @@ Collate:
     'checkSex.R'
     'topTable.merge.R'
     'GOIplot.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

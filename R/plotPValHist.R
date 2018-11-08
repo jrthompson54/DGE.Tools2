@@ -104,7 +104,7 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
 
     if (savePlot) {
       #print(Hist_Pval_Facet)
-      png(file=fileNames[1], width=8, height=6, units = 'in', res = 300)
+      png(filename=fileNames[1], width=8, height=6, units = 'in', res = 300)
       print(Hist_Pval_Facet)
       invisible ( dev.off() )
     }
@@ -144,7 +144,7 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
       plotlist[[i]] = Hist_Pval
 
       if (savePlot) {
-        png(file=paste(f, ".png", sep=""),width=8,height=6, units = 'in', res = 300)
+        png(filename=paste(f, ".png", sep=""),width=8,height=6, units = 'in', res = 300)
         print(Hist_Pval)
         invisible ( dev.off() )
       }

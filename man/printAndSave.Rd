@@ -4,9 +4,10 @@
 \alias{printAndSave}
 \title{Function  printAndSave}
 \usage{
-printAndSave(plotObject, filename, width = 7, height = 5, units = "in",
-  res = 300, scale = 1, printFontSize = 12, saveFontSize = 24,
-  scaleLegend = TRUE, printPlot = TRUE, savePlot = TRUE)
+printAndSave(plotObject, filename, width = 7, height = 5,
+  units = "in", res = 300, scale = 1, printFontSize = 12,
+  saveFontSize = 24, scaleLegend = TRUE, printPlot = TRUE,
+  savePlot = TRUE)
 }
 \arguments{
 \item{plotObject}{A ggplot2 plotobject}

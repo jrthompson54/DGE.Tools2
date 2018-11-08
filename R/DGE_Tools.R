@@ -3,8 +3,6 @@
 #
 # A set of functions to facilitate differential gene expression analysis.
 
-
-
 #Need separate data objects for Gene and Transcript level because they have
 #different row counts
 #
@@ -19,14 +17,14 @@
 # The pre-defined GeneData and TranscriptData lists are configured for the Omicsoft pipeline default filenames.
 # You can change the filenames to support other datasources.  But do not change the name or type values.
 #
-#' GeneData (list of lists)
-#'
-#' Defines the data files to import into a SummarizedExperiment.
-#' Each file is described by a list with defines the fieldname, the type of data
-#' and the text file containing the data.  The predefined GeneData item
-#' is preconfigured for datafiles from the Omicsoft pipeline.  Modify GeneData
-#' file values to use data from a different pipeline.
-#'
+# GeneData (list of lists)
+#
+# Defines the data files to import into a SummarizedExperiment.
+# Each file is described by a list with defines the fieldname, the type of data
+# and the text file containing the data.  The predefined GeneData item
+# is preconfigured for datafiles from the Omicsoft pipeline.  Modify GeneData
+# file values to use data from a different pipeline.
+#
 # "GeneData"
 # .GeneData = list(
 #   Annotation = list(name = "Annotation",
@@ -51,21 +49,20 @@
 #             file = "RNA-Seq.QCMetrics.Table.txt",
 #             type = "metadata")
 # )
-
 # uncomment this block to save changes to this datastructure to be built into the package
 # x = getwd()
 # setwd ("~/R/lib/pkgsrc/DGE.Tools2/")
 # save(GeneData, file="./data/GeneData.rda")
 # setwd(x)
 
-#' TranscriptData (list of lists)
-#'
-#' Defines the data files to import into a SummarizedExperiment.
-#' Each file is described by a list with defines the fieldname, the type of data
-#' and the text file containing the data.  The predefined TranscriptData item
-#' is preconfigured for datafiles from the Omicsoft pipeline.  Modify TranscriptData
-#' file values to use data from a different pipeline.
-#'
+# TranscriptData (list of lists)
+#
+# Defines the data files to import into a SummarizedExperiment.
+# Each file is described by a list with defines the fieldname, the type of data
+# and the text file containing the data.  The predefined TranscriptData item
+# is preconfigured for datafiles from the Omicsoft pipeline.  Modify TranscriptData
+# file values to use data from a different pipeline.
+#
 # .TranscriptData = list(
 #   Annotation = list(name = "Annotation",
 #                     file = "RNA-Seq.Transcript_Count.Annotation.txt",
@@ -105,42 +102,42 @@ tsmsg <- function(...) {
 }
 
 #df2GR is obsolete.  Can now use:  gr <- as(geneInfoDF, "GRanges")
-### Function df2GR ###
-#' @import magrittr IRanges GenomicRanges
-df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"),
-                  start="start", end="end", strand="strand",
-                  start.offset=1, end.offset=start.offset) {
-  #Convert a Annotation DF to a genomic Ranges object
-  #Optional parameters for seqnames, start, end, strand anticipate possible you might have for these
-  #fields in your annotation file.  Only need to modify these if your annotation uses differenc colnames
-  #for these fields
-  #
-    #These lines return the colnames used in your datafile.
-    seqnames.col <- match(seqnames, tolower(colnames(df))) %>% na.omit %>% .[1]
-    start.col <- match(start, tolower(colnames(df))) %>% na.omit %>% .[1]
-    end.col <- match(end, tolower(colnames(df))) %>% na.omit %>% .[1]
-    strand.col <- match(strand, tolower(colnames(df))) %>% na.omit %>% .[1]
-    other.cols <- setdiff(seq_along(colnames(df)), c(seqnames.col, start.col, end.col, strand.col))
-
-  	#make sure start and end are numeric; if not, remove commas and convert to numeric
-  	if (is.character(df[[start.col]])) {
-  	  df[[start.col]] = gsub(",", "", df[[start.col]]) %>% as.numeric
-  	}
-    if (is.character(df[[end.col]])) {
-      df[[end.col]] = gsub(",", "", df[[end.col]]) %>% as.numeric
-    }
-
-    MyRanges = IRanges::IRanges(start=df[[start.col]] - start.offset + 1,
-                                end=df[[end.col]]) - end.offset + 1
-
-    gr <- GenomicRanges::GRanges(seqnames=df[[seqnames.col]],
-                                 ranges=MyRanges,
-                                 strand=df[[strand.col]])
-
-    GenomicRanges::mcols(gr) <- df[other.cols]
-    names(gr) <- rownames(df)
-    return(gr)
-}
+# Function df2GR
+# @import magrittr IRanges GenomicRanges
+# df2GR <- function(df, seqnames=c("seqnames", "chr", "chromosome"),
+#                   start="start", end="end", strand="strand",
+#                   start.offset=1, end.offset=start.offset) {
+#   #Convert a Annotation DF to a genomic Ranges object
+#   #Optional parameters for seqnames, start, end, strand anticipate possible you might have for these
+#   #fields in your annotation file.  Only need to modify these if your annotation uses differenc colnames
+#   #for these fields
+#   #
+#     #These lines return the colnames used in your datafile.
+#     seqnames.col <- match(seqnames, tolower(colnames(df))) %>% na.omit %>% .[1]
+#     start.col <- match(start, tolower(colnames(df))) %>% na.omit %>% .[1]
+#     end.col <- match(end, tolower(colnames(df))) %>% na.omit %>% .[1]
+#     strand.col <- match(strand, tolower(colnames(df))) %>% na.omit %>% .[1]
+#     other.cols <- setdiff(seq_along(colnames(df)), c(seqnames.col, start.col, end.col, strand.col))
+#
+#   	#make sure start and end are numeric; if not, remove commas and convert to numeric
+#   	if (is.character(df[[start.col]])) {
+#   	  df[[start.col]] = gsub(",", "", df[[start.col]]) %>% as.numeric
+#   	}
+#     if (is.character(df[[end.col]])) {
+#       df[[end.col]] = gsub(",", "", df[[end.col]]) %>% as.numeric
+#     }
+#
+#     MyRanges = IRanges::IRanges(start=df[[start.col]] - start.offset + 1,
+#                                 end=df[[end.col]]) - end.offset + 1
+#
+#     gr <- GenomicRanges::GRanges(seqnames=df[[seqnames.col]],
+#                                  ranges=MyRanges,
+#                                  strand=df[[strand.col]])
+#
+#     GenomicRanges::mcols(gr) <- df[other.cols]
+#     names(gr) <- rownames(df)
+#     return(gr)
+# }
 
 ### Function Txt2DF ###
 Txt2DF <- function(filename) {
@@ -183,7 +180,7 @@ Txt2DF <- function(filename) {
 #' @return SLOA a SubsettableListOfArrays containing data ready for DGE analysis
 #'
 #' @examples
-#' MyFit = eBayes_autoprop (MyFit)
+#'      MyFit = eBayes_autoprop (MyFit)
 #'
 #' @import limma
 #'

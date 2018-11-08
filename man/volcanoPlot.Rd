@@ -6,13 +6,14 @@
 \usage{
 volcanoPlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
   pvalCol = "P.Value", pthreshold = 0.01, xlab = NULL, ylab = NULL,
-  title = NULL, symbolSize = c(4, 3.999, 4), symbolShape = c(21, 1, 21),
-  symbolColor = c("black", "grey25", "grey0"), symbolFill = c("red3",
-  "grey25", "deepskyblue4"), alpha = 0.5, sizeByIntensity = TRUE,
-  pthresholdLine = NULL, foldChangeLines = log2(1.5),
-  refLineThickness = 1, legendPosition = "right", rugColor = NULL,
-  rugAlpha = 1, baseFontSize = 12, themeStyle = "grey", footnote,
-  footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
+  title = NULL, symbolSize = c(4, 3.999, 4), symbolShape = c(21, 1,
+  21), symbolColor = c("black", "grey25", "grey0"),
+  symbolFill = c("red3", "grey25", "deepskyblue4"), alpha = 0.5,
+  sizeByIntensity = TRUE, pthresholdLine = NULL,
+  foldChangeLines = log2(1.5), refLineThickness = 1,
+  legendPosition = "right", rugColor = NULL, rugAlpha = 1,
+  baseFontSize = 12, themeStyle = "grey", footnote, footnoteSize = 3,
+  footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a

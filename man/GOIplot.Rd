@@ -10,8 +10,9 @@ GOIplot(dgeObj, logRatioCol = "logFC", logIntCol = "AveExpr",
   pvalCol = "P.Value", pthreshold = 0.01, xlab, ylab, title,
   symbolSize = 2, symbolShape = 21, symbolColor = "black",
   symbolFill = "dodgerblue3", alpha = 0.5, zeroRefLine = TRUE,
-  refLineThickness = 1, baseFontSize = 12, themeStyle = "grey", footnote,
-  footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
+  refLineThickness = 1, baseFontSize = 12, themeStyle = "grey",
+  footnote, footnoteSize = 3, footnoteColor = "black",
+  footnoteJust = 1)
 }
 \arguments{
 \item{dgeObj}{A DGEobj workflow datastrucutre containing contrast (topTable) results (required)}

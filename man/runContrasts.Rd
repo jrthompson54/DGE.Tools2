@@ -6,9 +6,9 @@
 \usage{
 runContrasts(dgeObj, designMatrixName, contrastList,
   contrastSetName = fitName, runTopTable = TRUE, runTopTreat = FALSE,
-  FoldChangeThreshold = 1.5, PvalueThreshold = 0.01, FDRthreshold = 0.1,
-  runEBayes = TRUE, robust = TRUE, proportion = 0.01, Qvalue = FALSE,
-  IHW = FALSE)
+  FoldChangeThreshold = 1.5, PvalueThreshold = 0.01,
+  FDRthreshold = 0.1, runEBayes = TRUE, robust = TRUE,
+  proportion = 0.01, Qvalue = FALSE, IHW = FALSE)
 }
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}

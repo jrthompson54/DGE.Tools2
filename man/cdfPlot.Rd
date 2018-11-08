@@ -5,13 +5,14 @@
 \title{Deluxe CDF Plots}
 \usage{
 cdfPlot(df, pvalCol = "P.Value", pthreshold = 0.01, xlab = NULL,
-  ylab = NULL, title = NULL, insetTitle = NULL, symbolSize = c(2, 1),
-  symbolShape = c(20, 20), symbolColor = c("red3", "deepskyblue4"),
-  symbolFill = c("red3", "deepskyblue4"), alpha = 1, referenceLine = NULL,
-  refLineThickness = 1, legendPosition = "se", baseFontSize = 12,
-  viewportX = 0.15, viewportY = 0.93, viewportWidth = 0.35,
-  themeStyle = "grey", pvalMax = 0.1, printPlot = TRUE, plotFile,
-  footnote, footnoteSize = 3, footnoteColor = "black", footnoteJust = 1)
+  ylab = NULL, title = NULL, insetTitle = NULL, symbolSize = c(2,
+  1), symbolShape = c(20, 20), symbolColor = c("red3", "deepskyblue4"),
+  symbolFill = c("red3", "deepskyblue4"), alpha = 1,
+  referenceLine = NULL, refLineThickness = 1, legendPosition = "se",
+  baseFontSize = 12, viewportX = 0.15, viewportY = 0.93,
+  viewportWidth = 0.35, themeStyle = "grey", pvalMax = 0.1,
+  printPlot = TRUE, plotFile, footnote, footnoteSize = 3,
+  footnoteColor = "black", footnoteJust = 1)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.}

@@ -4,12 +4,12 @@
 \alias{ggplotMDS}
 \title{Function ggplotMDS}
 \usage{
-ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels, labelSize,
-  title, textColor = "blue2", hlineIntercept, vlineIntercept,
-  reflineColor = "darkgoldenrod1", reflineSize = 0.5, baseFontSize = 12,
-  themeStyle = "grey", symShape = 16, symSize = 5, symFill = "blue2",
-  symColor = "blue2", shapes, colors, dim.plot = c(1, 2), colorName,
-  shapeName, sizeName)
+ggplotMDS(DGEdata, colorBy, shapeBy, sizeBy, top = Inf, labels,
+  labelSize, title, textColor = "blue2", hlineIntercept, vlineIntercept,
+  reflineColor = "darkgoldenrod1", reflineSize = 0.5,
+  baseFontSize = 12, themeStyle = "grey", symShape = 16,
+  symSize = 5, symFill = "blue2", symColor = "blue2", shapes, colors,
+  dim.plot = c(1, 2), colorName, shapeName, sizeName)
 }
 \arguments{
 \item{DGEdata}{A DGEList object taken after normalization

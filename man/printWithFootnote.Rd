@@ -4,8 +4,8 @@
 \alias{printWithFootnote}
 \title{Function  printWithFootnote}
 \usage{
-printWithFootnote(plotObject, footnote, fontface = "plain", fontsize = 10,
-  hjust = -0.1)
+printWithFootnote(plotObject, footnote, fontface = "plain",
+  fontsize = 10, hjust = -0.1)
 }
 \arguments{
 \item{plotObject}{A ggplot2 plotobject}

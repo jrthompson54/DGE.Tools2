@@ -5,8 +5,8 @@
 \title{Function  plotPvalHist}
 \usage{
 plotPvalHist(P.Val, Facet = TRUE, savePlot = FALSE, fileNames = NULL,
-  binWidth = 0.02, baseFontSize = 12, facetFontSize = NULL, alpha = 0.6,
-  color = "dodgerblue3", fill = "dodgerblue3")
+  binWidth = 0.02, baseFontSize = 12, facetFontSize = NULL,
+  alpha = 0.6, color = "dodgerblue3", fill = "dodgerblue3")
 }
 \arguments{
 \item{P.Val}{a matrix or dataframe of numeric data; col=samples}

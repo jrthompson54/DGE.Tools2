@@ -330,7 +330,7 @@ cdfPlot <- function(df,
     vp <- viewport(width = viewportWidth, height = viewportWidth,
                    x = viewportX, y = vy,
                    just = c("left", "top"))
-    png(file=plotFile, width=6, height=4, units = "in", res = 300)
+    png(filename=plotFile, width=6, height=4, units = "in", res = 300)
     print(cdfMain + baseFont(pngFontSize))
     print(cdfInset + baseFont(pngFontSize/3), vp=vp)
     invisible ( dev.off() )
