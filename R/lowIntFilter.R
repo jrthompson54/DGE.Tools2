@@ -1,26 +1,15 @@
 ### Function lowIntFilter ###
 #' Function  lowIntFilter
 #'
-#' Take a named list of dataframes where each dataframe has the same
-#' column names (e.g. a list of topTable dataframes). Extract
-#' the named column from each dataframe and return a matrix.
 #'
-#' The common use case for this is to provide a list of topTable
-#' data frames and extract one column from each file to create
-#' a matrix of LogRatios or Pvalues.
-#'
-#' Technically, this should work as long as the requested colName is present
-#' in each dataframe.  The default robust = TRUE should be used unless you
-#' are absolutely certain each dataframe in the input list has the same row count
-#' and row order.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq; counts; low intensity
 #'
-#' @param x A counts matrix or data.frame OR DGEobj with RNA-Seq data.
-#' @param zThreshold Default = -3.0 Genes below this threshold are considered not detected.
-#' @param countThreshold Default = 10 Minimum read counts to keep a gene
-#' @param sampleFraction The proportion of samples that must meet the thresholds  Default = 0.5
+#' @param x A counts matrix or data.frame OR DGEobj with RNA-Seq data (required).
+#' @param zThreshold  Genes below this threshold are considered not detected (Default = -3.0).  Genes >= this value are kept.  Set to -Inf to disable this filter.
+#' @param countThreshold Minimum read counts to keep a gene (Default = 10 ). Genes >= this value are kept. Set to 0 to disable this filter.
+#' @param sampleFraction The proportion of samples that must meet the thresholds (Default = 0.5). Range >0 and <=1.
 #' @param genelength Vector of genelength for rows of x (required unless x is a DGEobj)
 #'
 #' @return Same class as input object with low intensity rows removed
