@@ -4,37 +4,36 @@
 \alias{lowIntFilter}
 \title{Function  lowIntFilter}
 \usage{
-lowIntFilter(x, xThreshold = -3, countThreshold = 10,
-  sampleFraction = 0.5, genelength)
+lowIntFilter(x, zfpkmThreshold = -3, fpkThreshold = 5,
+  countThreshold = 10, sampleFraction = 0.5, genelength)
 }
 \arguments{
-\item{x}{A counts matrix or data.frame OR DGEobj with RNA-Seq data.}
+\item{x}{A counts matrix or data.frame OR DGEobj with RNA-Seq data
+(required).}
 
-\item{countThreshold}{Default = 10 Minimum read counts to keep a gene}
+\item{zfpkmThreshold}{Genes below this threshold are removed
+(Default = -3.0).  Set to -Inf to disable
+this filter.}
 
-\item{sampleFraction}{The proportion of samples that must meet the thresholds  Default = 0.5}
+\item{fpkThreshold}{Genes below this threshold are removed (Default = 5).
+Set to 0 to disable this filter.}
 
-\item{genelength}{Vector of genelength for rows of x (required unless x is a DGEobj)}
+\item{countThreshold}{Genes below this threshold are removed (Default = 10 ).
+Set to 0 to disable this filter.}
 
-\item{zThreshold}{Default = -3.0 Genes below this threshold are considered not detected.}
+\item{sampleFraction}{The proportion of samples that must meet the thresholds
+(Default = 0.5). Range >0 and <=1.}
+
+\item{genelength}{Vector of genelength for rows of x (required unless x is a
+DGEobj)}
 }
 \value{
 Same class as input object with low intensity rows removed
 }
 \description{
-Take a named list of dataframes where each dataframe has the same
-column names (e.g. a list of topTable dataframes). Extract
-the named column from each dataframe and return a matrix.
-}
-\details{
-The common use case for this is to provide a list of topTable
-data frames and extract one column from each file to create
-a matrix of LogRatios or Pvalues.
-
-Technically, this should work as long as the requested colName is present
-in each dataframe.  The default robust = TRUE should be used unless you
-are absolutely certain each dataframe in the input list has the same row count
-and row order.
+Takes a DGEobj or counts matrix as input and applies a combination of low
+intensity filters. zFPKM, FPK and raw Count filters are supported.  A gene
+must pass all filters.
 }
 \examples{
 
