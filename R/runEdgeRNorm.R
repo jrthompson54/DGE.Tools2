@@ -19,43 +19,47 @@
 #'
 #' @examples
 #' MyDgeObj <- runEdgeRNorm (RSE)
-#' 
+#'
 #' MyDgeObj <- runEdgeRNorm (MyDgeObj)
 #'
-#' @import edgeR magrittr limma SummarizedExperiment DGEobj assertthat
+#' @import magrittr
+#' @importFrom edgeR calcNormFactors DGEList
+#' @importFrom DGEobj addItem getItem convertRSE
+#' @importFrom assertthat assert_that
+#'
 #'
 #' @export
-runEdgeRNorm <- function(dat, normMethod="TMM", 
+runEdgeRNorm <- function(dat, normMethod="TMM",
                          plotFile="TMM_Norm.Factors.PNG",
                          plotLabels = NULL){
 
     funArgs <- match.call()
-    
+
     datClass <- class(dat)[[1]]
-    assert_that ((datClass == "RangedSummarizedExperiment") |
+    assertthat::assert_that ((datClass == "RangedSummarizedExperiment") |
                 (datClass == "DGEobj"))
-   
-#create the DGEobj if needed  
+
+#create the DGEobj if needed
   if (datClass == "RangedSummarizedExperiment")
-      dgeObj <- as.DGEO(dat)
+      dgeObj <- DGEobj::convertRSE(dat, "DGEobj")
   else dgeObj <- dat
 
   #convert counts to a matrix
-  CountsMatrix = as.matrix(getItem(dgeObj, "counts"))
+  CountsMatrix = as.matrix(DGEobj::getItem(dgeObj, "counts"))
 
   #Now ready to normalize counts
   MyDGElist = CountsMatrix %>%
-    DGEList %>%  #edgeR
-    calcNormFactors (method = normMethod)   
-  
+    edgeR::DGEList %>%  #edgeR
+    edgeR::calcNormFactors (method = normMethod)
+
   #capture the DGEList
   itemAttr <- list(normalization=normMethod)
-  dgeObj <- addItem(dgeObj, item=MyDGElist, 
-                    itemName="DGEList",  
-                    itemType="DGEList", 
-                    funArgs=funArgs,
-                    itemAttr=itemAttr,
-                    parent="counts")
+  dgeObj <- DGEobj::addItem(dgeObj, item=MyDGElist,
+                            itemName="DGEList",
+                            itemType="DGEList",
+                            funArgs=funArgs,
+                            itemAttr=itemAttr,
+                            parent="counts")
 
   #plot the Norm factors
   if (!is.null(plotLabels)  && length(plotLabels == ncol(dgeObj))){

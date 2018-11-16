@@ -23,6 +23,8 @@
 #'
 #' @import magrittr
 #' @importFrom stringr str_c
+#' @importFrom tibble rownames_to_column column_to_rownames
+#' @importFrom dplyr left_join
 #'
 #' @export
 topTable.merge <- function(ttlist,
@@ -51,24 +53,24 @@ topTable.merge <- function(ttlist,
     as.data.frame
   colnames(dat) <- str_c(colNames[1], "_", colnames(dat))
   dat <- round(dat, digits[1])
-  dat %<>% rownames_to_column(var="rowid")
+  dat %<>% tibble::rownames_to_column(var="rowid")
 
   if (length(colNames)  > 1) {
     for (i in 1:length(colNames)){
       dat2 <- extractCol(ttlist, colName=colNames[i], robust=TRUE) %>%
         as.data.frame
       #add datatype as prefix on colname e.g. logFC_contrastname
-      colnames(dat2) <- str_c(colNames[i], "_", colnames(dat2))
+      colnames(dat2) <- stringr::str_c(colNames[i], "_", colnames(dat2))
       dat2 <- round(dat2, digits[i])
-      dat2 %<>% rownames_to_column(var="rowid")
+      dat2 %<>% tibble::rownames_to_column(var="rowid")
       if (i == 1) {
         dat <- dat2
       } else {
-        dat %<>% left_join(dat2, by="rowid")
+        dat %<>% dplyr::left_join(dat2, by="rowid")
       }
     }
   }
-  dat %<>% column_to_rownames(var="rowid")
+  dat %<>% tibble::column_to_rownames(var="rowid")
   return(dat)
 }
 

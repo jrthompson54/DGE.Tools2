@@ -107,7 +107,8 @@
 #'      referenceLine = "blue",
 #'      legendPosition="ne")
 #'
-#' @import ggplot2 magrittr dplyr
+#' @import ggplot2 magrittr
+#' @importFrom dplyr left_join
 #'
 #' @export
 volcanoPlot <- function(df,
@@ -228,7 +229,7 @@ volcanoPlot <- function(df,
   df$group[DEup] = "Increased"
   df$group[DEdn] = "Decreased"
   df$group[DEnot] = "No Change"
-  df %<>% left_join(ssc)
+  df %<>% dplyr::left_join(ssc)
   df$group %<>% factor(levels=c("Increased", "Decreased", "No Change"))
 
   #set an order field to force plotting of NoChange first

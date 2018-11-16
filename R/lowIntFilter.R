@@ -28,7 +28,8 @@
 #'
 #'   myDgeObj  = lowIntFilter (myDgeObj)
 #'
-#' @importFrom  assertthat assert_that
+#' @importFrom assertthat assert_that
+#' @importFrom DGEobj getItem
 #'
 #' @export
 lowIntFilter <- function(x, zfpkmThreshold=-3.0, fpkThreshold=5, countThreshold=10, sampleFraction=0.5, genelength){
@@ -41,7 +42,7 @@ lowIntFilter <- function(x, zfpkmThreshold=-3.0, fpkThreshold=5, countThreshold=
 
   #need counts
   if (class(x)[[1]] == "DGEobj")
-    counts <- getItem(dgeObj, "counts")
+    counts <- DGEobj::getItem(dgeObj, "counts")
   else
     counts <- x
 
@@ -53,7 +54,7 @@ lowIntFilter <- function(x, zfpkmThreshold=-3.0, fpkThreshold=5, countThreshold=
 
   #get genelength if dgeobj
   if (xClass == "DGEobj")
-    genelength <-getItem(dgeObj, "geneData")$ExonLength
+    genelength <-DGEobj::getItem(dgeObj, "geneData")$ExonLength
 
   #get needed data transformations
   fpkm <- convertCounts(counts, unit="fpkm", geneLength = genelength)
@@ -67,14 +68,14 @@ lowIntFilter <- function(x, zfpkmThreshold=-3.0, fpkThreshold=5, countThreshold=
   if (xClass == "DGEobj") x <- x[idxcc,]
 
   #keep zfpkm >= -3 in fracThreshold of samples
-  idxzfpkm <- zfpkm >= -3.0
+  idxzfpkm <- zfpkm >= zfpkmThreshold
   frac <- rowSums(idxzfpkm) / ncol(idxzfpkm)
   idx <- frac >= fracThreshold
   counts <- counts[idx,]
   if (xClass == "DGEobj") x <- x[idx,]
 
   #keep FPK >= 5 in fracThreshold of samples
-  idxfpk <- fpk >=
+  idxfpk <- fpk >= fpkThreshold
 
   #overlay a mincount filter
   counts <- getItem(dgeObj, "counts")

@@ -18,7 +18,7 @@ must be numeric.}
 A matrix of TPM values
 }
 \description{
-Takes a counts and genelength as input and converts to tpm units using the equation from 
+Takes a counts and genelength as input and converts to tpm units using the equation from
 [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 }
 \details{
@@ -28,7 +28,7 @@ Genelength can be a vector (length == nrow(counts) or a matrix (same dim as coun
 The genelength is used as is, or optionally collapsed to a vector by rowMeans.
 }
 \examples{
-myTPM <- tpm.classic(mycounts, mygenelength) 
+myTPM <- tpm.classic(mycounts, mygenelength)
 
 }
 \author{

@@ -37,7 +37,10 @@
 #' #Print the previous plot to the console
 #' print(myplot)
 #'
-#' @import ggplot2 reshape2
+#' @import ggplot2
+#' @importFrom grDevices png dev.off
+#' @importFrom reshape2 melt
+#' @importFrom dplyr filter
 #' @export
 plotPvalHist <- function (P.Val, Facet = TRUE,
                           savePlot = FALSE,
@@ -104,9 +107,9 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
 
     if (savePlot) {
       #print(Hist_Pval_Facet)
-      png(filename=fileNames[1], width=8, height=6, units = 'in', res = 300)
+      grDevices::png(filename=fileNames[1], width=8, height=6, units = 'in', res = 300)
       print(Hist_Pval_Facet)
-      invisible ( dev.off() )
+      invisible ( grDevices::dev.off() )
     }
     return(Hist_Pval_Facet)
 
@@ -130,7 +133,7 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
       if (is.null(fileNames))
       f = fileNames[i]
       s = SampNames[i]
-      MyPVal = filter (P.Val, grepl(s, Levels))
+      MyPVal = dplyr::filter (P.Val, grepl(s, Levels))
 
       Hist_Pval <- ggplot2::ggplot(data=MyPVal, aes(x=Pval)) +
         ggplot2::geom_histogram(alpha = alpha, fill = fill, color = color,
@@ -144,9 +147,9 @@ plotPvalHist <- function (P.Val, Facet = TRUE,
       plotlist[[i]] = Hist_Pval
 
       if (savePlot) {
-        png(filename=paste(f, ".png", sep=""),width=8,height=6, units = 'in', res = 300)
+        grDevices::png(filename=paste(f, ".png", sep=""),width=8,height=6, units = 'in', res = 300)
         print(Hist_Pval)
-        invisible ( dev.off() )
+        invisible ( grDevices::dev.off() )
       }
       return(plotlist)
     }

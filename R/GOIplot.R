@@ -1,14 +1,23 @@
+#
+# Merge the contrasts from the DGEobj adding the contrast name as a new column
+# Then plot the logratios +/- 95% confidence as a bar plot or points.
+# If only one contrast, plot all genes on one plot (x <- genes)
+# If multiple contrasts, x <- contrasts, facet on genes, freey scale.
+
 ### Function GOIplot ###
 #'
-#' Provide a gene list of the genes of interest and return a plot of the LogFC data for each gene.
+#' Not Functional Yet.
+#'
+#' Provide a DGEobj with contrast results (topTable format) for the genes of interest. Alternatively,
+#' a named list of topTable contrast results (allowing you to plot contrasts from different DGEobjs).
+#' Return a plot of the LogFC data for each gene.
 #' If >1 gene requested, the plot will be faceted which places an upper limit of around 25 or so
 #' on the number of genes that can be displayed.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
-#' @keywords compare plot ggplot2 logratio scatterplot
+#' @keywords GOI plot ggplot2 logratio DGE
 #'
-#' @param dgeObj A DGEobj workflow datastrucutre containing contrast (topTable) results (required)
-#' @param genelist List of ensembl gene IDs for the genes of interest (required)
+#' @param dgeObj A DGEobject containing at least on contrast (topTable data.frame)
 #' @param plotType One of "point", "bar" or "line" (Default = "bar")
 #' @param logRatioCol name of the LogRatio column (Default = "logFC")
 #' @param logIntCol name of the LogIntensity column (Default = "AveExpr")
@@ -50,10 +59,13 @@
 #'    pending
 #'
 #'
-#' @import ggplot2 magrittr dplyr tibble DGEobj
+#' @import ggplot2 magrittr
+#' @importFrom tibble rownames_to_column column_to_rownames
+#' @importFrom dplyr arrange left_join
 #'
 #' @export
-GOIplot <- function(dgeObj,
+
+GOIplot <- function(topTableDF,
                         logRatioCol = "logFC",
                         logIntCol = "AveExpr",
                         pvalCol = "P.Value",
@@ -78,13 +90,13 @@ GOIplot <- function(dgeObj,
   #argument checks
   #
   # Make sure specified columns exist
-  if (!logRatioCol %in% colnames(df)) {
+  if (!logRatioCol %in% colnames(topTableDF)) {
     stop("LogRatio Ccolumn not found.")
   }
-  if (!logIntCol %in% colnames(df)) {
+  if (!logIntCol %in% colnames(topTableDF)) {
     stop("LogIntensity column not found.")
   }
-  if (!pvalCol %in% colnames(df)) {
+  if (!pvalCol %in% colnames(topTableDF)) {
     stop("Significance measure column not found.")
   }
 
@@ -112,11 +124,11 @@ GOIplot <- function(dgeObj,
 #   }
 
   if (sizeByIntensity==TRUE){
-    #create a column to support sizeByIntensity
-    df$LogInt = df[[logIntCol]]
+    #create a new column to support sizeByIntensity
+    topTableDF$LogInt = topTableDF[[logIntCol]]
     #set a floor and a ceiling
-    df$LogInt[df$LogInt<0] = 0
-    df$LogInt[df$LogInt>10] = 10
+    topTableDF$LogInt[topTableDF$LogInt<0] = 0
+    topTableDF$LogInt[topTableDF$LogInt>10] = 10
   }
 
   names(symbolShape) = c("Increased", "No Change", "Decreased")
@@ -130,7 +142,7 @@ GOIplot <- function(dgeObj,
                    symbolColor = symbolColor,
                    symbolFill = symbolFill,
                    order = c(1,3,2),
-                   stringsAsFactors = FALSE) %>% arrange(order)
+                   stringsAsFactors = FALSE) %>% dplyr::arrange(order)
                   #setting the order defines the legend order
 
   #columns to plot
@@ -138,54 +150,54 @@ GOIplot <- function(dgeObj,
   xlabel = logRatioCol
   ylabel = paste ("-log10(", pvalCol, ")", sep="")
   #now make the columnames suitable for use with aes_string
-  x = make.names(colnames(df)[colnames(df)==logRatioCol])
-  colnames(df)[colnames(df)==logRatioCol] = make.names(colnames(df)[colnames(df)==logRatioCol])
+  x = make.names(colnames(topTableDF)[colnames(topTableDF)==logRatioCol])
+  colnames(topTableDF)[colnames(topTableDF)==logRatioCol] = make.names(colnames(topTableDF)[colnames(topTableDF)==logRatioCol])
   #make a log10significance column and make that the y column
-  df$NegativeLogP = -log10(df[,pvalCol])
+  topTableDF$NegativeLogP = -log10(topTableDF[,pvalCol])
   y = "NegativeLogP"
 
   ### DELUXE PLOT: plot groups in different colors/shapes
 
   #Let's plot the subsets
-  DEup = df[[pvalCol]] <= pthreshold & df[[logRatioCol]] > 0
-  DEdn = df[[pvalCol]] <= pthreshold & df[[logRatioCol]] < 0
+  DEup = topTableDF[[pvalCol]] <= pthreshold & topTableDF[[logRatioCol]] > 0
+  DEdn = topTableDF[[pvalCol]] <= pthreshold & topTableDF[[logRatioCol]] < 0
   DEnot = !DEup & !DEdn
-  #create group factor column in df
-  df$group=NA
-  df$group[DEup] = "Increased"
-  df$group[DEdn] = "Decreased"
-  df$group[DEnot] = "No Change"
-  df %<>% left_join(ssc)
-  df$group %<>% factor(levels=c("Increased", "Decreased", "No Change"))
+  #create group factor column in topTableDF
+  topTableDF$group=NA
+  topTableDF$group[DEup] = "Increased"
+  topTableDF$group[DEdn] = "Decreased"
+  topTableDF$group[DEnot] = "No Change"
+  topTableDF %<>% dplyr::left_join(ssc)
+  topTableDF$group %<>% factor(levels=c("Increased", "Decreased", "No Change"))
 
   #set an order field to force plotting of NoChange first
-  df$order = NA
-  df$order[DEup] = 1
-  df$order[DEdn] = 1
-  df$order[DEnot] = 0
+  topTableDF$order = NA
+  topTableDF$order[DEup] = 1
+  topTableDF$order[DEdn] = 1
+  topTableDF$order[DEnot] = 0
 
-  volcanoPlot <- ggplot (df, aes_string(x=x, y=y)) +
-                    aes(shape=group, size=group,
-                      color=group, fill=group,
-                      order=order) +
-      #scale lines tell it to use the actual values, not treat them as factors
-      scale_shape_manual(name="Group", guide="legend", labels=ssc$group,
-                           values=ssc$symbolShape) +
-      scale_size_manual(name="Group", guide="legend", labels=ssc$group,
-                          values=ssc$symbolSize) +
-      scale_color_manual(name="Group", guide="legend", labels=ssc$group,
-                           values=ssc$symbolColor) +
-      scale_fill_manual(name="Group", guide="legend", labels=ssc$group,
-                          values=ssc$symbolFill) +
-      geom_point(alpha=alpha) +
-      #box around the legend
-      theme(legend.background = element_rect(fill="gray95", size=.5, linetype="dotted"))
+  volcanoPlot <- ggplot (topTableDF, aes_string(x=x, y=y)) +
+    aes(shape=group, size=group,
+        color=group, fill=group,
+        order=order) +
+    #scale lines tell it to use the actual values, not treat them as factors
+    scale_shape_manual(name="Group", guide="legend", labels=ssc$group,
+                       values=ssc$symbolShape) +
+    scale_size_manual(name="Group", guide="legend", labels=ssc$group,
+                      values=ssc$symbolSize) +
+    scale_color_manual(name="Group", guide="legend", labels=ssc$group,
+                       values=ssc$symbolColor) +
+    scale_fill_manual(name="Group", guide="legend", labels=ssc$group,
+                      values=ssc$symbolFill) +
+    geom_point(alpha=alpha) +
+    #box around the legend
+    theme(legend.background = element_rect(fill="gray95", size=.5, linetype="dotted"))
 ###end DELUXE PLOT
 
   ### Optional Decorations
 
   if (!is.null(rugColor)){
-    volcanoPlot = volcanoPlot + geom_rug(data=df, inherit.aes=FALSE,
+    volcanoPlot = volcanoPlot + geom_rug(data=topTableDF, inherit.aes=FALSE,
                                          color = rugColor,
                                          alpha=rugAlpha,
                                          show.legend=FALSE,

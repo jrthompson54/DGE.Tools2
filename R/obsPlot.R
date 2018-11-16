@@ -97,7 +97,10 @@
 #'    MyBlock = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6)
 #'    MyPlot = obsPlot(genes, MyBlock, title = "Plot Title")
 #'
-#' @import ggplot2 magrittr dplyr reshape2 assertthat
+#' @import ggplot2 magrittr
+#' @importFrom dplyr left_join
+#' @importFrom reshape2 melt
+#' @importFrom assertthat assert_that
 #'
 #' @export
 obsPlot <- function(data,
@@ -199,22 +202,22 @@ obsPlot <- function(data,
     data <- as.data.frame(data, stringsAsFactors=FALSE)
   }
 
-  assert_that(length(block) == ncol(data))
+  assertthat::assert_that(length(block) == ncol(data))
 
   if (missing(sampNames)){
     sampNames = colnames(data)
   } else {
-    assert_that(length(sampNames) == ncol(data))
+    assertthat::assert_that(length(sampNames) == ncol(data))
   }
 
   if (missing(obsNames)){
     obsNames = rownames(data)
   } else {
-    assert_that(length(obsNames) == nrow(data))
+    assertthat::assert_that(length(obsNames) == nrow(data))
   }
 
   if(!missing(blockOrder)){
-      assert_that(length(blockOrder) == length(unique(block)))
+    assertthat::assert_that(length(blockOrder) == length(unique(block)))
   }
 
   #reduce box outliers to a dot if geom_points turned on.

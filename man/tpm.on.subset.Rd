@@ -23,15 +23,15 @@ using the original data but returns a DGEobj with the subset.
 Takes a DGEObj as input. Uses all data (pre-genefiltering; counts_orig) to
 calculate TPM values. Then optionally filters any genes that were already
 filtered out.
-  
-For GeneLength in the calculation, it takes geneData$ExonLength (for Omicsoft data) 
+
+For GeneLength in the calculation, it takes geneData$ExonLength (for Omicsoft data)
 or uses rowMeans(effectiveLength) for data derived from Xpress.
 
 Internally it uses edgeR::fpkm to calculate fpkm and converts to tpm
 using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 }
 \examples{
-myTPM <- tpm(dgeobj) 
+myTPM <- tpm(dgeobj)
 
 }
 \author{

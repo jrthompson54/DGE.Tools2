@@ -1,7 +1,7 @@
 ### Function isoformFrac ###
 #' Function isoformFrac
 #'
-#' Takes a DGEobj as input and adds an assay item containing isoform fraction data.
+#' Takes a DGEobj as input (transcript level data) and adds an assay item containing isoform fraction data.
 #'
 #' Isoform Fraction is calculated using length normalized data (FPKM or TPM), as
 #' length normalized data is required because different isoforms have different
@@ -32,7 +32,11 @@
 #' @examples
 #'    MyDgeObj <- isoformFrac(MyDgeObj)
 #'
-#' @import dplyr tidyr DGEobj magrittr assertthat
+#' @import magrittr
+#' @importFrom dplyr group_by mutate
+#' @importFrom assertthat assert_that
+#' @importFrom tidyr gather spread
+#' @importFrom DGEobj getItem addItem
 #'
 #' @export
 isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
@@ -41,16 +45,16 @@ isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
                           attr(dgeObj, "level") == "isoform")
 
     #calculate sum of isoforms for each gene and sample
-    counts <- getItem(dgeObj, "counts")
-    isoformData <- getItem(dgeObj, "isoformData")
+    counts <- DGEobj::getItem(dgeObj, "counts")
+    isoformData <- DGEobj::getItem(dgeObj, "isoformData")
 
     #Xpress support:
     #If present, Need to take rowMeans of assay=effectiveLength and create
     #isoformData$ExonLength.
     if (tolower(attr(dgeObj, "source")) == "xpress"){#It's an Xpress dataset
-      efflen <- getItem(dgeObj, "effectiveLength")
+      efflen <- DGEobj::getItem(dgeObj, "effectiveLength")
       if (!is.null(efflen)){
-        isoformData <- getItem(dgeObj, "isoformData")
+        isoformData <- DGEobj::getItem(dgeObj, "isoformData")
         isoformData$ExonLength <- rowMeans(efflen, na.rm=TRUE)
       } else {
         stop ("Effective Length data not found in Xpress DGEobj!")
@@ -94,7 +98,7 @@ isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
 
     #add isoform fraction to assays.
     funArgs <- match.call()
-    dgeObj <- addItem(dgeObj, IsoformFrac,
+    dgeObj <- DGEobj::addItem(dgeObj, IsoformFrac,
                       itemName=paste("isoformFrac", dataType, sep="_"),
                       itemType="assay", funArgs=funArgs,
                       parent="counts")

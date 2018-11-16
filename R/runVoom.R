@@ -52,7 +52,11 @@
 #'
 #' @examples
 #'
-#' @import magrittr limma
+#' @import magrittr
+#' @importFrom limma voom lmFit eBayes voomWithQualityWeights duplicateCorrelation
+#' @importFrom stringr str_c
+#' @importFrom DGEobj getItem addItem
+#' @importFrom assertthat assert_that
 #'
 #' @export
 runVoom <- function(dgeObj, designMatrixName,
@@ -70,11 +74,11 @@ runVoom <- function(dgeObj, designMatrixName,
                 designMatrixName %in% names(dgeObj),
                 class(dgeObj)[[1]] == "DGEobj")
 
-    designMatrix <- getItem(dgeObj, designMatrixName)
+    designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
 
     #get the DGEList
     if ("DGEList" %in% attr(dgeObj, "type"))
-        dgelist <- getItem(dgeObj, "DGEList")
+        dgelist <- DGEobj::getItem(dgeObj, "DGEList")
     else stop("No DGEList found in DGEobj")
 
     #collect calling args for documentation
@@ -109,72 +113,70 @@ runVoom <- function(dgeObj, designMatrixName,
 
         #voom squeezes the variance (borrowing from other genes) to deal
         #with the heteroskedasticity problem
-        VoomElist <- voom(dgelist, designMatrix, plot=mvPlot, col="blue")
-        fit <- lmFit(VoomElist, designMatrix)
+        VoomElist <- limma::voom(dgelist, designMatrix, plot=mvPlot, col="blue")
+        fit <- limma::lmFit(VoomElist, designMatrix)
 
     } else if (dupcor==F & qualityWeights==T & blockQW==F){ #indQW analysis
 
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
                                             plot=mvPlot, col="blue")
-        fit <- lmFit(VoomElist, designMatrix)
+        fit <- limma::lmFit(VoomElist, designMatrix)
 
     } else if (dupcor==F & qualityWeights==T & blockQW==T){ #blockedQW analysis
 
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
                                plot=mvPlot, col="blue",
                                var.design = var.design)
-        fit <- lmFit(VoomElist, designMatrix)
+        fit <- limma::lmFit(VoomElist, designMatrix)
 
     } else if (dupcor==T & qualityWeights==F & blockQW==F){ #dupcor_base analysis
 
-        VoomElist <- voom(dgelist, designMatrix)
-        corfit <- duplicateCorrelation(VoomElist,
+        VoomElist <- limma::voom(dgelist, designMatrix)
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- voom(dgelist, designMatrix,
+        VoomElist <- limma::voom(dgelist, designMatrix,
                           correlation=corfit$consensus.correlation,
                           plot=mvPlot, col="blue")
-        corfit <- duplicateCorrelation(VoomElist,
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
 
-        fit <- lmFit(VoomElist, designMatrix, block=dupcorBlock,
+        fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                   correlation=corfit$consensus.correlation)
-
-
 
     } else if (dupcor==T & qualityWeights==T & blockQW==F){ #dupcor_indQW analysis
 
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix)
-        corfit <- duplicateCorrelation(VoomElist,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix)
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
                                             plot=mvPlot, col="blue",
                                             correlation=corfit$consensus.correlation)
-        corfit <- duplicateCorrelation(VoomElist,
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
 
-        fit <- lmFit(VoomElist, designMatrix, block=dupcorBlock,
+        fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                      correlation=corfit$consensus.correlation)
 
     } else if (dupcor==T & qualityWeights==T & blockQW==T){ #dupcor_vdQW analysis
 
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
                                             var.design = var.design)
-        corfit <- duplicateCorrelation(VoomElist,
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- voomWithQualityWeights(dgelist, designMatrix,
+        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
                                             plot=mvPlot, col="blue",
                                             correlation=corfit$consensus.correlation,
                                             var.design = var.design)
-        corfit <- duplicateCorrelation(VoomElist,
+        corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
 
-        fit <- lmFit(VoomElist, designMatrix, block=dupcorBlock,
+        fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                      correlation=corfit$consensus.correlation)
 
     } else {
@@ -183,12 +185,12 @@ runVoom <- function(dgeObj, designMatrixName,
 
     #run eBayes
     if (runEBayes) {
-        fit = eBayes(fit, robust=robust, proportion=proportion)
+        fit = limma::eBayes(fit, robust=robust, proportion=proportion)
         itemAttr <- list(eBayes = TRUE)
     } else itemAttr <- list(eBayes = FALSE)
 
     if (exists("corfit")) { #duplicate correlation was used; capture the correlation value
-      cat (str_c("Duplicate Correlation = ", round(corfit$consensus.correlation, 4), "   \n"))
+      cat (stringr::str_c("Duplicate Correlation = ", round(corfit$consensus.correlation, 4), "   \n"))
       attr(VoomElist, "DupCor") <- corfit$consensus.correlation
       attr(fit, "DupCor") <- corfit$consensus.correlation
     }
@@ -196,7 +198,7 @@ runVoom <- function(dgeObj, designMatrixName,
     #save the several objects
 
     VoomElistName = paste(designMatrixName, "_Elist", sep="")
-    dgeObj %<>% addItem(VoomElist, VoomElistName,
+    dgeObj %<>% DGEobj::addItem(VoomElist, VoomElistName,
                         "Elist",
                         funArgs=funArgs,
                         parent=list("DGEList", designMatrixName)
@@ -204,16 +206,16 @@ runVoom <- function(dgeObj, designMatrixName,
 
     #Add corfit if present
     if (exists("corfit"))
-        dgeObj %<>% addItem(corfit, paste(designMatrixName, "_corFit", sep=""),
-                            "corFit",
-                            funArgs=funArgs,
-                            parent=paste(designMatrixName, "_Elist", sep=""))
+      dgeObj %<>% DGEobj::addItem(corfit, paste(designMatrixName, "_corFit", sep=""),
+                                  "corFit",
+                                  funArgs=funArgs,
+                                  parent=paste(designMatrixName, "_Elist", sep=""))
 
-    dgeObj %<>% addItem(fit, paste(designMatrixName, "_fit", sep=""),
-                        "fit",
-                        funArgs=funArgs,
-                        itemAttr=itemAttr,
-                        parent=list(VoomElistName, designMatrixName))
+    dgeObj %<>% DGEobj::addItem(fit, paste(designMatrixName, "_fit", sep=""),
+                                "fit",
+                                funArgs=funArgs,
+                                itemAttr=itemAttr,
+                                parent=list(VoomElistName, designMatrixName))
 
   return(dgeObj)  #now containing designMatrix, corFit, Elist and fit
 }

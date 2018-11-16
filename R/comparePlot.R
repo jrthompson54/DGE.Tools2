@@ -96,7 +96,8 @@
 #'      referenceLine = "blue",
 #'      legendPosition="nw")
 #'
-#' @import ggplot2 magrittr dplyr
+#' @import ggplot2 magrittr
+#' @importFrom dplyr left_join
 #'
 #' @export
 comparePlot <- function(df, pthreshold=0.01,
@@ -199,7 +200,7 @@ comparePlot <- function(df, pthreshold=0.01,
     df$group[xindx] = "X Unique"
     df$group[yindx] = "Y Unique"
     df$group[neitherindx] = "Not Significant"
-    df %<>% left_join(ssc)
+    df %<>% dplyr::left_join(ssc)
     df$group %<>% factor(levels=c("Common", "X Unique", "Y Unique", "Not Significant"))
 
     #set an order field to control order of plotting

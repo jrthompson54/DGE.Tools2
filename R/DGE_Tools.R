@@ -153,6 +153,8 @@ Txt2DF <- function(filename) {
     return (-1)
   }
 }
+
+
 #' Function  eBayes_autoprop
 #'
 #' If you use the following function in place of eBayes for single contrasts,
@@ -166,7 +168,7 @@ Txt2DF <- function(filename) {
 #' which should give conservative values as long as at least 1% of
 #' genes are DE.
 #'
-#' The function below uses propTrueNull to determine this prior, which
+#' The function below uses limma propTrueNull to determine this prior, which
 #' means that the B-statistics should be reliable as long as propTrueNull
 #' returns a reasonable-looking value, which you can verify by looking at
 #' the p-value distribution.
@@ -177,12 +179,12 @@ Txt2DF <- function(filename) {
 #' @param ... See ?eBayes
 #' @param prop.method defaults to "lfdr"
 #'
-#' @return SLOA a SubsettableListOfArrays containing data ready for DGE analysis
+#' @return A fit is returned
 #'
 #' @examples
 #'      MyFit = eBayes_autoprop (MyFit)
 #'
-#' @import limma
+#' @importFrom  limma propTrueNull
 #'
 #' @export
 eBayes_autoprop <- function(..., prop.method="lfdr") {
@@ -192,90 +194,5 @@ eBayes_autoprop <- function(..., prop.method="lfdr") {
 }
 
 
-#' Function  yrange
-#'
-#' extract the Y upper and lower limits from a ggplot2 v3 plot object.
-#'
-#' @author John Thompson, \email{rct@@thompsonclan.org}
-#' @keywords ggplot, ranges, limits
-#'
-#' @param g A ggplot plot object (ggplot2 v3 or higher)
-#'
-#' @return A vector length 2
-#'
-#' @examples
-#' myYrange = yrange (myggplot)
-#'
-#' @importFrom ggplot2 ggplot_build
-#' @importFrom stringr str_sub
-#' @importFrom assertthat assert_that
-#'
-#' @export
-#https://gist.github.com/tomhopper/9076152  ranges for ggplot2 v2
-yrange <- function(my.ggp){ #pass a ggplot object, return yrange
-  assertthat::assert_that(class(my.ggp)[[2]] == "ggplot")
-  #method used is ggplot2 version-dependent
-  ggplot_version <- stringr::str_sub(as.character(packageVersion("ggplot2")),1,1)
-  if (ggplot_version == 2) {
-    # ggplot2 v2 solution:
-    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_ranges[[1]]$y.range
-  } else {
-    # ggplot2 v3 solution:
-    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_params[[1]]$y.range
-  }
-  return(range)
-}
 
-#' Function  xrange
-#'
-#' extract the X upper and lower limits from a ggplot2 v3 plot object.
-#'
-#' @author John Thompson, \email{rct@@thompsonclan.org}
-#' @keywords ggplot, ranges, limits
-#'
-#' @param g A ggplot plot object (ggplot2 v3 or higher)
-#'
-#' @return A vector length 2
-#'
-#' @examples
-#' myYrange = yrange (myggplot)
-#'
-#' @importFrom ggplot2 ggplot_build
-#' @importFrom stringr str_sub
-#' @importFrom assertthat assert_that
-#'
-#' @export
-xrange <- function(my.ggp){
-  assertthat::assert_that(class(my.ggp)[[2]] == "ggplot")
-  #method used is ggplot2 version-dependent
-  ggplot_version <- stringr::str_sub(as.character(packageVersion("ggplot2")),1,1)
-  if (ggplot_version == 2) {
-  # ggplot2 v2:
-    range <- ggplot2::ggplot_build(my.ggp)$layout$panel_ranges[[1]]$x.range
-  } else {
-  # ggplot2 v3 solution:
-    range <-  ggplot2::ggplot_build(my.ggp)$layout$panel_params[[1]]$x.range
-  }
-  return(range)
-}
-
-#footnote
-addFootnote <- function (my.ggp, footnoteText, footnoteSize, footnoteColor, footnoteJust=1, yoffset=0){
-  #add a right justified (by default) footnote at the bottom plot.
-  #footnoteJust: value = 0.1; <0.5 is left justified; > 0.5 is right justified; 0.5 is centered
-  #yoffset is fraction of y delta to add to yr[1]
-
-  yr <- yrange(my.ggp)
-  xr <- xrange(my.ggp)
-  yoffset <- yoffset * (yr[2]-yr[1])
-  xcoord <- ifelse(footnoteJust < 0.50, xr[1], xr[2])
-  if (footnoteJust == 0.5) #special case = center
-    xcoord <- xr[1] + ((xr[2]-xr[1])/2)
-  my.ggp <- my.ggp +
-    annotate("text", label = footnoteText, x = xcoord, y = yr[1]+yoffset,
-             size = footnoteSize,
-             colour = footnoteColor,
-             hjust=footnoteJust,
-             vjust=1)
-}
 

@@ -22,12 +22,20 @@ setwd(x)
 #
 
 
+library(NCmisc)
+flist <- list.functions.in.file("R/runVoom.R", alphabetic=T)
+x <- cbind(names(flist), flist) %>% as.data.frame()
+x$V1=NULL
 
-> flist <- list.functions.in.file("R/dimensionMatch.R", alphabetic=T)
-> x <- cbind(names(flist), flist) %>% as.data.frame()
 
 
-
+> library(DGE.Tools2)
+Warning messages:
+  1: replacing previous import ‘IRanges::setdiff’ by ‘dplyr::setdiff’ when loading ‘DGEobj’
+2: replacing previous import ‘IHW::alpha’ by ‘ggplot2::alpha’ when loading ‘DGE.Tools2’
+3: replacing previous import ‘dplyr::combine’ by ‘gridExtra::combine’ when loading ‘DGE.Tools2’
+4: replacing previous import ‘assertthat::has_name’ by ‘tibble::has_name’ when loading ‘DGE.Tools2’
+5: replacing previous import ‘magrittr::extract’ by ‘tidyr::extract’ when loading ‘DGE.Tools2’
 
 
 

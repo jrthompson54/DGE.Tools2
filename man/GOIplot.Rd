@@ -2,11 +2,9 @@
 % Please edit documentation in R/GOIplot.R
 \name{GOIplot}
 \alias{GOIplot}
-\title{Provide a gene list of the genes of interest and return a plot of the LogFC data for each gene.
-If >1 gene requested, the plot will be faceted which places an upper limit of around 25 or so
-on the number of genes that can be displayed.}
+\title{Not Functional Yet.}
 \usage{
-GOIplot(dgeObj, logRatioCol = "logFC", logIntCol = "AveExpr",
+GOIplot(topTableDF, logRatioCol = "logFC", logIntCol = "AveExpr",
   pvalCol = "P.Value", pthreshold = 0.01, xlab, ylab, title,
   symbolSize = 2, symbolShape = 21, symbolColor = "black",
   symbolFill = "dodgerblue3", alpha = 0.5, zeroRefLine = TRUE,
@@ -15,8 +13,6 @@ GOIplot(dgeObj, logRatioCol = "logFC", logIntCol = "AveExpr",
   footnoteJust = 1)
 }
 \arguments{
-\item{dgeObj}{A DGEobj workflow datastrucutre containing contrast (topTable) results (required)}
-
 \item{logRatioCol}{name of the LogRatio column (Default = "logFC")}
 
 \item{logIntCol}{name of the LogIntensity column (Default = "AveExpr")}
@@ -67,7 +63,7 @@ respectively. Default = bw"}
 
 \item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
 
-\item{genelist}{List of ensembl gene IDs for the genes of interest (required)}
+\item{dgeObj}{A DGEobject containing at least on contrast (topTable data.frame)}
 
 \item{plotType}{One of "point", "bar" or "line" (Default = "bar")}
 
@@ -78,7 +74,9 @@ faceted plot.}
 ggplot object or list of ggplot objects
 }
 \description{
-Provide a gene list of the genes of interest and return a plot of the LogFC data for each gene.
+Provide a DGEobj with contrast results (topTable format) for the genes of interest. Alternatively,
+a named list of topTable contrast results (allowing you to plot contrasts from different DGEobjs).
+Return a plot of the LogFC data for each gene.
 If >1 gene requested, the plot will be faceted which places an upper limit of around 25 or so
 on the number of genes that can be displayed.
 }
@@ -90,8 +88,8 @@ on the number of genes that can be displayed.
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }
-\keyword{compare}
+\keyword{DGE}
+\keyword{GOI}
 \keyword{ggplot2}
 \keyword{logratio}
 \keyword{plot}
-\keyword{scatterplot}

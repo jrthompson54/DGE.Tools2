@@ -86,7 +86,10 @@
 #'
 #'    cdfPlot(df, title = "My CDF Plot", printFile = "MyCDFplot.PNG")
 #'
-#' @import ggplot2 magrittr dplyr grid
+#' @import ggplot2 magrittr
+#' @importFrom grDevices dev.off png
+#' @importFrom grid viewport
+#' @importFrom dplyr arrange left_join
 #'
 #' @export
 cdfPlot <- function(df,
@@ -141,7 +144,7 @@ cdfPlot <- function(df,
                    symbolColor = symbolColor,
                    symbolFill = symbolFill,
                    order = c(1,2),
-                   stringsAsFactors = FALSE) %>% arrange(order)
+                   stringsAsFactors = FALSE) %>% dplyr::arrange(order)
                     #setting the order defines the legend order
 
   #columns to plot
@@ -165,7 +168,7 @@ cdfPlot <- function(df,
   df$group <- NA
   df$group[Sig] <- "Significant"
   df$group[NotSig] <- "Not Significant"
-  df %<>% left_join(ssc)
+  df %<>% dplyr::left_join(ssc)
   df$group %<>% factor(levels=c("Significant", "Not Significant"))
 
   #set an order field to force plotting of NotSig first
@@ -293,7 +296,7 @@ cdfPlot <- function(df,
     #viewportX %<>% add(adjust)
   }
   #A viewport taking up a fraction of the plot area (upper left)
-  vp <- viewport(width = viewportWidth, height = viewportWidth,
+  vp <- grid::viewport(width = viewportWidth, height = viewportWidth,
                  x = viewportX, y = vy,
                  just = c("left", "top"))
 
@@ -327,13 +330,13 @@ cdfPlot <- function(df,
       )
 
     #A viewport taking up a fraction of the plot area (upper left)
-    vp <- viewport(width = viewportWidth, height = viewportWidth,
+    vp <- grid::viewport(width = viewportWidth, height = viewportWidth,
                    x = viewportX, y = vy,
                    just = c("left", "top"))
-    png(filename=plotFile, width=6, height=4, units = "in", res = 300)
+    grDevices::png(filename=plotFile, width=6, height=4, units = "in", res = 300)
     print(cdfMain + baseFont(pngFontSize))
     print(cdfInset + baseFont(pngFontSize/3), vp=vp)
-    invisible ( dev.off() )
+    invisible ( grDevices::dev.off() )
   }
 
 #   ### create a function to print the combined plot

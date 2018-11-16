@@ -13,7 +13,7 @@ runContrasts(dgeObj, designMatrixName, contrastList,
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
 
-\item{designMatrixName}{The name of the design matrix within dgeObj to use for 
+\item{designMatrixName}{The name of the design matrix within dgeObj to use for
 contrast analysis  (required)}
 
 \item{contrastList}{A named list of contrasts  (required)}
@@ -51,7 +51,7 @@ contain a limma Fit object and associated DesignMatrix. Returns the DGEobj with
 contrast fit(s), contrast matrix and topTable/topTreat dataframes added.
 }
 \details{
-The contrastList is a named list composed of column names from the DesignMatrix 
+The contrastList is a named list composed of column names from the DesignMatrix
 of the DGEobj.  Each contrast is named to give
 it a short recognizable name.
 

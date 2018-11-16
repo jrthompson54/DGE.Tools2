@@ -13,6 +13,7 @@ getYrange(p)
 a vector of length 2 with xmin, xmax
 }
 \description{
+Deprecated.  Use yrange instead.
 A simple function to spare me from looking up the syntax everytime
 I want to get the y range of a plot
 }

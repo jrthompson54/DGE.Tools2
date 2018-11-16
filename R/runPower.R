@@ -30,7 +30,11 @@
 #' @examples
 #'    MyResults <- runPower(counts, designMatrix)
 #'
-#' @import magrittr assertthat RNASeqPower
+#' @import magrittr
+#' @importFrom assertthat assert_that
+#' @importFrom RNASeqPower rnapower
+#' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
+#' @importFrom dplyr filter
 #'
 #' @export
 runPower <- function(counts, designMatrix,
@@ -44,9 +48,9 @@ runPower <- function(counts, designMatrix,
   #estimate dispersion
   dgelist <- counts %>%
     as.matrix %>%
-    DGEList %>%
-    calcNormFactors %>%
-    estimateDisp (design=designMatrix, robust=TRUE)
+    edgeR::DGEList %>%
+    edgeR::calcNormFactors %>%
+    edgeR::estimateDisp (design=designMatrix, robust=TRUE)
 
   # BCV <- sqrt(dgelist$tagwise.dispersion)
 
@@ -58,7 +62,7 @@ runPower <- function(counts, designMatrix,
   # to AveLogCPM units and return the BCV for those values
   #BCV is the sqrt of Dispersion
   GeoMeanLibSize <-  dgelist$samples$lib.size %>% log %>% mean %>% exp
-  depth_avelogcpm <- aveLogCPM(depth, GeoMeanLibSize)
+  depth_avelogcpm <- edgeR::aveLogCPM(depth, GeoMeanLibSize)
   depthBCV <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
                                xout=depth_avelogcpm, rule=2)$y)
 
@@ -85,7 +89,7 @@ runPower <- function(counts, designMatrix,
     for (Nf in n)
       for (E in effectSize)
         for (A in alpha) {
-          P <- rnapower(depth=D, n=Nf, cv=cv, effect=E, alpha=A)
+          P <- RNASeqPower::rnapower(depth=D, n=Nf, cv=cv, effect=E, alpha=A)
           pdat <- rbind(pdat, c(depth=D, n=Nf, effect=E, alpha=A, power=P))
         }
   }
@@ -103,7 +107,7 @@ runPower <- function(counts, designMatrix,
     #
     #ROC Curves (FDR vs Power)
 
-    rocdat <- filter(pdat, n %in% N)
+    rocdat <- dplyr::filter(pdat, n %in% N)
     rocdat$depth %<>% as.factor
 
     roc <- ggplot(rocdat, aes(x=alpha, y=power, fill=depth, shape=depth, color = depth)) +
@@ -124,7 +128,7 @@ runPower <- function(counts, designMatrix,
 
     #N vs Power
     #filter to just a few FDR thresholds
-    ndat <- filter(pdat, alpha %in% FDR)
+    ndat <- dplyr::filter(pdat, alpha %in% FDR)
 
     ndat$depth %<>% as.factor
     ndat$FDR <- ndat$alpha

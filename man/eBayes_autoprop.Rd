@@ -12,7 +12,7 @@ eBayes_autoprop(..., prop.method = "lfdr")
 \item{prop.method}{defaults to "lfdr"}
 }
 \value{
-SLOA a SubsettableListOfArrays containing data ready for DGE analysis
+A fit is returned
 }
 \description{
 If you use the following function in place of eBayes for single contrasts,
@@ -27,7 +27,7 @@ which should give conservative values as long as at least 1% of
 genes are DE.
 }
 \details{
-The function below uses propTrueNull to determine this prior, which
+The function below uses limma propTrueNull to determine this prior, which
 means that the B-statistics should be reliable as long as propTrueNull
 returns a reasonable-looking value, which you can verify by looking at
 the p-value distribution.

@@ -68,7 +68,10 @@
 #'      MyMDS = ggplotMDS (MyDGEList, dim.plot=c(2,3) ndim =3)
 #'      MyMDS[[1]]
 #'
-#' @import ggplot2 magrittr edgeR assertthat ggrepel ggiraph
+#' @import ggplot2 magrittr ggrepel ggiraph
+#' @importFrom assertthat assert_that
+#' @importFrom limma plotMDS
+#' @importFrom grDevices pdf dev.off
 #'
 #' @export
 ggplotMDS <- function(DGEdata,
@@ -103,34 +106,34 @@ ggplotMDS <- function(DGEdata,
   #default labels to colnames of DGEdata
   addLabels <- TRUE
   if (missing(labels)){ #set default labels
-      labels <- colnames(DGEdata)
-      # Get labels from ReplicateGroup if present
-      if (class(DGEdata)[[1]] == "DGEobj"){
-          design <- getItem(DGEdata, "design")
-          if (exists("design"))
-              if (with (design, exists("ReplicateGroup")))
-                  labels <- design$ReplicateGroup
-      }
+    labels <- colnames(DGEdata)
+    # Get labels from ReplicateGroup if present
+    if (class(DGEdata)[[1]] == "DGEobj"){
+      design <- getItem(DGEdata, "design")
+      if (exists("design"))
+        if (with (design, exists("ReplicateGroup")))
+          labels <- design$ReplicateGroup
+    }
   } else if (is.null(labels))
-      addLabels <- FALSE
+    addLabels <- FALSE
 
   #argument checks
   if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
-      DGEdata <- getItem(DGEdata, "DGEList")
+    DGEdata <- getItem(DGEdata, "DGEList")
   else if (!class(DGEdata)[[1]] %in% c("DGEList", "matrix"))
     stop("DGEdata must be class DGEList or DGEobj or matrix")
 
-  assert_that(!missing(colorBy),
-              length(colorBy) == ncol(DGEdata))
+  assertthat::assert_that(!missing(colorBy),
+                          length(colorBy) == ncol(DGEdata))
   if (!missing(shapeBy))
-      assert_that(length(shapeBy) == ncol(DGEdata))
+    assertthat::assert_that(length(shapeBy) == ncol(DGEdata))
   if (!missing(sizeBy))
-      assert_that(length(sizeBy) == ncol(DGEdata))
+    assertthat::assert_that(length(sizeBy) == ncol(DGEdata))
 
   #shapes: solid circle, square, triangle, diamond, open circle, square, triangle, diamond
   myShapes = c(16, 15, 17, 18, 21, 22, 24, 23)
   if (missing(shapes))
-      shapes <- myShapes
+    shapes <- myShapes
 
   # ColorBlind palette:
   # http://www.ucl.ac.uk/~zctpep9/Archived%20webpages/Cookbook%20for%20R%20%C2%BB%20Colors%20(ggplot2).htm
@@ -175,16 +178,16 @@ ggplotMDS <- function(DGEdata,
     title <- "MDS Plot"
   }
 
-  pdf(NULL) #suppress the plot and just capture the output
+  grDevices::pdf(NULL) #suppress the plot and just capture the output
   # mds <- plotMDS(DGEdata, top = top, labels = labels, pch = pch,
   #                cex = cex, dim.plot = dim.plot, ndim = ndim,
   #                gene.selection = gene.selection,
   #                xlab = Xlab, ylab = Ylab)
-  mds <- plotMDS(DGEdata, top = top, pch = pch,
+  mds <- limma::plotMDS(DGEdata, top = top, pch = pch,
                  cex = cex, dim.plot = dim.plot, ndim = max(dim.plot),
                  gene.selection = gene.selection,
                  xlab = Xlab, ylab = Ylab)
-  invisible(dev.off())
+  invisible(grDevices::dev.off())
 
   #pull the plotting data together
   if (addLabels == TRUE)

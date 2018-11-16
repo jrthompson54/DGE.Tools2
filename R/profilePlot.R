@@ -110,7 +110,9 @@
 #'      referenceLine = "blue",
 #'      legendPosition="ne")
 #'
-#' @import ggplot2 magrittr dplyr assertthat
+#' @import ggplot2 magrittr
+#' @importFrom dplyr left_join filter arrange
+#' @importFrom assertthat assert_that
 #'
 #' @export
 profilePlot <- function(df,
@@ -147,9 +149,9 @@ profilePlot <- function(df,
   #argument checks
   #
   # Make sure specified columns exist
-  assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
-  assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
-  assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
+  assertthat::assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
+  assertthat:assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
+  assertthat:assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
 
   # if (!logRatioCol %in% colnames(df)) {
   #   stop("LogRatio column not found.")
@@ -179,7 +181,7 @@ profilePlot <- function(df,
                    symbolColor = symbolColor,
                    symbolFill = symbolFill,
                    order = c(1,3,2),
-                   stringsAsFactors = FALSE) %>% arrange(order)
+                   stringsAsFactors = FALSE) %>% dplyr::arrange(order)
                     #setting the order defines the legend order
 
   #columns to plot
@@ -208,7 +210,7 @@ profilePlot <- function(df,
   df$group[DEup] <- "Increased"
   df$group[DEdn] <- "Decreased"
   df$group[DEnot] <- "No Change"
-  df %<>% left_join(ssc)
+  df %<>% dplyr::left_join(ssc)
   df$group %<>% factor(levels=c("Increased", "Decreased", "No Change"))
 
   #set an order field to force plotting of NoChange first
@@ -273,7 +275,7 @@ profilePlot <- function(df,
   #Add genesym labels to increased, decreased genes.
   if (!missing(geneSym)){
     #filter df to changed genes
-    dfc <- filter(df, group != "No Change")
+    dfc <- dplyr::filter(df, group != "No Change")
     profilePlot <- profilePlot +
       geom_text_repel(data=dfc, aes_string(x=x, y=y, label=geneSym),
                       show.legend=FALSE)

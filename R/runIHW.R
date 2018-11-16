@@ -3,8 +3,8 @@
 #'
 #' This is a wrapper around the independent hypothesis weighting package that
 #' takes a list of topTable dataframes and applies Independent Hypothesis
-#' Weighting (IHW) to each topTable dataframe in the list.  
-#' 
+#' Weighting (IHW) to each topTable dataframe in the list.
+#'
 #' IHW is a method developed by N. Ignatiadis (http://dx.doi.org/10.1101/034330)
 #' to weight FDR values based on a covariate (AveExpr in this case).
 #'
@@ -19,7 +19,7 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
 #'
-#' @param contrastList A list of topTable dataframes.  
+#' @param contrastList A list of topTable dataframes.
 #' @param alpha The alpha value is the FDR level you wish to interogate (range 0-1; default = 0.1)
 #' @param ... other arguments are passed directly to the ihw function (see ?ihw).
 #'
@@ -33,7 +33,7 @@
 #' MyContrastList <- IHWresults[[1]]
 #' IHWdf <- IHWresults[[2]]
 #'
-#' @import IHW
+#' @importFrom IHW ihw
 #'
 #' @export
  runIHW <- function(contrastList,
@@ -56,7 +56,7 @@
       if (is.null(ttdf$P.Value) || is.null(ttdf$AveExpr)){
         stop ("Expected both P.Value and AveExpr columns in data.frame")
       }
-      IHWresult <- ihw(ttdf$P.Value,
+      IHWresult <- IHW::ihw(ttdf$P.Value,
                          covariates = ttdf$AveExpr,
                          alpha = alpha, ...)
     }
@@ -82,13 +82,11 @@
     numcol <- length (cnames)
     cnames[(numcol-2):numcol] <- paste ("ihw.", cnames[(numcol-2):numcol], sep="")
     colnames(contrastList[[i]]) <- cnames
-    
+
     #add documentation
     attr(contrastList[[i]], "ihw") = TRUE
   }
 
-  #todo: add optional facet plots of weights vs. Intensity colorby bin
-  
   result <- list(contrasts=contrastList, ihwObj=ihwList)
   return(result)
 

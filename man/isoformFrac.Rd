@@ -24,7 +24,7 @@ normalizations have no effect.}
 A DGEobj with an isoform fraction dataframe added
 }
 \description{
-Takes a DGEobj as input and adds an assay item containing isoform fraction data.
+Takes a DGEobj as input (transcript level data) and adds an assay item containing isoform fraction data.
 }
 \details{
 Isoform Fraction is calculated using length normalized data (FPKM or TPM), as

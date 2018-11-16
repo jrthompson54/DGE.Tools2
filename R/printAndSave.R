@@ -34,7 +34,9 @@
 #' printAndSave (Myggplot, "myfile.png", width=5, height=4, res=150, printFontSize=10,
 #'                saveFontSize=18)  #set a few options
 #'
-#' @import ggplot2 tools grDevices
+#' @import ggplot2
+#' @importFrom grDevices dev.cur dev.off
+#' @importFrom assertthat assert_that
 #'
 #' @export
 printAndSave <- function (plotObject, filename, width=7, height=5,
@@ -43,7 +45,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
                      scaleLegend = TRUE, printPlot=TRUE, savePlot=TRUE){
 
   #Save the starting dev level
-  startDev <- dev.cur()
+  startDev <- grDevices::dev.cur()
 
   #scale the legend text for saved graphics
   save.Legend.ScaledSize <- 10/printFontSize
@@ -100,8 +102,8 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
   }
 
   #Reset to starting dev level before exit (traps for a malformed ggplot that opens a device and never closes)
-  while (cur.dev() > startDev)
-      devoff()
+  while (grDevices::dev.cur() > startDev)
+      grDevices::dev.off()
 }
 
 ### Function printWithFootnote ###
@@ -141,7 +143,11 @@ printWithFootnote <- function(plotObject, footnote, fontface="plain", fontsize=1
   #fontfact values = "plain", "bold", "italic"
   assertthat::assert_that("ggplot" %in% class(plotObject))
   assertthat::assert_that(class(footnote)[[1]] == "character")
-  grid.newpage()
-  g <- arrangeGrob(plotObject, bottom = textGrob(footnote, x = 0, hjust = hjust, vjust=0.1, gp = gpar(fontface = fontface, fontsize = fontsize)))
-  grid.draw(g)
+  grid::grid.newpage()
+  g <- gridExtra::arrangeGrob(plotObject,
+                              bottom = grid::textGrob(footnote, x = 0,
+                                                      hjust = hjust, vjust=0.1,
+                                                      gp = grid::gpar(fontface = fontface, fontsize = fontsize))
+                              )
+  grid::grid.draw(g)
 }

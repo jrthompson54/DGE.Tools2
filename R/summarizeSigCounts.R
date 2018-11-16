@@ -27,7 +27,7 @@
 #' @import magrittr
 #'
 #' @examples
-#' 
+#'
 #' #get a contrast list from a dgeObj
 #' MyContrastList <- getType(dgeObj, "topTable")
 #'

@@ -22,8 +22,11 @@
 #'
 #'    checkSex(dgeObj, species="human")
 #'
-#' @import dplyr ggplot2 magrittr edgeR ggrepel ggiraph tibble
+#' @import ggplot2 magrittr ggrepel ggiraph
 #' @importFrom assertthat assert_that
+#' @importFrom edgeR calcNormFactors
+#' @importFrom dplyr filter select left_join mutate arrange
+#' @importFrom tibble rownames_to_column column_to_rownames
 #'
 #' @export
 checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
@@ -32,7 +35,7 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #convert this to a function in DGE.Tools2
   #input dgeObj, optionally specify x and y genes
   ##if genes not specified, pick highest expressed of each x and y gene
-  assert_that(!missing(species),
+  assertthat::assert_that(!missing(species),
               !missing(dgeObj),
               tolower(species) %in% c("human", "mouse", "rat")
               )
@@ -59,25 +62,25 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   idx <- rownames(log2CPM) %in% c(x$gene, y$gene)
   plotDat <- t(log2CPM[idx,]) %>%
     as.data.frame %>%
-    rownames_to_column(var="rowname")
+    tibble::rownames_to_column(var="rowname")
 
   #add sample identifier data
   dtemp <- getItem(dgeObj, "design_orig") %>%
-    rownames_to_column(var="rowname")
+    tibble::rownames_to_column(var="rowname")
   #add labelCo and sexCol data as needed
   if (!missing(labelCol) & !missing(sexCol)){
-    dtemp %<>% select(rowname, labelCol=labelCol, sexCol=sexCol)
-    plotDat <- left_join(plotDat, dtemp)
+    dtemp %<>% dplyr::select(rowname, labelCol=labelCol, sexCol=sexCol)
+    plotDat <- dplyr::left_join(plotDat, dtemp)
     colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol, sexCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol, color=sexCol))
   } else if (!missing(labelCol) & missing(sexCol)){
-    dtemp %<>% select(rowname, labelCol=labelCol)
-    plotDat <- left_join(plotDat, dtemp)
+    dtemp %<>% dplyr::select(rowname, labelCol=labelCol)
+    plotDat <- dplyr::left_join(plotDat, dtemp)
     colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol))
   } else if (missing(labelCol) & !missing(sexCol)){
-    dtemp %<>% select(rowname, sexCol=sexCol)
-    plotDat <- left_join(plotDat, dtemp)
+    dtemp %<>% dplyr::select(rowname, sexCol=sexCol)
+    plotDat <- dplyr::left_join(plotDat, dtemp)
     colnames(plotDat) <- c("SampID", x$genename, y$genename, sexCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, color=sexCol))
   } else if (missing(labelCol) & missing(sexCol)){
@@ -117,9 +120,9 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   if (!is.null(chr))
     geneData %<>%
     as.data.frame() %>%
-    rownames_to_column(var="geneid") %>%
-    filter(toupper(Chromosome) %in% toupper(chr)) %>%
-    column_to_rownames(var="geneid")
+    tibble::rownames_to_column(var="geneid") %>%
+    dplyr::filter(toupper(Chromosome) %in% toupper(chr)) %>%
+    tibble::column_to_rownames(var="geneid")
 
   log2CPM_mat <- log2CPM[rownames(log2CPM) %in% rownames(geneData),]
 
@@ -143,7 +146,7 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   if (!is.null(chr))
     log2CPM_mat <- .getChrDat(dgeObj, chr=chr, orig=orig)
   if (is.null(log2CPM_mat))
-    Stop ("No gene data found for specified chromosome.")
+    stop ("No gene data found for specified chromosome.")
 
   meanLogCPM <- rowMeans(log2CPM_mat)
 
@@ -151,11 +154,11 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #Calc mean and sort on mean descending
   log2CPM  <- log2CPM_mat %>%
     as.data.frame() %>%
-    rownames_to_column(var="geneid") %>%
-    mutate(meanLogCPM = meanLogCPM) %>%
-    arrange(desc(meanLogCPM)) %>%
-    mutate(meanLogCPM = NULL) %>%
-    column_to_rownames(var="geneid")
+    tibble::rownames_to_column(var="geneid") %>%
+    dplyr::mutate(meanLogCPM = meanLogCPM) %>%
+    dplyr::arrange(desc(meanLogCPM)) %>%
+    dplyr::mutate(meanLogCPM = NULL) %>%
+    tibble::column_to_rownames(var="geneid")
   gene <- rownames(log2CPM)[1]
   genename <- geneData$GeneName[rownames(geneData) == gene]
   # dat <- log2CPM %>%

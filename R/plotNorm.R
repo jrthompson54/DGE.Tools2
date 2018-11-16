@@ -21,8 +21,12 @@
 #'    MyggPlot <- plotNorm(MyDgeObj, plotType="box")
 #'    MyggPlot <- plotNorm(counts, plotType="density")
 #'
-#' @import dplyr tidyr DGEobj edgeR magrittr assertthat ggplot2
+#' @import magrittr ggplot2
 #' @importFrom stringr str_c
+#' @importFrom tidyr gather
+#' @importFrom tibble rownames_to_column
+#' @importFrom DGEobj getItem
+#' @importFrom assertthat assert_that
 #'
 #' @export
 # For sourcing during dev:
@@ -42,7 +46,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
   if (class(dat)[[1]] == "matrix") {
     counts <- dat
   } else {
-    counts <- getItem(dat, "counts")
+    counts <- DGEobj::getItem(dat, "counts")
   }
 
   log2cpm <- convertCounts(counts, unit="cpm", log=TRUE, normalize="none")
@@ -51,14 +55,14 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
   #convert to tall/shinny for facetted plotting
   tall <- log2cpm %>%
     as.data.frame %>%
-    rownames_to_column(var="GeneID") %>%
-    gather (SampleID, Log2CPM, -GeneID)
+    tibble::rownames_to_column(var="GeneID") %>%
+    tidyr::gather (SampleID, Log2CPM, -GeneID)
   tall$Normalization = "none"
 
   tall_tmm <- log2CPM_tmm %>%
     as.data.frame %>%
-    rownames_to_column(var="GeneID") %>%
-    gather (SampleID, Log2CPM, -GeneID)
+    tibble::rownames_to_column(var="GeneID") %>%
+    tidyr::gather (SampleID, Log2CPM, -GeneID)
   tall_tmm$Normalization = "TMM"
 
   tall %<>% rbind(tall_tmm)
@@ -69,7 +73,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
     resultPlot <- ggplot (tall, aes(x=Log2CPM, color=SampleID)) +
       geom_density() +
       facet_grid (~ Normalization) +
-      ggtitle(str_c("Log2CPM before/after", normalize, "normalization", sep=" "))  +
+      ggtitle(stringr::str_c("Log2CPM before/after", normalize, "normalization", sep=" "))  +
       theme_gray() +
       NoLegend()
   }
@@ -80,7 +84,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
       geom_boxplot(alpha=0.5) +
       # geom_violin(alpha=0.5) +
       facet_grid (~ Normalization) +
-      ggtitle(str_c("Log2CPM before/after", normalize, "normalization", sep=" "))  +
+      ggtitle(stringr::str_c("Log2CPM before/after", normalize, "normalization", sep=" "))  +
       theme_gray() +
       NoXlab() +
       NoLegend()

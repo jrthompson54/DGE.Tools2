@@ -33,8 +33,6 @@
 #'    Optional but highly encouraged;  suggestions: list(PID = "20170101-0001",
 #'    XpressID = "123456", Genome = "Mouse.B38", GeneMobel = "Ensembl.R84")
 #'
-#' @importFrom stringr str_c
-#'
 #' @return A DGEobj
 #'
 #' @examples
@@ -56,7 +54,9 @@
 #'                                       GeneMobel = "Ensembl.R84")
 #'                              )
 #'
-#' @import DGEobj magrittr
+#' @import magrittr
+#' @importFrom stringr str_c
+#' @importFrom DGEobj initDGEobj
 #'
 #' @export
 OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
@@ -74,19 +74,19 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     } else {
       gz <- ""
     }
-    counts <- str_c(counts, gz)
-    seqAnnotation <- str_c(seqAnnotation, gz)
-    design <- str_c(design, gz)
+    counts <- stringr::str_c(counts, gz)
+    seqAnnotation <- stringr::str_c(seqAnnotation, gz)
+    design <- stringr::str_c(design, gz)
 
 
    #change default filenames if not given and level = isoform
     if (tolower(level) == "isoform") {
         if (missing(counts))
-            counts <- str_c("RNA-Seq.Transcript_Count.Table.txt", gz)
+            counts <- stringr::str_c("RNA-Seq.Transcript_Count.Table.txt", gz)
         if (missing(seqAnnotation))
-            seqAnnotation <- str_c("RNA-Seq.Transcript_Count.Annotation.txt", gz)
+            seqAnnotation <- stringr::str_c("RNA-Seq.Transcript_Count.Annotation.txt", gz)
         if (missing(design))
-            design <- str_c("RNA-Seq.Design.txt", gz)
+            design <- stringr::str_c("RNA-Seq.Design.txt", gz)
     }
 
     #get the data
@@ -100,7 +100,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     if (missing(customAttr)) {
         customAttr <- list(source="Omicsoft")
     } else {
-        assert_that(class(customAttr)[[1]] == "list")
+        asertthat::assert_that(class(customAttr)[[1]] == "list")
         customAttr$source <- source
     }
 
@@ -109,7 +109,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     customAttr$DGEobj <- packageVersion("DGEobj")
 
     #build the DgeObj
-    DgeObj <- initDGEobj(counts=countData, rowData=seqData,
+    DgeObj <- DGEobj::initDGEobj(counts=countData, rowData=seqData,
                         colData=designData, level,
                         customAttr=customAttr)
 

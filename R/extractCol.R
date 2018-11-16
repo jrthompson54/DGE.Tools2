@@ -109,7 +109,9 @@ extractCol <- function(dflist, colName, robust="TRUE"){
 #'
 #'     MyPvalues  = .extractCol2(TopTableList, "P.Value")
 #'
-#' @import magrittr dplyr tibble
+#' @import magrittr
+#' @importFrom tibble rownames_to_column column_to_rownames
+#' @importFrom dplyr select full_join
 #' @importFrom assertthat assert_that
 #'
 .extractCol2 <- function(dflist, colName){
@@ -122,16 +124,16 @@ extractCol <- function(dflist, colName, robust="TRUE"){
   for (i in 1:length(dflist)){
 
     newdat <- dflist[[i]] %>%
-      rownames_to_column(var="rowid") %>%
-      select(rowid, colName)
+      tibble::rownames_to_column(var="rowid") %>%
+      dplyr::select(rowid, colName)
 
     if (i == 1){
       dat <- newdat
     } else {
-      dat %<>% full_join(newdat, by="rowid")
+      dat %<>% dplyr::full_join(newdat, by="rowid")
     }
   }
-  dat %<>% column_to_rownames(var="rowid")
+  dat %<>% tibble::column_to_rownames(var="rowid")
   colnames(dat) <- names(dflist)
   return(dat)
 }

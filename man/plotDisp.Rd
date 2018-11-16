@@ -13,7 +13,7 @@ plotDisp(x, designMatrix, plotType = "dispersion", symbolSize = 1,
 \arguments{
 \item{x}{A Counts matrix or DGEList (required)}
 
-\item{designMatrix}{A design matrix created limma by model.matrix}
+\item{designMatrix}{A design matrix created stats::model.matrix}
 
 \item{plotType}{One of "dispersion" or "BCV" (default = "dispersion")}
 
