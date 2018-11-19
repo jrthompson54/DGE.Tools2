@@ -47,9 +47,9 @@ runPower <- function(counts, designMatrix,
 #Fit the BCV data and define the BCV for each depth requested.
   #estimate dispersion
   dgelist <- counts %>%
-    as.matrix %>%
-    edgeR::DGEList %>%
-    edgeR::calcNormFactors %>%
+    as.matrix() %>%
+    edgeR::DGEList() %>%
+    edgeR::calcNormFactors() %>%
     edgeR::estimateDisp (design=designMatrix, robust=TRUE)
 
   # BCV <- sqrt(dgelist$tagwise.dispersion)

@@ -49,8 +49,8 @@ runEdgeRNorm <- function(dat, normMethod="TMM",
 
   #Now ready to normalize counts
   MyDGElist = CountsMatrix %>%
-    edgeR::DGEList %>%  #edgeR
-    edgeR::calcNormFactors (method = normMethod)
+    edgeR::DGEList() %>%  #edgeR
+    edgeR::calcNormFactors(method = normMethod)
 
   #capture the DGEList
   itemAttr <- list(normalization=normMethod)

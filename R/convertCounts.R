@@ -83,6 +83,8 @@ convertCounts <- function(counts,
         normalize <- toupper(normalize)
     if (toupper(normalize) %in% c("UPPERQUARTILE", "NONE")) #these have to be lowercase
         normalize <- tolower(normalize)
+    if (toupper(normalize) %in% c("TMMWZP"))
+      normalize <- "TMMwzp"
 
     #Coerce counts to a matrix
     result <- try({counts <- as.matrix(counts)}, silent=TRUE)
@@ -135,7 +137,7 @@ calcCPM <- function(counts, log, normalize, prior.count, debug){
   if (nrow(counts) < 10000)
     warning('You should use the whole dataset when calculating CPM, not a subset.')
   counts %>%
-    edgeR::DGEList %>%
+    edgeR::DGEList() %>%
     edgeR::calcNormFactors(method=normalize) %>%
     edgeR::cpm(log=log, prior.count=prior.count)
 }
@@ -146,7 +148,7 @@ calcFPKM <- function(counts, log, normalize, geneLength, prior.count, debug){
   if (nrow(counts) < 10000)
     warning('You should use the whole dataset when calculating FPKM, not a subset.')
   counts %>%
-    edgeR::DGEList %>%
+    edgeR::DGEList() %>%
     edgeR::calcNormFactors(method=normalize) %>%
     edgeR::rpkm(log=log, gene.length=geneLength, prior.count=prior.count)
 }

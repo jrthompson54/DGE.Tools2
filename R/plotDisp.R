@@ -67,12 +67,12 @@ plotDisp <- function (x,
 
   if (class(x)[[1]] == "DGEList")
     dgelist <- x %>%
-        edgeR::calcNormFactors %>%
+        edgeR::calcNormFactors() %>%
         edgeR::estimateDisp (design=designMatrix, robust=TRUE, ...)
   else dgelist <- x %>%  #process a counts matrix
       as.matrix %>%
-      edgeR::DGEList %>%
-      edgeR::calcNormFactors %>%
+      edgeR::DGEList() %>%
+      edgeR::calcNormFactors() %>%
       edgeR::estimateDisp (design=designMatrix, robust=TRUE, ...)
 
   if (tolower(plotType == "dispersion"))
