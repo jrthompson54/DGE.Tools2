@@ -68,15 +68,16 @@
   contrastNames <- names(contrastList)
   for (i in 1:length(contrastList)){
     # message(paste("Running ihw on contrast", contrastNames[i], sep=" "))
-
     ihwResult <- runIHWon1DF(contrastList[[i]],
                             alpha=alpha,
                             proportion=proportion[i], ...)
     #capture the ihwResult object
     ihwList[[i]] <- ihwResult
     #cbind adj_pvalue, weight and weighted_pvalue columns to topTable DF
+    # contrastList[[i]] <- cbind (contrastList[[i]],
+    #                       as.data.frame(ihwResult)[,2:4])
     contrastList[[i]] <- cbind (contrastList[[i]],
-                          as.data.frame(ihwResult)[,2:4])
+                               ihwResult@df[,2:4])
     #prefix the colnames of those three columns with "ihw."
     cnames <- colnames(contrastList[[i]])
     numcol <- length (cnames)
