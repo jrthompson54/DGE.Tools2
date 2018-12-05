@@ -150,8 +150,8 @@ profilePlot <- function(df,
   #
   # Make sure specified columns exist
   assertthat::assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
-  assertthat:assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
-  assertthat:assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
+  assertthat::assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
+  assertthat::assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
 
   # if (!logRatioCol %in% colnames(df)) {
   #   stop("LogRatio column not found.")

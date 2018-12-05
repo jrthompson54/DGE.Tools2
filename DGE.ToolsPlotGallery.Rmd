@@ -65,7 +65,7 @@ library(ggplot2)
 library(magrittr)
 library(dplyr)
 library(gridExtra)
-library(DGE.Tools)
+library(DGE.Tools2)
 library(SummarizedExperiment)
 library(grDevices)
 source("~/R/lib/SubsettableListOfArrays.R")
@@ -73,6 +73,7 @@ source("~/R/lib/SubsettableListOfArrays.R")
 MyRSE <- readRDS("MyGene_RSE.RDS")
 MySLOA <- readRDS("DT_Model_SLOA_dupCor.RDS")
 MyContrasts <- readRDS("DT_Model_dupCor_Contrasts.RDS")
+#Get DGEobj from Stash....
 
 #Set some options for drawing heatmaps
 heatopts <- list(

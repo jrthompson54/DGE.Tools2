@@ -1,5 +1,5 @@
 ### Function obsPlot ###
-#' Deluxe obsPlot
+#' Function obsPlot
 #'
 #' Provides a summary plot for each observation (gene), showing data for each
 #' experiment group. The plot can optionally include one or more of the
@@ -26,17 +26,17 @@
 #' @keywords boxplot violinplot ggplot2 logratio
 #'
 #' @param data matrix or dataframe of whatever data you want to plot with
-#'   samples in columns and observations (genes) in rows.
-#' @param block Determines which samples belong to the same group.  Must be same
+#'   samples in columns and observations (genes) in rows (with rownames and colnames).  Bug: Currently requires at least 2 rows of data.
+#' @param block Character or numeric vector. Determines which samples belong to the same group.  Must be same
 #'   length as ncol(data).  Assign the same value to each member of a group.
 #'   Note that the block values are used to label the X Axis to identify the
 #'   groups.  Thus short pneumonic labels are useful here.
-#' @param blockOrder Use this to explicitly set the display order of the blocks
+#' @param blockOrder Character vector. Use this to explicitly set the display order of the blocks
 #'   in the plots.  blockOrder should contain unique(block) in the order you
-#'   wish to items to be arranged along the X-axis.  (optional)
-#' @param obsNames list of row (observation) names to use instead of actual
+#'   wish to items to be arranged along the X-axis.  (Optional: Default = unique(block))
+#' @param obsNames Character vector of row (observation) names to use instead of actual
 #'   rownames. (Default = NULL)
-#' @param sampNames list of column (sample) names to use instead of actual
+#' @param sampNames Character vector of column (sample) names to use instead of actual
 #'   colnames. (Default = NULL)
 #' @param plotBy Name for the type of observation being plotted (Default = "Gene")
 #' @param valType name for the Value being plotted.  (Default = "Log2CPM")
@@ -79,6 +79,7 @@
 #' @param scales Specify same scales or independent scales for each subplot (Default = "free_y";
 #'   Allowed values: "fixed", "free_x", "free_y", "free")
 #' @param returnPlotDat Returns the dataframe used for the plot as a list member (default=FALSE)
+#' @param debug Used to open a breakpoint just before the melt step (default=FALSE)
 #'
 #' @return ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
 #'   facet=FALSE or returnPlotDat=TRUE, returns a list of ggplot objects indexed
@@ -141,7 +142,8 @@ obsPlot <- function(data,
                       facetCol = NULL,
                       xAngle = 30,
                       scales = "free_y",
-                      returnPlotDat = FALSE
+                      returnPlotDat = FALSE,
+                      debug = FALSE
                       )
 {
 
@@ -195,8 +197,10 @@ obsPlot <- function(data,
 
   ### Argument checks
   ###
-  assert_that(!missing(block),
+  assertthat::assert_that(!missing(block),
               !missing(data))
+  if (!class(block) == "character")
+    block <- as.character(block)
 
   if (is.matrix(data)){ #ggplot likes dataframes
     data <- as.data.frame(data, stringsAsFactors=FALSE)
@@ -216,7 +220,9 @@ obsPlot <- function(data,
     assertthat::assert_that(length(obsNames) == nrow(data))
   }
 
-  if(!missing(blockOrder)){
+  if (missing(blockOrder)){
+    blockOrder <- unique(block) #set default blockOrder
+  }else{
     assertthat::assert_that(length(blockOrder) == length(unique(block)))
   }
 
@@ -236,17 +242,21 @@ obsPlot <- function(data,
     ylab = valType
   }
 
+  if (debug ==TRUE) browser()
+
   #build tall data
   groupdf = data.frame(cbind(Samples=sampNames, Block=block), stringsAsFactors = FALSE)
-  data[[plotBy]] = obsNames
+  data[[plotBy]] = as.character(obsNames) #wrap in as.character to tolerate lists
   data %<>% reshape2::melt(variable.name="Samples", value.name = valType, na.rm=TRUE)
   #attach the group info
   data %<>% dplyr::left_join(groupdf)
-  data$Block %<>% as.character %>% as.factor
+  # data$Block %<>% as.character %>% as.factor
+  data$Block <- factor(data$Block, levels=blockOrder)
+
   #optionally set the block order for the plot
-  if (!is.null(blockOrder)){
-      data$Block <- factor(data$Block, levels=blockOrder)
-  }
+  # if (!missing(blockOrder)){
+  #     data$Block <- factor(data$Block, levels=blockOrder)
+  # }
 
 ### Plot code here
   if (facet) {

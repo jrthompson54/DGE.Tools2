@@ -2,7 +2,7 @@
 % Please edit documentation in R/obsPlot.R
 \name{obsPlot}
 \alias{obsPlot}
-\title{Deluxe obsPlot}
+\title{Function obsPlot}
 \usage{
 obsPlot(data, block, blockOrder, obsNames, sampNames, plotBy = "Gene",
   valType = "Log2CPM", boxLayer = TRUE, violinLayer = FALSE,
@@ -16,25 +16,25 @@ obsPlot(data, block, blockOrder, obsNames, sampNames, plotBy = "Gene",
   meanFill = "goldenrod1", meanShape = 22, meanAlpha = 0.7,
   meanSize = 3, legenPosition = "right", baseFontSize = 12,
   themeStyle = "grey", facet = TRUE, facetCol = NULL, xAngle = 30,
-  scales = "free_y", returnPlotDat = FALSE)
+  scales = "free_y", returnPlotDat = FALSE, debug = FALSE)
 }
 \arguments{
 \item{data}{matrix or dataframe of whatever data you want to plot with
-samples in columns and observations (genes) in rows.}
+samples in columns and observations (genes) in rows (with rownames and colnames).  Bug: Currently requires at least 2 rows of data.}
 
-\item{block}{Determines which samples belong to the same group.  Must be same
+\item{block}{Character or numeric vector. Determines which samples belong to the same group.  Must be same
 length as ncol(data).  Assign the same value to each member of a group.
 Note that the block values are used to label the X Axis to identify the
 groups.  Thus short pneumonic labels are useful here.}
 
-\item{blockOrder}{Use this to explicitly set the display order of the blocks
+\item{blockOrder}{Character vector. Use this to explicitly set the display order of the blocks
 in the plots.  blockOrder should contain unique(block) in the order you
-wish to items to be arranged along the X-axis.  (optional)}
+wish to items to be arranged along the X-axis.  (Optional: Default = unique(block))}
 
-\item{obsNames}{list of row (observation) names to use instead of actual
+\item{obsNames}{Character vector of row (observation) names to use instead of actual
 rownames. (Default = NULL)}
 
-\item{sampNames}{list of column (sample) names to use instead of actual
+\item{sampNames}{Character vector of column (sample) names to use instead of actual
 colnames. (Default = NULL)}
 
 \item{plotBy}{Name for the type of observation being plotted (Default = "Gene")}
@@ -107,6 +107,8 @@ respectively. Default = bw"}
 Allowed values: "fixed", "free_x", "free_y", "free")}
 
 \item{returnPlotDat}{Returns the dataframe used for the plot as a list member (default=FALSE)}
+
+\item{debug}{Used to open a breakpoint just before the melt step (default=FALSE)}
 
 \item{violinAlpha}{Transparency for the box layer (Default = 0.5)}
 
