@@ -4,21 +4,18 @@
 \alias{lowIntFilter}
 \title{Function  lowIntFilter}
 \usage{
-lowIntFilter(x, zfpkmThreshold = -3, fpkThreshold = 5,
-  countThreshold = 10, sampleFraction = 0.5, genelength)
+lowIntFilter(x, zfpkmThreshold, fpkThreshold, countThreshold,
+  sampleFraction = 0.5, genelength)
 }
 \arguments{
-\item{x}{A counts matrix or data.frame OR DGEobj with RNA-Seq data
+\item{x}{A counts matrix or data.frame OR a DGEobj with RNA-Seq data
 (required).}
 
-\item{zfpkmThreshold}{Genes below this threshold are removed
-(Default = -3.0).  Set to -Inf to disable
-this filter.}
+\item{zfpkmThreshold}{Genes below this threshold are removed (-3.0 is recommended)}
 
-\item{fpkThreshold}{Genes below this threshold are removed (Default = 5).
-Set to 0 to disable this filter.}
+\item{fpkThreshold}{Genes below this threshold are removed (recommend 5).}
 
-\item{countThreshold}{Genes below this threshold are removed (Default = 10 ).
+\item{countThreshold}{Genes below this threshold are removed (recommend 10).
 Set to 0 to disable this filter.}
 
 \item{sampleFraction}{The proportion of samples that must meet the thresholds
@@ -32,12 +29,15 @@ Same class as input object with low intensity rows removed
 }
 \description{
 Takes a DGEobj or counts matrix as input and applies a combination of low
-intensity filters. zFPKM, FPK and raw Count filters are supported.  A gene
-must pass all filters.
+intensity filters. raw count, zFPKM and/or FPK filters are supported.  A gene
+must pass all active filters.  Not setting a threshold argument inactivates that threshold.
 }
 \examples{
+  #simple count threshold
+  myDgeObj  = lowIntFilter (myDgeObj, countThreshold=10)
 
-  myDgeObj  = lowIntFilter (myDgeObj)
+  #count and zFPKM thresholds
+  myDgeObj  = lowIntFilter (myDgeObj, countThreshold=10, zfpkmThreshold = -3.0)
 
 }
 \author{
