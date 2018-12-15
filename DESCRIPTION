@@ -90,4 +90,5 @@ Collate:
     'topTable.merge.R'
     'GOIplot.R'
     'lowIntFilter.R'
+    'tidyContrasts.R'
 RoxygenNote: 6.1.1

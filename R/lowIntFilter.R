@@ -29,7 +29,6 @@
 #'   myDgeObj  = lowIntFilter (myDgeObj, countThreshold=10, zfpkmThreshold = -3.0)
 #'
 #' @importFrom assertthat assert_that
-#' @importFrom DGEobj getItem
 #' @importFrom zFPKM zFPKM
 #'
 #' @export
@@ -65,23 +64,29 @@ lowIntFilter <- function(x, zfpkmThreshold, fpkThreshold, countThreshold, sample
     idx <- frac >= sampleFraction
     counts <- counts[idx,]
     if (xClass == "DGEobj") x <- x[idx,]
+    genelength <- genelength[idx]
   }
 
   #apply zFPKM threshold
   if (!missing(zfpkmThreshold)){
-    fpkm <- convertCounts(counts, unit="fpkm", geneLength = genelength)
-    zfpkm <- zFPKM::zFPKM(as.data.frame(fpkm))
+    fpkm <- convertCounts(counts, unit="fpkm", geneLength = genelength) #class(fpkm) = "matrix"
+    zfpkm <-as.matrix(zFPKM::zFPKM(as.data.frame(fpkm)))
 
     #For data from Xpress, Expect -Inf fpkm values for very short (<150bp genes)  These rows should be removed.
-    zFPKM[is.infinite(zFPKM)] <- NA
-    idxcc <- complete.cases(zFPKM)  #idxcc flags rows to keep; drops rows with NAs
+    zfpkm[is.infinite(zfpkm)] <- NA
+    idxcc <- complete.cases(zfpkm)  #idxcc flags rows to keep; drops rows with NAs
+    counts <- counts[idxcc,]
+    if (xClass == "DGEobj") x <- x[idxcc,]
+    zfpkm <- zfpkm[idxcc,]
+    genelength <- genelength[idxcc]
 
     #creat index for zfpkm >= zfpkmThreshold in fracThreshold of samples
     idxzfpkm <- zfpkm >= zfpkmThreshold
     frac <- rowSums(idxzfpkm) / ncol(idxzfpkm)
-    idx <- frac >= fracThreshold
-    counts <- counts[(idx & idxcc),]
-    if (xClass == "DGEobj") x <- x[(idx & idxcc),]
+    idx <- frac >= sampleFraction
+    counts <- counts[idx,]
+    if (xClass == "DGEobj") x <- x[idx,]
+    genelength <- genelength[idx]
   }
 
   #apply FPK threshold
@@ -89,8 +94,11 @@ lowIntFilter <- function(x, zfpkmThreshold, fpkThreshold, countThreshold, sample
     fpk <- convertCounts(counts, unit="fpk", geneLength = genelength)
     #keep FPK >= fpkThreshold in fracThreshold of samples
     idxfpk <- fpk >= fpkThreshold
-    counts <- counts[idxfpk,]
-    if (xClass == "DGEobj") x <- x[idxfpk,]
+    frac <- rowSums(idxfpk)/ncol(idxfpk)
+    idx <- frac >= sampleFraction
+    counts <- counts[idx,]
+    if (xClass == "DGEobj") x <- x[idx,]
+    genelength <- genelength[idx]
   }
 
   if (xClass == "DGEobj") return(x) else return(counts)
