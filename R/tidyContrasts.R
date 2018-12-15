@@ -28,7 +28,7 @@
 #'
 #' @examples
 #'
-#'   MyMergedResults  = mergeContrasts (myDgeObj)
+#'   MyMergedResults  = tidyContrasts (myDgeObj)
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom dplyr select bind_rows
@@ -36,7 +36,7 @@
 #' @importFrom DGEobj getType
 #'
 #' @export
-tidyContrasts <- function(x, format = "tidy", columns, rownameColumn="rownames"){
+tidyContrasts <- function(x, columns, rownameColumn="rownames"){
 
   assertthat::assert_that(class(x)[[1]] %in% c("DGEobj", "list"))
 

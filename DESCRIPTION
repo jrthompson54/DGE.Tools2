@@ -91,4 +91,5 @@ Collate:
     'GOIplot.R'
     'lowIntFilter.R'
     'tidyContrasts.R'
+    'tidyIntensity.R'
 RoxygenNote: 6.1.1

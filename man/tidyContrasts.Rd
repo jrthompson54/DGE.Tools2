@@ -4,7 +4,7 @@
 \alias{tidyContrasts}
 \title{Function  tidyContrasts}
 \usage{
-tidyContrasts(x, format = "tidy", columns, rownameColumn = "rownames")
+tidyContrasts(x, columns, rownameColumn = "rownames")
 }
 \arguments{
 \item{x}{A DGEobj or named list of contrast dataframes
@@ -36,7 +36,7 @@ The output will be in tall "tidy" format.
 }
 \examples{
 
-  MyMergedResults  = mergeContrasts (myDgeObj)
+  MyMergedResults  = tidyContrasts (myDgeObj)
 
 }
 \author{
