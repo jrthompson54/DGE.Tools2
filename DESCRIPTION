@@ -22,8 +22,8 @@ LazyData: true
 Imports:
     assertthat,
     AnnotationDbi,
-    dplyr (>= 0.4.3),
-    DGEobj,
+    dplyr (>= 0.7.0),
+    DGEobj (>= 0.9.25),
     edgeR,
     gdata,
     GenomicRanges,
@@ -50,7 +50,7 @@ Imports:
     tidyr,
     tools,
     zFPKM,
-    DGEobj (>= 0.9.0),
+    DGEobj (>= 0.9.25),
     checkmate,
     IHW,
     glue,
@@ -92,4 +92,5 @@ Collate:
     'lowIntFilter.R'
     'tidyContrasts.R'
     'tidyIntensity.R'
+    'obsPlot2.R'
 RoxygenNote: 6.1.1

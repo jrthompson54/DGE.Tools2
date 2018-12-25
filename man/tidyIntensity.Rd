@@ -2,12 +2,12 @@
 % Please edit documentation in R/tidyIntensity.R
 \name{tidyIntensity}
 \alias{tidyIntensity}
-\title{Function  tidyIntensit}
+\title{Function  tidyIntensity}
 \usage{
 tidyIntensity(x, rowIDcolumn = "rownames", group)
 }
 \arguments{
-\item{x}{A dataframe or matrix with rownames (required).}
+\item{x}{A dataframe or matrix with rownames and colnames (required).}
 
 \item{rowIDcolumn}{Name of column for the rowID (Usually a geneID column).  If it doesn't exist, it will be created from rownames (default="rowname)}
 
@@ -17,15 +17,8 @@ tidyIntensity(x, rowIDcolumn = "rownames", group)
 A tidy dataframe of intensity data.
 }
 \description{
-Takes dataframe or matrix of intensity values with geneid rownames and samplename columnnames.
-}
-\details{
-The contrast names will be used as a new column in the tidy output format.
-The input may or may not have rownames. If rownameColumn does not exist as a colname in
-the dataframes, it is created from the rownames.  The output will always
-contain a rownames column instead of actual rownames.
-
-The output will be in tall "tidy" format.
+Takes dataframe or matrix of intensity values with geneid rownames and samplename columnnames and a grouping vector.
+Returns a tidy dataframe.
 }
 \examples{
 
@@ -36,5 +29,5 @@ The output will be in tall "tidy" format.
 John Thompson, \email{john.thompson@bms.com}
 }
 \keyword{RNA-Seq;}
-\keyword{contrasts;}
-\keyword{merge}
+\keyword{intensity;}
+\keyword{tidy}
