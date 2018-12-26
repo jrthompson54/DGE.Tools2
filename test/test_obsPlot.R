@@ -7,13 +7,14 @@ library(tidyverse)
 library(magrittr)
 library(JRTutil)
 
-stashRoot <- getStashLocation()
+stashRoot <- getStashPath()
+stashRoot <- "//stash.pri.bms.com/stash"
 stashPath <- file.path(stashRoot, "data/nonclin/DGEobj_library")
 dgeObj <- readRDS(file.path(stashPath, "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS"))
 
-tcDat <-tidyContrasts(dgeObj, rownameColumn="EnsgID")
-unique(tcDat$contrast)
-#now plot logration +/- CI
+tcDat <-tidyContrasts(dgeObj, rownameColumn="EnsgID", includeColumns = c("logFC", "CI.R", "CI.L"))
+unique(tcDat$Contrast)
+#now plot logratio +/- CI
 
 
 #Intensity Plots

@@ -93,4 +93,5 @@ Collate:
     'tidyContrasts.R'
     'tidyIntensity.R'
     'obsPlot2.R'
+    'logRatioPlot.R'
 RoxygenNote: 6.1.1

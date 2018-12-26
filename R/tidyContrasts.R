@@ -1,34 +1,36 @@
 ### Function tidyContrasts ###
 #' Function  tidyContrasts
 #'
-#' Takes a DGEobj or contrast list as input and merges them into one dataframe.
+#' Takes a DGEobj or contrast list as input and merges them into one tidy dataframe.
 #' A contrast list is simply a list of topTable contrast dataframes. For
 #' example, DGEobj::getType(mydgeobj, "topTable") would retrieve a list of
 #' contrasts from a DGEobj.  The contrast list must be a named list as the
-#' contrast names are used during the merge operation.  Output can be specified
-#' as "tall" (synonymous with "tidy") or "wide".
+#' contrast names are used during the merge operation.
+#'
+#' The input may or may not have rownames. If supplied rownameColumn does not exist as a colname in
+#' the dataframes, it is created from the rownames.  In tidy style, the output will have no rownames.
 #'
 #' The contrast names will be used as a new column in the tidy output format.
-#' The input may or may not have rownames. If rownameColumn does not exist as a colname in
-#' the dataframes, it is created from the rownames.  The output will always
-#' contain a rownames column instead of actual rownames.
-#'
-#' The output will be in tall "tidy" format.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
-#' @keywords RNA-Seq; contrasts; merge
+#' @keywords RNA-Seq; contrasts; tidy merge
 #'
 #' @param x A DGEobj or named list of contrast dataframes
 #'   (required).
 #' @param rownameColumn Name of the rowname column. If a column by this
 #'   name does not exist, it is created from the rownames property (rownames_to_column(var=rownameColumn))
-#' @param columns A character vector of columns to include in the output (default = colnames of the first contrast)
+#' @param includeColumns A character vector of columns to include in the output (default = colnames of the first contrast)
 #'
 #' @return A DF with merged contrast data.
 #'
 #' @examples
 #'
-#'   MyMergedResults  = tidyContrasts (myDgeObj)
+#'   #Get contrasts directly from a DGEobj
+#'   MyMergedTidyDF  = tidyContrasts (myDgeObj)
+#'
+#'   #Assemble a list of contrasts from two DGEobjs; just logFC and conf intervals
+#'   myContrasts <- c(getType(DGEobj1, "topTable"), getType(DEobj2, "topTable))
+#'   MyMergedTidyDF <- tidyContrasts (myContrasts, includeColumns = c("logFC", "CI.R", "CI.L")
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom dplyr select bind_rows
@@ -36,7 +38,7 @@
 #' @importFrom DGEobj getType
 #'
 #' @export
-tidyContrasts <- function(x, columns, rownameColumn="rownames"){
+tidyContrasts <- function(x, rownameColumn="rownames", includeColumns){
 
   assertthat::assert_that(class(x)[[1]] %in% c("DGEobj", "list"))
 
@@ -44,7 +46,7 @@ tidyContrasts <- function(x, columns, rownameColumn="rownames"){
     dgeObj <- x
     x <- DGEobj::getType(dgeObj, "topTable")
     if (length(x) == 0)
-      stop("No topTable dataframes found in DGEobj")
+      stop("No topTable dataframes found in DGEobj\n")
   }  #x is now a contrastlist
 
   #make sure list contains only dataframes
@@ -58,8 +60,8 @@ tidyContrasts <- function(x, columns, rownameColumn="rownames"){
   }
 
   #Set default columns
-  if (missing(columns))
-    columns <- colnames(x[[1]])
+  if (missing(includeColumns))
+    includeColumns <- colnames(x[[1]])
 
   #find the common set of columns present in all dataframes.
   commonColumns <- colnames(x[[1]])
@@ -67,9 +69,9 @@ tidyContrasts <- function(x, columns, rownameColumn="rownames"){
     commonColumns <- intersect(commonColumns, colnames(x[[i]]))
 
  #make sure user-requested columns are present
-  if (!all(columns %in% commonColumns))
+  if (!all(includeColumns %in% commonColumns))
     warning("Some requested columns are not present in all dataframes.")
-  commonColumns <- intersect(commonColumns, columns)
+  commonColumns <- intersect(commonColumns, includeColumns)
 
   #Does the rownameColumn exist in df1?
   if (!rownameColumn %in% colnames(x[[1]])) {
@@ -79,11 +81,12 @@ tidyContrasts <- function(x, columns, rownameColumn="rownames"){
   }
 
   #reduce all dataframes to the selected columns
+  #this also insures same column order in each df
   x <- lapply(x, select, commonColumns)
 
   #add a contrast name column to each DF
   for (name in names(x)){
-    x[[name]]["contrast"] <- name
+    x[[name]]["Contrast"] <- name
   }
 
   #Now merge the dataframes vertically
