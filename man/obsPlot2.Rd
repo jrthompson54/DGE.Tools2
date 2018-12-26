@@ -15,17 +15,17 @@ obsPlot2(data, plotByCol, groupCol, valueCol,
   pointAlpha = 1, pointSize = 2, pointJitter = 0,
   meanColor = "red2", meanFill = "goldenrod1", meanShape = 22,
   meanAlpha = 0.7, meanSize = 3, legenPosition = "right",
-  baseFontSize = 12, themeStyle = "grey", facet = TRUE, facetCol,
+  baseFontSize = 12, themeStyle = "grey", facet = TRUE, facetRow,
   xAngle = 30, scales = "free_y", debug = FALSE)
 }
 \arguments{
 \item{data}{A tidy dataframe of intensity data.}
 
-\item{plotByCol}{Define the column name to separate plots.}
+\item{plotByCol}{Define the column name to separate plots (typically a gene ID column).}
 
-\item{groupCol}{Define the column name to group boxplots by.}
+\item{groupCol}{Define the column name to group boxplots by (typically a replicate group column).}
 
-\item{valueCol}{Define the column of values for plotting.}
+\item{valueCol}{Define the column of values for plotting (typically a log intensity measure).}
 
 \item{groupOrder}{Define the order for the groups in each plot.  Should
 contain values in unique(data$group) listed in the order that you want the
@@ -91,6 +91,9 @@ respectively. Default = bw"}
 \item{facet}{Specifies whether to facet (TRUE) or print individual plots
 (FALSE)  (Default = TRUE)}
 
+\item{facetRow}{Explicitly set the number of rows for the facet plot.
+Default behavior will automatically set the columns. (Default = NULL)}
+
 \item{xAngle}{Angle to set the sample labels on the Xaxis. (Default =  30; Range = 0-90)}
 
 \item{scales}{Specify same scales or independent scales for each subplot (Default = "free_y";
@@ -99,9 +102,6 @@ Allowed values: "fixed", "free_x", "free_y", "free")}
 \item{debug}{Turn on debug mode (default = FALSE)}
 
 \item{violinAlpha}{Transparency for the box layer (Default = 0.5)}
-
-\item{facetRow}{Explicitly set the number of Rows for the facet plot.
-Default behavior will automatically set the columns. (Default = NULL)}
 }
 \value{
 ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
@@ -109,7 +109,7 @@ ggplot If Facet=TRUE (default) returns a facetted ggplot object. If
   by observation (gene) names.
 }
 \description{
-Provides a summary plot for each observation (gene), showing data for each
+Provides a summary plot (box/violin/points)for each observation (gene), showing data for each
 experiment group. The plot can optionally include one or more of the
 following layers: boxplot, violin plot, individual points and/or mean of all
 points.  The layers are built up in the order listed with user settable
@@ -121,6 +121,44 @@ off to return a list of individual ggplot graphics for each gene.
 Input is a tidy dataframe of intensity data.
 }
 \examples{
+
+  #create a dataframe of data with row and colnames
+  groups <- paste("group", factor(rep(1:4, each=100)), sep="")
+  x <- matrix(rnorm(2400, mean=10), ncol=length(groups))
+  colnames(x) <- paste("sample", 1:ncol(x), sep="")
+  rownames(x) <- paste("gene", 1:nrow(x), sep="")
+
+  #reformat into tidy dataframe
+  tidyInt <- tidyIntensity(x,
+                           rowidColname = "GeneID",
+                           keyColname = "Sample",
+                           valueColname ="Log2CPM",
+                           group = groups)
+
+  #Facetted boxplot
+  obsPlot2(tidyInt, plotByCol="GeneID",
+           groupCol = "group",
+           valueCol ="Log2CPM",
+           pointJitter = 0.1,
+           facetRow = 2)
+
+  #Facetted violin plot
+  obsPlot2(tidyInt, plotByCol = "GeneID",
+           violinLayer = TRUE,
+           boxLayer = FALSE,
+           groupCo l="group",
+           valueCol = "Log2CPM",
+           pointJitter = 0.1,
+           facetRow = 2)
+
+  #Return a list of ggplots for each individual gene
+  myplots <- obsPlot2(tidyInt, plotByCol="GeneID",
+           groupCol = "group",
+           valueCol ="Log2CPM",
+           pointJitter = 0.1,
+           facet = FALSE)
+  #plot one from the list
+  myplots[[2]]
 
 }
 \author{

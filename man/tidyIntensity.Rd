@@ -4,14 +4,18 @@
 \alias{tidyIntensity}
 \title{Function  tidyIntensity}
 \usage{
-tidyIntensity(x, rowIDcolumn = "rownames", group)
+tidyIntensity(x, rowidColname, keyColname, valueColname, group)
 }
 \arguments{
 \item{x}{A dataframe or matrix with rownames and colnames (required).}
 
-\item{rowIDcolumn}{Name of column for the rowID (Usually a geneID column).  If it doesn't exist, it will be created from rownames (default="rowname)}
+\item{rowidColname}{Column name for the rowID (Usually a geneID column).
+If it doesn't exist, it will be created from rownames.}
 
-\item{group}{A grouping variable to define which columns go together (vector with length = ncol(x); coercable to character)}
+\item{valueColname}{Column name for the value column}
+
+\item{group}{A grouping variable to define which columns go together (vector
+with length = ncol(x); coercable to character)}
 }
 \value{
 A tidy dataframe of intensity data.

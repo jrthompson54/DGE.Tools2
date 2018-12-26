@@ -4,40 +4,32 @@
 \alias{tidyContrasts}
 \title{Function  tidyContrasts}
 \usage{
-tidyContrasts(x, columns, rownameColumn = "rownames")
+tidyContrasts(x, rownameColumn = "rownames", includeColumns)
 }
 \arguments{
 \item{x}{A DGEobj or named list of contrast dataframes
 (required).}
 
-\item{columns}{A character vector of columns to include in the output (default = colnames of the first contrast)}
-
 \item{rownameColumn}{Name of the rowname column. If a column by this
 name does not exist, it is created from the rownames property (rownames_to_column(var=rownameColumn))}
+
+\item{includeColumns}{A character vector of columns to include in the output (default = colnames of the first contrast)}
 }
 \value{
 A DF with merged contrast data.
 }
 \description{
-Takes a DGEobj or contrast list as input and merges them into one dataframe.
+Takes a DGEobj or contrast list as input and merges them into one tidy dataframe.
 A contrast list is simply a list of topTable contrast dataframes. For
 example, DGEobj::getType(mydgeobj, "topTable") would retrieve a list of
 contrasts from a DGEobj.  The contrast list must be a named list as the
-contrast names are used during the merge operation.  Output can be specified
-as "tall" (synonymous with "tidy") or "wide".
+contrast names are used during the merge operation.
 }
 \details{
+The input may or may not have rownames. If supplied rownameColumn does not exist as a colname in
+the dataframes, it is created from the rownames.  In tidy style, the output will have no rownames.
+
 The contrast names will be used as a new column in the tidy output format.
-The input may or may not have rownames. If rownameColumn does not exist as a colname in
-the dataframes, it is created from the rownames.  The output will always
-contain a rownames column instead of actual rownames.
-
-The output will be in tall "tidy" format.
-}
-\examples{
-
-  MyMergedResults  = tidyContrasts (myDgeObj)
-
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}
@@ -45,3 +37,4 @@ John Thompson, \email{john.thompson@bms.com}
 \keyword{RNA-Seq;}
 \keyword{contrasts;}
 \keyword{merge}
+\keyword{tidy}
