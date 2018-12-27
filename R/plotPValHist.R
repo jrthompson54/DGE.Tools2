@@ -27,15 +27,14 @@
 #' @return A ggplot2 object if facet=TRUE or a list of plots if facet=FALSE. (Default = TRUE)
 #'
 #' @examples
+#'
 #' #Print to console, all defaults
+#' MyPvalMatrix <- extractCol(getType(myDGEobj, "topTable"), "P.Value")
 #' plotPvalHist (MyPvalMatrix)
 #'
 #' #Print just to a PNG with some arguments
-#' myplot = plotPvalHist (MyPValMatrix, savePlot = T, fileNames = "MyPlot.PNG",
+#' myplot <- plotPvalHist (MyPValMatrix, savePlot = T, fileNames = "MyPlot.PNG",
 #'                facetFontSize= 14)
-#'
-#' #Print the previous plot to the console
-#' print(myplot)
 #'
 #' @import ggplot2
 #' @importFrom grDevices png dev.off
