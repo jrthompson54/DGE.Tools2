@@ -31,6 +31,16 @@ the dataframes, it is created from the rownames.  In tidy style, the output will
 
 The contrast names will be used as a new column in the tidy output format.
 }
+\examples{
+
+  #Get contrasts directly from a DGEobj
+  MyMergedTidyDF <- tidyContrasts (myDgeObj)
+
+  #Assemble a list of contrasts from two DGEobjs; just logFC and conf intervals
+  myContrasts <- c(getType(DGEobj1, "topTable"), getType(DEobj2, "topTable"))
+  MyMergedTidyDF <- tidyContrasts (myContrasts, includeColumns = c("logFC", "CI.R", "CI.L"))
+
+}
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }

@@ -10,12 +10,12 @@ logRatioPlot(data, facetColname, xColname, yColname = "logFC",
   plotType = "bar", refLine = TRUE, refLineColor = "red",
   xlab = xColname, ylab = yColname, title, barColor = "dodgerblue4",
   barFill = "dodgerblue3", barSize = 0.1, barAlpha = 1,
-  pointColor = "grey30", pointFill = "dodgerblue4", pointShape = 21,
-  pointAlpha = 1, pointSize = 2, lineLayer = FALSE,
-  lineColor = "dodgerblue4", lineSize = 1, lineType = "solid",
-  lineFit = "loess", baseFontSize = 12, themeStyle = "grey",
-  facet = TRUE, facetCol, xAngle = 45, scales = "free_y",
-  debug = FALSE)
+  barWidth = 0.9, pointColor = "grey30", pointFill = "dodgerblue4",
+  pointShape = 21, pointAlpha = 1, pointSize = 2,
+  lineLayer = FALSE, lineColor = "dodgerblue4", lineSize = 1,
+  lineType = "solid", lineFit = "loess", baseFontSize = 12,
+  themeStyle = "grey", facet = TRUE, facetCol, xAngle = 45,
+  scales = "free_y", debug = FALSE)
 }
 \arguments{
 \item{data}{A tidy dataframe of data to plot (see ?tidyContrasts).}
@@ -51,6 +51,8 @@ groups to appear in the plot. (optional; default = unique(data[xColname]))}
 \item{barSize}{set the bar size (thickness of each bar perimeter; default = 0.1)}
 
 \item{barAlpha}{Transparency for the bar layer (Default = 1)}
+
+\item{barWidth}{set the bar width (Default = 0.8)}
 
 \item{pointColor}{Color for the point layer (Default = "grey30")}
 

@@ -26,11 +26,11 @@
 #' @examples
 #'
 #'   #Get contrasts directly from a DGEobj
-#'   MyMergedTidyDF  = tidyContrasts (myDgeObj)
+#'   MyMergedTidyDF <- tidyContrasts (myDgeObj)
 #'
 #'   #Assemble a list of contrasts from two DGEobjs; just logFC and conf intervals
-#'   myContrasts <- c(getType(DGEobj1, "topTable"), getType(DEobj2, "topTable))
-#'   MyMergedTidyDF <- tidyContrasts (myContrasts, includeColumns = c("logFC", "CI.R", "CI.L")
+#'   myContrasts <- c(getType(DGEobj1, "topTable"), getType(DEobj2, "topTable"))
+#'   MyMergedTidyDF <- tidyContrasts (myContrasts, includeColumns = c("logFC", "CI.R", "CI.L"))
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom dplyr select bind_rows

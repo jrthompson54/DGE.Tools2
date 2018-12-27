@@ -29,6 +29,7 @@
 #' @param barColor Color for the bar outline (default = "dodgerblue4")
 #' @param barFill Color for the bar area (default = "dodgerblue3")
 #' @param barSize set the bar size (thickness of each bar perimeter; default = 0.1)
+#' @param barWidth set the bar width (Default = 0.8)
 #' @param barAlpha Transparency for the bar layer (Default = 1)
 #' @param pointColor Color for the point layer (Default = "grey30")
 #' @param pointFill Fill color for the point layer (Default = "dodgerblue4")
@@ -107,6 +108,7 @@ logRatioPlot <- function(data,
                       barFill = "dodgerblue3",
                       barSize = 0.1,
                       barAlpha = 1,
+                      barWidth = 0.9,
                       pointColor = "grey30",
                       pointFill = "dodgerblue4",
                       pointShape = 21, #fillable circle
@@ -136,7 +138,8 @@ logRatioPlot <- function(data,
                                      alpha=barAlpha,
                                      color=barColor,
                                      fill=barFill,
-                                     size=barSize
+                                     size=barSize,
+                                     width=barWidth
           )
         } else if (tolower(plotType)=="point"){
           MyPlot <- MyPlot + geom_point(alpha=pointAlpha,
