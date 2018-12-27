@@ -17,15 +17,22 @@
 #' If possible, the sequence annotation should include chromosome position data (chr,
 #' start, end, strand).
 #'
+#' Sample annotation is one row for each column in the count table.
+#' rownames(sampleannotation) == colnames(counts).
+#'
+#' Function DGEobj::annotateDGEobj provides an easier way than the customAttr argument
+#' here.  annotateDGEobj reads key=value pairs from a text file to define
+#' attributes.
+#'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords Omicsoft, DGEObj, RNA-Seq, Data loading
 #'
 #' @param path File path for the three data files (Default = "./")
-#' @param counts A matrix or dataframe of R gene by C samples (required)
+#' @param counts A text file name for count data (gene rows by sample columns) (required)
 #'  [Default = "RNA-Seq.Count.Table.txt"]
-#' @param seqAnnotation  Gene, isoform or exon level (row) annotation (required)
+#' @param seqAnnotation  Filename for Gene, isoform or exon level (row) annotation (required)
 #'  [Default = "RNA-Seq.Count.Annotation.txt"]
-#' @param design Sample annotation with expt factors and other sample-associated
+#' @param design Filename for sample annotation with expt factors and other sample-associated
 #'     data (required) [Default = RNA-Seq.Design.txt"]
 #' @param level One of "gene", "isoform", "exon" (required) [Default = "gene"]
 #' @param source Default = "Omicsoft.  Change if your data if from somewhere else.
@@ -54,7 +61,6 @@
 #'                                       GeneMobel = "Ensembl.R84")
 #'                              )
 #'
-#' @import magrittr
 #' @importFrom stringr str_c
 #' @importFrom DGEobj initDGEobj
 #'
@@ -68,6 +74,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
                               customAttr,
                               gz=FALSE){
 
+    message("OmicsoftToDgeObj is deprecated as of 0.9.56. Use textToDgeObj instead.")
     #add support for gzipped files
     if (gz==TRUE){
       gz <- ".gz"
@@ -100,7 +107,7 @@ OmicsoftToDgeObj <- function (counts = "RNA-Seq.Count.Table.txt",
     if (missing(customAttr)) {
         customAttr <- list(source="Omicsoft")
     } else {
-        asertthat::assert_that(class(customAttr)[[1]] == "list")
+        assertthat::assert_that(class(customAttr)[[1]] == "list")
         customAttr$source <- source
     }
 

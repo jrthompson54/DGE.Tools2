@@ -39,18 +39,19 @@
 #' @param lineLayer Add a fitted line layer (Default = FALSE)
 #' @param lineColor Color of the line fit (Default = "dodgerblue4")
 #' @param lineSize Size of the line fit (Default = 1)
-#' @param lineFit Type of fit to use.  One of c("auto", "lm", "glm", "gam", "loess"). (Default = "loess")
-#' @param lineType One of c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash"). (Default = "solid")
+#' @param lineFit Type of fit to use.  One of c("auto", "lm", "glm", "gam",
+#'   "loess"). (Default = "loess")
+#' @param lineType One of c("solid", "dashed", "dotted", "dotdash", "longdash",
+#'   "twodash"). (Default = "solid")
 #' @param baseFontSize The smallest size font in the figure in points. (Default =
 #'   12)
 #' @param themeStyle "bw" or "grey" which correspond to theme_bw or theme_grey
-#'   respectively. Default = bw"
+#'   respectively. (Default = "bw")
 #' @param facet Specifies whether to facet (TRUE) or print individual plots
 #'   (FALSE)  (Default = TRUE)
-#' @param facetCol Explicitly set the number of Rows for the facet plot.
-#'   Default behavior will automatically set the columns.
-#'   Default = data[facetCol] %>% unique %>% length %>% sqrt %>% ceiling
-#' @param xAngle Angle to set the sample labels on the Xaxis. (Default =  45; Range = 0-90)
+#' @param facetCol Explicitly set the number of Rows for the facet plot. Default
+#'   behavior will automatically set the columns. (Default = ceiling(sqrt(length(unique(data[facetCol])))))
+#' @param xAngle Angle to set the sample labels on the Xaxis (Default =  45; Range = 0-90)
 #' @param scales Specify same scales or independent scales for each subplot (Default = "free_y";
 #'   Allowed values: "fixed", "free_x", "free_y", "free")
 #' @param debug Turn on debug mode (default = FALSE)

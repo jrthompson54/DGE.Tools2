@@ -94,4 +94,5 @@ Collate:
     'tidyIntensity.R'
     'obsPlot2.R'
     'logRatioPlot.R'
+    'textToDGEobj.R'
 RoxygenNote: 6.1.1

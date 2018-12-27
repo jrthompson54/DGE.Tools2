@@ -10,13 +10,13 @@ OmicsoftToDgeObj(counts = "RNA-Seq.Count.Table.txt",
   path = ".", customAttr, gz = FALSE)
 }
 \arguments{
-\item{counts}{A matrix or dataframe of R gene by C samples (required)
+\item{counts}{A text file name for count data (gene rows by sample columns) (required)
 [Default = "RNA-Seq.Count.Table.txt"]}
 
-\item{seqAnnotation}{Gene, isoform or exon level (row) annotation (required)
+\item{seqAnnotation}{Filename for Gene, isoform or exon level (row) annotation (required)
 [Default = "RNA-Seq.Count.Annotation.txt"]}
 
-\item{design}{Sample annotation with expt factors and other sample-associated
+\item{design}{Filename for sample annotation with expt factors and other sample-associated
 data (required) [Default = RNA-Seq.Design.txt"]}
 
 \item{level}{One of "gene", "isoform", "exon" (required) [Default = "gene"]}
@@ -49,6 +49,13 @@ Sequence annotation should also have the same rownames as assays.
 
 If possible, the sequence annotation should include chromosome position data (chr,
 start, end, strand).
+
+Sample annotation is one row for each column in the count table.
+rownames(sampleannotation) == colnames(counts).
+
+Function DGEobj::annotateDGEobj provides an easier way than the customAttr argument
+here.  annotateDGEobj reads key=value pairs from a text file to define
+attributes.
 }
 \examples{
 

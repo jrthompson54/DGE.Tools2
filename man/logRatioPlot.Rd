@@ -70,24 +70,25 @@ groups to appear in the plot. (optional; default = unique(data[xColname]))}
 
 \item{lineSize}{Size of the line fit (Default = 1)}
 
-\item{lineType}{One of c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash"). (Default = "solid")}
+\item{lineType}{One of c("solid", "dashed", "dotted", "dotdash", "longdash",
+"twodash"). (Default = "solid")}
 
-\item{lineFit}{Type of fit to use.  One of c("auto", "lm", "glm", "gam", "loess"). (Default = "loess")}
+\item{lineFit}{Type of fit to use.  One of c("auto", "lm", "glm", "gam",
+"loess"). (Default = "loess")}
 
 \item{baseFontSize}{The smallest size font in the figure in points. (Default =
 12)}
 
 \item{themeStyle}{"bw" or "grey" which correspond to theme_bw or theme_grey
-respectively. Default = bw"}
+respectively. (Default = "bw")}
 
 \item{facet}{Specifies whether to facet (TRUE) or print individual plots
 (FALSE)  (Default = TRUE)}
 
-\item{facetCol}{Explicitly set the number of Rows for the facet plot.
-Default behavior will automatically set the columns.
-Default = data[facetCol] %>% unique %>% length %>% sqrt %>% ceiling}
+\item{facetCol}{Explicitly set the number of Rows for the facet plot. Default
+behavior will automatically set the columns. (Default = ceiling(sqrt(length(unique(data[facetCol])))))}
 
-\item{xAngle}{Angle to set the sample labels on the Xaxis. (Default =  45; Range = 0-90)}
+\item{xAngle}{Angle to set the sample labels on the Xaxis (Default =  45; Range = 0-90)}
 
 \item{scales}{Specify same scales or independent scales for each subplot (Default = "free_y";
 Allowed values: "fixed", "free_x", "free_y", "free")}
