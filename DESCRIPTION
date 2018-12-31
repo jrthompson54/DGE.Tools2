@@ -1,6 +1,6 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.56
+Version: 0.9.57
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -94,5 +94,5 @@ Collate:
     'tidyIntensity.R'
     'obsPlot2.R'
     'logRatioPlot.R'
-    'textToDGEobj.R'
+    'textToDgeObj.R'
 RoxygenNote: 6.1.1

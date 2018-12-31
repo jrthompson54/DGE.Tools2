@@ -71,7 +71,6 @@
 #' @import ggplot2 magrittr ggrepel ggiraph
 #' @importFrom assertthat assert_that
 #' @importFrom limma plotMDS
-#' @importFrom grDevices pdf dev.off
 #'
 #' @export
 ggplotMDS <- function(DGEdata,
@@ -178,7 +177,7 @@ ggplotMDS <- function(DGEdata,
     title <- "MDS Plot"
   }
 
-  grDevices::pdf(NULL) #suppress the plot and just capture the output
+  # grDevices::pdf(NULL) #suppress the plot and just capture the output
   # mds <- plotMDS(DGEdata, top = top, labels = labels, pch = pch,
   #                cex = cex, dim.plot = dim.plot, ndim = ndim,
   #                gene.selection = gene.selection,
@@ -186,8 +185,9 @@ ggplotMDS <- function(DGEdata,
   mds <- limma::plotMDS(DGEdata, top = top, pch = pch,
                  cex = cex, dim.plot = dim.plot, ndim = max(dim.plot),
                  gene.selection = gene.selection,
-                 xlab = Xlab, ylab = Ylab)
-  invisible(grDevices::dev.off())
+                 xlab = Xlab, ylab = Ylab,
+                 plot=FALSE)
+  # invisible(grDevices::dev.off())
 
   #pull the plotting data together
   if (addLabels == TRUE)
@@ -212,54 +212,45 @@ ggplotMDS <- function(DGEdata,
   if (!is.null(Ylab))
       xylab[[2]] <- Ylab
 
-  # my_gg <- g + geom_point_interactive(aes(tooltip = labels), size = 2)
-  # ggiraph(code = print(my_gg), width = .7)
-
   #start the plot
   if (byShape == FALSE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode)) +
-        # geom_point_interactive(aes(data_id = labels),
-        #                        shape=symShape, size=symSize) +
         geom_point(shape=symShape, size=symSize)
 
   else if (byShape == TRUE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                   shape=Shape)) +
-        # geom_point_interactive(aes(data_id = labels), size=symSize) +
         geom_point(size=symSize) +
         scale_shape_manual(values=shapes)
 
   else if (byShape == FALSE & bySize == TRUE)
-    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
-                                  size=Size)) +
-        # geom_point_interactive(aes(data_id = labels), shape=symShape) +
-        geom_point(shape=symShape)
+    mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, size=Size)) +
+    geom_point(shape=symShape)
 
   else if (byShape == TRUE & bySize == TRUE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
-                                  shape=Shape,
-                                  size=Size)) +
-        # geom_point_interactive(aes(data_id = labels)) +
-        geom_point() +
-        scale_shape_manual(values=shapes)
+                                shape=Shape,
+                                size=Size)) +
+    geom_point() +
+    scale_shape_manual(values=shapes)
 
   #add point labels
   if (!is.null(labels)){
-      if (missing(labelSize))
-         mdsplot <- mdsplot +
-                    geom_text_repel(aes(label = Labels))
-      else mdsplot <- mdsplot +
-              geom_text_repel(aes(label = Labels), size=labelSize)
+    if (missing(labelSize))
+      mdsplot <- mdsplot +
+        geom_text_repel(aes(label = Labels))
+    else mdsplot <- mdsplot +
+        geom_text_repel(aes(label = Labels), size=labelSize)
   }
 
   #add some other common elements
   mdsplot <- mdsplot +
-      scale_fill_manual(values=colors) +
-      scale_colour_manual(values=colors) +
-      coord_fixed() +
-      xlab (xylab[[1]]) +
-      ylab (xylab[[2]]) +
-      ggtitle (title)
+    scale_fill_manual(values=colors) +
+    scale_colour_manual(values=colors) +
+    coord_fixed() +
+    xlab (xylab[[1]]) +
+    ylab (xylab[[2]]) +
+    ggtitle (title)
 
   #place an annotation on the bottom left of the plot
   xrange <- getXrange(mdsplot)
@@ -267,10 +258,10 @@ ggplotMDS <- function(DGEdata,
   #put the annotation 10% from xmin
   xpos <- xrange[1] + ((xrange[2] - xrange[1]) * 0.1 )
   alabel <- paste("top ", mds$top, " genes : gene.selection = ",
-                 mds$gene.selection, sep="")
+                  mds$gene.selection, sep="")
   mdsplot <- mdsplot + annotate ("text", x = xpos, y = yrange[1],
-                                label = alabel, hjust=0,
-                                size=rel(2.5), color="grey30")
+                                 label = alabel, hjust=0,
+                                 size=rel(2.5), color="grey30")
 
   if (!missing(hlineIntercept)){
     mdsplot <- mdsplot + geom_hline (yintercept = hlineIntercept,
@@ -292,10 +283,114 @@ ggplotMDS <- function(DGEdata,
     mdsplot <- mdsplot + theme_grey(baseFontSize)
   } else mdsplot <- mdsplot + theme_bw(baseFontSize)
 
-  #print the interactive plot
-  #ggiraph(code = print(mdsplot), width = .7)
-
   return(list(plot=mdsplot, mdsobj=mds))
+}
 
+### Function MDS_var_explained ###
+#' Function MDS_var_explained
+#'
+#' Takes a class MDS object from limma::plotMDS and generates two plots: 1)
+#' fraction of variance for each dimension, 2) cumulative variance. By default,
+#' it plots the first 10 dimensions or the first N dimensions totaling 90%. See
+#' topN and cumVarLimit arguments to change the defaults.
+#'
+#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @keywords MDS, RNA-Seq, DGE, QC
+#'
+#' @param mds A class MDS object from limma::plotMDS or a data matrix to analyze
+#'   (typically log2) (required)
+#' @param topN The number of dimensions to plot (Default = 10)
+#' @param cumVarLimit The maximum cumulative variance to plot. Range 0-1. (Default = 0.9)
+#' @param barColor Default = "dodgerblue4"
+#' @param barFill Default = "dodgerblue3"
+#' @param barWidth range 0-1. (Default = 0.65)
+#' @param barSize Thickness of the fill border (Default = 0.1)
+#' @param baseFontSize Base fontsize for the plot (Default = 14)
+#'
+#' @return A list with two ggplots and the variance explained data.frame.
+#'
+#' @examples
+#'
+#'      #Plot the first two dimensions
+#'      MyMDS = ggplotMDS (MyDGEList)
+#'      MyMDS[[1]]  #the MDS plot
+#'
+#'      #Then apply MDS_var_explained (the MDS object is MyMDS[[2]])
+#'      varResults <- MDS_var_explained(MyMDS[[2]])
+#'      varResults[[1]] #the Variance per dimension plot
+#'      varResults[[2]] #the cumulative variance plot
+#'      var_explained <- varResults[[3]]  #data used for plotting (unfiltered)
+#'
+#' @import ggplot2 magrittr
+#' @importFrom assertthat assert_that
+#' @importFrom limma plotMDS
+#' @importFrom matrixStats colVars
+#' @importFrom tibble tibble
+#'
+#' @export
+MDS_var_explained <- function(mds,
+                              topN = 10,
+                              cumVarLimit = 0.9,
+                              barColor="dodgerblue4",
+                              barFill = "dodgerblue3",
+                              barWidth = 0.65,
+                              barSize = 0.1,
+                              baseFontSize = 14){
+
+  assertthat::assert_that(!missing(mds))
+
+  if (!is(mds, "MDS")) mds <- limma::plotMDS(mds, plot=FALSE)
+
+  mds.distances <- mds %$% distance.matrix %>% as.dist
+
+  mdsvals <- mds.distances %>%
+             {suppressWarnings(cmdscale(., k = ncol(mds$distance.matrix)-1))} %>%
+             magrittr::set_colnames(stringr::str_c("Dim", seq_len(ncol(.)))) %>%
+             as.data.frame
+
+  var_explained <- tibble::tibble(var = mdsvals %>%
+                                        as.matrix %>%
+                                        matrixStats::colVars() %>%
+                                        magrittr::divide_by(sum(.)),
+                                  cumvar = cumsum(var),
+                                  dim = seq_along(var))
+
+  #often lot's of dimensions.  limit what to plot
+  idx <- var_explained$cumvar < cumVarLimit
+  if (sum(idx) < topN) topN <- sum(idx)
+  plotdat <- var_explained[idx,][1:topN,]
+
+  #plotting
+  setBreaks <- function(limits){
+    #return integer breaks
+    low <- floor(limits[1])
+    high <- ceiling(limits[2])
+    seq(from=low, to=high, by=1)
+  }
+
+  resultList <- list()
+  #fractin variance for each dimension
+  resultList$varexp <- ggplot(plotdat) +
+                       aes(x = dim, y = var) +
+                       geom_col(color=barColor,
+                                fill=barFill,
+                                size=barSize,
+                                width=barWidth) +
+                       labs(title = "Variance Explained by MDS Dimensions",
+                            x = "MDS dimension",
+                            y = "Variance Explained") +
+                       scale_x_continuous(breaks=setBreaks) +
+                       theme_grey(baseFontSize)
+
+  #cumulative variance plot (change the y dimension and relabel)
+  resultList$cumvar <- resultList$varexp + aes(y = cumvar) +
+                       labs(title = "Cumulative Variance Explained by MDS Dimensions",
+                            y = "Cumulative Variance Explained") +
+                       ylim(0,1)
+
+  #return the full data table too
+  resultList$var_explained <- var_explained
+
+  return(resultList)
 }
 

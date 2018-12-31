@@ -43,15 +43,14 @@ numbers.  Intended to perform histogram analysis of pvalue distributions.
 But should be useful for any dataframe of numeric columns.
 }
 \examples{
+
 #Print to console, all defaults
+MyPvalMatrix <- extractCol(getType(myDGEobj, "topTable"), "P.Value")
 plotPvalHist (MyPvalMatrix)
 
 #Print just to a PNG with some arguments
-myplot = plotPvalHist (MyPValMatrix, savePlot = T, fileNames = "MyPlot.PNG",
+myplot <- plotPvalHist (MyPValMatrix, savePlot = T, fileNames = "MyPlot.PNG",
                facetFontSize= 14)
-
-#Print the previous plot to the console
-print(myplot)
 
 }
 \author{
