@@ -104,7 +104,7 @@ lowIntFilter <- function(x, zfpkmThreshold, fpkThreshold, countThreshold,
     genelength <- genelength[idx]
 
     if (verbose == TRUE)
-      tsmsg(stringr::str_c(sum(idx), " of ", length(idx), " genes retained by the FPK filter."))
+      message(stringr::str_c(sum(idx), " of ", length(idx), " genes retained by the FPK filter."))
   }
 
   #apply count threshold
@@ -118,7 +118,7 @@ lowIntFilter <- function(x, zfpkmThreshold, fpkThreshold, countThreshold,
     genelength <- genelength[idx]
 
     if (verbose == TRUE)
-      tsmsg(stringr::str_c(sum(idx), " of ", length(idx), " genes retained by the low count filter."))
+      message(stringr::str_c(sum(idx), " of ", length(idx), " genes retained by the low count filter."))
   }
 
   if (xClass == "DGEobj") return(x) else return(counts)

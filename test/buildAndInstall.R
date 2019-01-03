@@ -8,7 +8,7 @@ document()
 load_all()
 # build_vignettes()
 build()
-pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.57.tar.gz"
+pkg = "~/R/lib/pkgsrc/DGE.Tools2_0.9.58.tar.gz"
 install.packages(pkg, repos=NULL, type="source")
 setwd(x)
 
@@ -22,6 +22,8 @@ setwd(x)
 #
 
 
+# list all function calls in the input R script.  Useful to search your code for
+# function calls that may need to be double colon referenced.
 library(NCmisc)
 flist <- list.functions.in.file("R/runVoom.R", alphabetic=T)
 x <- cbind(names(flist), flist) %>% as.data.frame()
