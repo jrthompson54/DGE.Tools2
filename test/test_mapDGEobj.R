@@ -11,6 +11,8 @@ dgeObj <- readRDS("../output/IPF_Lung_UPenn_P-20161128-0001_11Sep2017_DGEobj.RDS
 
 net <- mapDGEobj(dgeObj)
 
+#apply sugiyama layout style
+lay.sug <- layout_with_sugiyama(net)
 # setwd("~/R/iGraphTutorial")
 #
 #
@@ -22,12 +24,15 @@ net <- mapDGEobj(dgeObj)
 plot(net,
      edge.arrow.size=.3,
      vertex.color="dodgerblue2",
-     vertex.frame.color="dodgerblue4")
+     vertex.frame.color="dodgerblue4",
+     canvas.width = 1000, canvas.height = 2000,
+     layout=lay.sug$layout)
 
 
 #2d interactive plot
 tkplot(net, vertex.color="dodgerblue2", vertex.frame.color="dodgerblue4",
-       canvas.width = 800, canvas.height = 800)
+       canvas.width = 800, canvas.height = 800,
+       layout=lay.sug$layout)
 
 
 pal <- brewer.pal(length(unique(V(net)$type)), "Set1")
@@ -42,4 +47,13 @@ plotHandle <- tkplot(net, vertex.color=pal[as.numeric(as.factor(vertex_attr(net,
        vertex.frame.color="dodgerblue4",
        canvas.width = 800,
        canvas.height = 800)
+
+
+zach.sug <- layout_with_sugiyama(zach)
+  plot(zach,
+       edge.arrow.size=.3,
+       vertex.color = myPallet,
+       vertex.label.family = "Helvetica",
+       layout=zach.sug$layout
+       )
 

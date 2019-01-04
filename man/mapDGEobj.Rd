@@ -24,20 +24,25 @@ data items in the DGEobj.  Plot them with Function graphDGEobj.
   # Prepare an iGraph object for plotting
   mynet <- mapDGEobj(dgeObj)
 
+  #define a layout
+  lay.sug <- layout_with_sugiyama(mynet)
+
   #2D Plot
   plot(mynet,
        edge.arrow.size=.3,
        vertex.color="dodgerblue2",
-       vertex.frame.color="dodgerblue4")
+       vertex.frame.color="dodgerblue4",
+       layout=lay.sug$layout)
 
-  #2D Plot, colorby basetype attribute
+  #2D Plot; colorby the basetype attribute
   pal <- brewer.pal(length(unique(V(mynet)$basetype)), "Set1")
   myPallet <- pal[as.numeric(as.factor(vertex_attr(mynet, "basetype")))]
 
   plot(mynet,
        edge.arrow.size=.3,
        vertex.color = myPallet,
-       vertex.label.family = "Helvetica"
+       vertex.label.family = "Helvetica",
+       layout=lay.sug$layout
        )
 
   #2D Interactive plot
@@ -45,7 +50,8 @@ data items in the DGEobj.  Plot them with Function graphDGEobj.
                        vertex.color=myPallet,
                        vertex.frame.color="dodgerblue4",
                        canvas.width = 800,
-                       canvas.height = 800)
+                       canvas.height = 800,
+                       layout=lay.sug$layout)
   tk_close(plotHandle)
 
 }
