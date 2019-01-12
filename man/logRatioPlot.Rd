@@ -18,11 +18,11 @@ logRatioPlot(data, facetColname, xColname, yColname = "logFC",
   scales = "free_y", debug = FALSE)
 }
 \arguments{
-\item{data}{A tidy dataframe of data to plot (see ?tidyContrasts).}
+\item{data}{A tidy dataframe of data to plot (required) (see ?tidyContrasts).}
 
-\item{facetColname}{Define the column name to separate plots (e.g. GeneID).}
+\item{facetColname}{Define the column name to separate plots (required) (e.g. GeneID).}
 
-\item{xColname}{Define the column name to group boxplots by (e.g. Constrast).}
+\item{xColname}{Define the column name to group boxplots by (required) (e.g. Contrast).}
 
 \item{CI.R_colname}{Define name of the CI high value (Default = "CI.R")}
 

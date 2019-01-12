@@ -10,9 +10,9 @@
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords barplot lineplot gplot2 logratio confidence intervals contrasts
 #'
-#' @param data A tidy dataframe of data to plot (see ?tidyContrasts).
-#' @param facetColname Define the column name to separate plots (e.g. GeneID).
-#' @param xColname Define the column name to group boxplots by (e.g. Constrast).
+#' @param data A tidy dataframe of data to plot (required) (see ?tidyContrasts).
+#' @param facetColname Define the column name to separate plots (required) (e.g. GeneID).
+#' @param xColname Define the column name to group boxplots by (required) (e.g. Contrast).
 #' @param yColame Define the column of values for plotting (Default = "logFC").
 #' @param CI.R_colname Define name of the CI high value (Default = "CI.R")
 #' @param CI.L_colname Define name of the CI low value (Default =  "CI.L")
@@ -154,7 +154,7 @@ logRatioPlot <- function(data,
         }
 
         #Add error bars if columns present
-        if (all(c(CI.L_colname, CI.R_colname) %in% colnames(tcDat) )) {
+        if (all(c(CI.L_colname, CI.R_colname) %in% colnames(data) )) {
           MyPlot <- MyPlot + geom_errorbar(aes_string(ymin=CI.L_colname, ymax=CI.R_colname), width=.2)
         } else {
           warning ("Confidence limits columns not found.")

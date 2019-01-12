@@ -52,7 +52,7 @@
 #' @import magrittr
 #' @importFrom DGEobj inventory
 #' @importFrom assertthat assert_that
-#' @importFrom glue glue
+#' @importFrom igraph graph_from_data_frame
 #'
 #' @export
 mapDGEobj <- function(dgeObj, directed=TRUE) {
@@ -78,5 +78,5 @@ mapDGEobj <- function(dgeObj, directed=TRUE) {
                      type = as.character(type),
                      basetype = as.character(basetype))
 
-  graph_from_data_frame(d=edges, vertices=nodes, directed=directed)
+  igraph::graph_from_data_frame(d=edges, vertices=nodes, directed=directed)
 }

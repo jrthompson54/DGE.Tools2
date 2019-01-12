@@ -7,14 +7,14 @@
 #' length normalized data is required because different isoforms have different
 #' total exon lengths.  If FPKM is specified, you can also specify a
 #' normalization (via edgeR::calcNormFactors). Isoform fraction is calculated
-#' simply as the isoform intensity divided by the total gene intensity for all isoforms of
+#' simply as the isoform intensity divided by the summed gene intensity for all isoforms of
 #' a given gene.
 #'
 #' TPM or FPKM are calculated directly from counts using all data in the dgeObj.
-#' I recommend performing low intensity gene filtering before running isoformFrac.
+#' I recommend performing low intensity filtering at the gene level before running isoformFrac.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
-#' @keywords RNA-Seq, DGEobj
+#' @keywords RNA-Seq, DGEobj, isoform fraction
 #'
 #' @param dgeObj  An isoform level DGEobj created by function initDGEobj,
 #'   Xpress2DGEO or OmicsoftToDgeObj.  Counts and isoformData must be present
