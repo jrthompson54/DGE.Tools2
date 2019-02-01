@@ -19,13 +19,13 @@ obsPlot2(data, plotByCol, groupCol, valueCol,
   xAngle = 30, scales = "free_y", debug = FALSE)
 }
 \arguments{
-\item{data}{A tidy dataframe of intensity data.}
+\item{data}{A tidy dataframe of intensity data with row and colnames (required)}
 
-\item{plotByCol}{Define the column name to separate plots (typically a gene ID column).}
+\item{plotByCol}{Define the column name to separate plots (typically a gene ID column) (required)}
 
-\item{groupCol}{Define the column name to group boxplots by (typically a replicate group column).}
+\item{groupCol}{Define the column name to group boxplots by (typically a replicate group column) (required)}
 
-\item{valueCol}{Define the column of values for plotting (typically a log intensity measure).}
+\item{valueCol}{Define the column of values for plotting (typically a log intensity measure) (required)}
 
 \item{groupOrder}{Define the order for the groups in each plot.  Should
 contain values in unique(data$group) listed in the order that you want the
@@ -122,18 +122,20 @@ Input is a tidy dataframe of intensity data.
 }
 \examples{
 
-  #create a dataframe of data with row and colnames
+  #simulate some data with row and colnames
   groups <- paste("group", factor(rep(1:4, each=100)), sep="")
   x <- matrix(rnorm(2400, mean=10), ncol=length(groups))
   colnames(x) <- paste("sample", 1:ncol(x), sep="")
   rownames(x) <- paste("gene", 1:nrow(x), sep="")
-
   #reformat into tidy dataframe
   tidyInt <- tidyIntensity(x,
-                           rowidColname = "GeneID",
-                           keyColname = "Sample",
-                           valueColname ="Log2CPM",
-                           group = groups)
+
+ #Or get data from a DGEobj with RNA-Seq data
+ log2cpm <- convertCount(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+ tidyInt <- tidayIntensity(log2cpm,
+                           rowidColname="GeneID",
+                           keyColname="Sample",
+                           valueColname="Log2CPM")
 
   #Facetted boxplot
   obsPlot2(tidyInt, plotByCol="GeneID",

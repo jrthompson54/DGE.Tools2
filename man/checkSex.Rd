@@ -32,6 +32,11 @@ A ggplot object
 \description{
 Take a DGEobj as input and plot expression of XIST vs the highest expressed Y chr gene.
 }
+\details{
+This uses the original unfiltered data by default.  This is because Y-linked genes are often below
+the low intensity threshold in tissues other than testes.  Nevertheless, there are usually enough reads
+for the plot to be interpretable.
+}
 \examples{
 
    checkSex(dgeObj, species="human")

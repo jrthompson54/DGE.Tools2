@@ -96,5 +96,5 @@ Collate:
     'logRatioPlot.R'
     'textToDgeObj.R'
     'graphDGEobj.R'
-    'missingDataHeatmap.R'
+    'QCplots.R'
 RoxygenNote: 6.1.1

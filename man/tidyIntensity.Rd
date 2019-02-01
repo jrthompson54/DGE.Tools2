@@ -7,15 +7,19 @@
 tidyIntensity(x, rowidColname, keyColname, valueColname, group)
 }
 \arguments{
-\item{x}{A dataframe or matrix with rownames and colnames (required).}
+\item{x}{A dataframe or matrix with rownames and colnames (required)}
 
-\item{rowidColname}{Column name for the rowID (Usually a geneID column).
-If it doesn't exist, it will be created from rownames.}
+\item{rowidColname}{Column name for the rowID (Usually a geneID column)
+If it doesn't exist, it will be created from rownames  (required)}
 
-\item{valueColname}{Column name for the value column}
+\item{keyColname}{Defines the column name that will hold the sample names
+captured from the colnames of the input dataframe  (required)}
+
+\item{valueColname}{Defines the column name for the value column (intensity values)  (required)}
 
 \item{group}{A grouping variable to define which columns go together (vector
-with length = ncol(x); coercable to character)}
+with length = ncol(x) of the input dataframe).  This is typically the name
+of a column from the design table  (required)}
 }
 \value{
 A tidy dataframe of intensity data.
@@ -24,9 +28,22 @@ A tidy dataframe of intensity data.
 Takes dataframe or matrix of intensity values with geneid rownames and samplename columnnames and a grouping vector.
 Returns a tidy dataframe.
 }
+\details{
+This function takes a genes x samples datafile of e.g. log2cpm.  It uses tidyr::gather to produce
+a "tidy" datafile.
+
+So the rowidColname defines the name you want the gene id column to have and will create the column from
+the rownames which are typically ensembl gene IDs.  If you add a gene symbol column to your intensity
+dataframe, you can specify the name of that column with the rowidColname argument and it will be used instead
+of the rownames.
+}
 \examples{
 
-  MyTidyIntensity  = tidyIntensity (MyLog2CPM)
+  MyTidyIntensity  = tidyIntensity (MyLog2CPM,
+                                    rowidColname="GeneID",
+                                    keyColname="Sample"
+                                    valueColname="Log2CPM",
+                                    group=dgeObj$design$ReplicateGroup)
 
 }
 \author{

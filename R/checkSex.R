@@ -3,6 +3,10 @@
 #'
 #' Take a DGEobj as input and plot expression of XIST vs the highest expressed Y chr gene.
 #'
+#' This uses the original unfiltered data by default.  This is because Y-linked genes are often below
+#' the low intensity threshold in tissues other than testes.  Nevertheless, there are usually enough reads
+#' for the plot to be interpretable.
+#'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
@@ -70,17 +74,17 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #add labelCo and sexCol data as needed
   if (!missing(labelCol) & !missing(sexCol)){
     dtemp %<>% dplyr::select(rowname, labelCol=labelCol, sexCol=sexCol)
-    plotDat <- dplyr::left_join(plotDat, dtemp)
+    plotDat <- dplyr::left_join(plotDat, dtemp, by="rowname")
     colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol, sexCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol, color=sexCol))
   } else if (!missing(labelCol) & missing(sexCol)){
     dtemp %<>% dplyr::select(rowname, labelCol=labelCol)
-    plotDat <- dplyr::left_join(plotDat, dtemp)
+    plotDat <- dplyr::left_join(plotDat, dtemp, by="rowname")
     colnames(plotDat) <- c("SampID", x$genename, y$genename, labelCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, label=labelCol))
   } else if (missing(labelCol) & !missing(sexCol)){
     dtemp %<>% dplyr::select(rowname, sexCol=sexCol)
-    plotDat <- dplyr::left_join(plotDat, dtemp)
+    plotDat <- dplyr::left_join(plotDat, dtemp, by="rowname")
     colnames(plotDat) <- c("SampID", x$genename, y$genename, sexCol)
     sexPlot <- ggplot(plotDat, aes_string(x=x$genename, y=y$genename, color=sexCol))
   } else if (missing(labelCol) & missing(sexCol)){
