@@ -6,11 +6,11 @@
 \usage{
 QCplots(qcdata, metricNames, plotType = "bar",
   barColor = "dodgerblue4", barFill = "dodgerblue3", barSize = 0.1,
-  barAlpha = 1, barWidth = 0.9, pointColor = "grey30",
-  pointFill = "dodgerblue4", pointShape = 21, pointAlpha = 1,
-  pointSize = 2, lineColor = "dodgerblue4", lineSize = 1,
+  barAlpha = 1, barWidth = 0.9, pointColor = "dodgerblue4",
+  pointFill = "dodgerblue3", pointShape = 21, pointAlpha = 1,
+  pointSize = 4, lineColor = "dodgerblue4", lineSize = 1,
   lineType = "solid", lineFit = "loess", xAngle = 45,
-  debug = FALSE)
+  baseTextSize = 14, hlineSD = 3, winsorize = TRUE)
 }
 \arguments{
 \item{qcdata}{A dataframe or tibble with metric names in the first column and
@@ -22,7 +22,7 @@ of the data frame.}
 
 \item{plotType}{One of "bar", "point", "pointline".  If you want a different
 plottype for each metric, pass a list of plotTypes with length equal to
-length(metricNames)}
+length(metricNames) (default="bar")}
 
 \item{barColor}{Color for the bar outline (default = "dodgerblue4")}
 
@@ -58,17 +58,47 @@ length(metricNames)}
 \item{xAngle}{Angle to set the sample labels on the Xaxis (Default =  45;
 Range = 0-90)}
 
-\item{debug}{Turn on debug mode (default = FALSE)}
+\item{baseTextSize}{default = 14}
+
+\item{hlineSD}{Draw two reference lines 1) at the median value 2) the number of
+SDs defined by the value of hlineSD. (default=3; 0 to disable the reference lines).}
+
+\item{winsorize}{This implements a robust method to calculate standard
+deviations.  It is used to calculate the standard deviation for the
+placement of horizontal reference lines (hlineSD argument).  The adaptive
+winsorization used here only trims extreme values when normality is
+violated. see https://www.r-bloggers.com/winsorization/ for details.
+(Default=TRUE).}
 }
 \value{
 ggplot object if one plot is specified.  A list of ggplot objects if 2 or more metrics specified
 }
 \description{
-This function takes a dataframe with metric names in col1 and samples in col2-n.  Each row is a different metric.
-It then generates the qc pltos as defined by other arguments.
+This function takes a dataframe with metric names in the first column and
+samples in col2-n.  Each row is a different QC metric. It returns a list of
+qc plots as defined by other arguments.  If only one metric is plotted a
+ggplot object is returned. By default, horizontal reference lines are drawn
+at the median and +/- n SDs based on the hlineSD argument.  These are
+statistical reference points, NOT pass/fail limits.
 }
 \examples{
 
+  #Get some data from an Omicsoft project in S3
+  S3mount <- "Y:"
+  s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
+  qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
+  qcdat <- readr::read_delim(file.path(s3path, qcfilename), delim="\\t")
+  colnames(qcdat) <- stringr::str_sub(colnames(qcdat), 1, 16) #shorten the samplenames
+
+  #pick some Omicsoft Metrics from column 1 of the data frame
+  someFavMetrics <- c("Alignment_MappedRate", "Alignment_PairedRate",
+                              "Source_rRNA", "Strand_Read1AntiSense",
+                              "Strand_ReadPairAntiSense", "Profile_ExonRate",
+                              "Profile_InterGene_FPK")
+
+  MyQCplots <- QCplots(qcdata, metricNames=someFavMetrics) #all defaults
+  #draw the first plot
+  MyQCplots[[1]]
 
 }
 \author{
