@@ -1,6 +1,7 @@
 library(tidyverse)
 library(DGEobj)
 library(DGE.Tools2)
+library(JRTutil)
 
 s3mount <- "Y:"
 s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
@@ -17,9 +18,33 @@ plots_NoWin <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=90, wi
 
 plots <- QCplots(qcdat, metricNames=m, plotType="bar", xAngle=45)
 
-x <- ggplot(qcdata, aes(x=Sample, y=Alignment_MappedRate))+
-    geom_bar(stat="identity", fill="dodgerblue3")
+plots <- QCplots(qcdat, metricNames=metrics, plotType="histogram", xAngle=0)
 
-yvar <- "Alignment_MappedRate"
-x <- ggplot(qcdata, aes(x=Sample, y=!!!yvar))+
-  geom_bar(stat="identity", fill="dodgerblue3")
+
+#test JRTutil winsorize functions
+qcdata <- qcdat %>% column_to_rownames(var="Metric") %>% t() %>% as.data.frame
+
+missingDataHeatmap(qcdata)
+
+mean(qcdata[,3,drop=T], na.rm=T)
+winsorize_mean(qcdata[,3,drop=T])
+median(qcdata[,3,drop=T])
+
+sd(qcdata[,3,drop=T])
+winsorize_sd(qcdata[,3,drop=T])
+
+var(qcdata[,3,drop=T])
+winsorize_var(qcdata[,3,drop=T])
+
+
+
+#QC heatmap scaling each metric.
+#380 cells =NA
+idx <- complete.cases(qcdat)
+qcdat <- qcdat[idx,]
+qcdata <- qcdat %>% column_to_rownames(var="Metric") %>% t() %>% as.data.frame
+pheatmap::pheatmap(qcdata, scale = "column", breaks=NA)
+test <- qcdata[!idx,]
+
+missingDataHeatmap(qcdata)
+inspect(qcdata)

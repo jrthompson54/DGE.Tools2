@@ -13,9 +13,9 @@
 #'
 #' @param qcdata A dataframe or tibble with metric names in the first column and
 #'   samples in columns 2-n.  Each row is a different QC metric. This matches
-#'   the Omicsoft RNA-Seq.QCMetrics.Table.txt format.
+#'   the Omicsoft RNA-Seq.QCMetrics.Table.txt format. (required)
 #' @param metricNames A list of metrics to plot.  Values must exist in column 1
-#'   of the data frame.
+#'   of the data frame. (required)
 #' @param plotType One of "bar", "point", "pointline".  If you want a different
 #'   plottype for each metric, pass a list of plotTypes with length equal to
 #'   length(metricNames) (default="bar")
@@ -24,19 +24,22 @@
 #' @param barSize set the bar size (thickness of each bar perimeter; default =
 #'   0.1)
 #' @param barWidth set the bar width (Default = 0.8)
-#' @param barAlpha Transparency for the bar layer (Default = 1)
+#' @param barAlpha Transparency for the bar layer (Range = 0-1) (Default = 1)
 #' @param pointColor Color for the point layer (Default = "grey30")
 #' @param pointFill Fill color for the point layer (Default = "dodgerblue4")
 #' @param pointShape Shape for the point layer (Default = 21; fillable circle)
-#' @param pointAlpha Transparency for the box layer (Default = 1)
+#' @param pointAlpha Transparency for the box layer (Range = 0-1) (Default = 1)
 #' @param pointSize Size of the points (Default = 4)
-#' @param lineColor Color of the line fit (Default = "dodgerblue4")
+#' @param lineColor Color of the line (Default = "dodgerblue4")
 #' @param lineSize Size of the line fit (Default = 1)
-#' @param lineFit Type of fit to use.  One of c("auto", "lm", "glm", "gam",
-#'   "loess"). (Default = "loess")
+#' @param lineAlpha Transparency for the line layer (Range = 0-1) (default=1)
 #' @param lineType One of c("solid", "dashed", "dotted", "dotdash", "longdash",
 #'   "twodash"). (Default = "solid")
-#' @param xAngle Angle to set the sample labels on the Xaxis (Default =  45;
+#' @param histColor Outline color for the histogram (Default = "dodgerblue4")
+#' @param histFill Fill color for the histogram (Default = "dodgerblue3")
+#' @param histSize Thickness of the bar borders (Default = 1)
+#' @param histAlpha Transparency of the histogram (Derault = 1)
+#' @param xAngle Angle to set the sample labels on the Xaxis (Default =  90;
 #'   Range = 0-90)
 #' @param baseTextSize default = 14
 #' @param hlineSD Draw two reference lines 1) at the median value 2) the number of
@@ -53,7 +56,7 @@
 #' @examples
 #'
 #'   #Get some data from an Omicsoft project in S3
-#'   S3mount <- "Y:"
+#'   S3mount <- "/arrayserver" #where you mount the S3 bucket "bmsrd-ngs-arrayserver"
 #'   s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
 #'   qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
 #'   qcdat <- readr::read_delim(file.path(s3path, qcfilename), delim="\t")
@@ -91,14 +94,18 @@ QCplots <- function(qcdata,
                     lineColor = "dodgerblue4",
                     lineSize = 1,
                     lineType = "solid",
-                    lineFit = "loess",
-                    xAngle = 45,
+                    lineAlpha = 1,
+                    histColor = "dodgerblue4",
+                    histFill = "dodgerblue3",
+                    histSize = 1,
+                    histAlpha = 1,
+                    xAngle = 90,
                     baseTextSize=14,
                     hlineSD=3,
                     winsorize=TRUE
 ){
   assertthat::assert_that("data.frame" %in% class(qcdata),
-                          tolower(plotType) %in% c("bar", "point", "pointline"),
+                          tolower(plotType) %in% c("bar", "point", "pointline", "histogram"),
                           xAngle >= 0  && xAngle <= 90
   )
 
@@ -129,33 +136,36 @@ QCplots <- function(qcdata,
     metricMean <- mean(thisMetric, na.rm=TRUE)
     metricSD <-   sd(thisMetric, na.rm=TRUE)
 
-    p <- ggplot(qcdata, aes_string(x="Sample", y=metric, group=1))
+    if (!tolower(plot_type) == "histogram") p <- ggplot(qcdata, aes_string(x="Sample", y=metric, group=1))
 
     p <- switch(tolower(plot_type),
            bar = {p + geom_bar(stat="identity", color=barColor, fill=barFill, alpha=barAlpha, width=barWidth)},
            point = {p + geom_point(color=pointColor, fill=pointFill, shape=pointShape, alpha=pointAlpha, size=pointSize)},
            pointline = {p +
                geom_point(color=pointColor, fill=pointFill, shape=pointShape, alpha=pointAlpha, size=pointSize) +
-               geom_line(color=lineColor, size=lineSize, linetype=lineType)}
+               geom_line(color=lineColor, size=lineSize, linetype=lineType, alpha=lineAlpha)},
+           histogram = {p <- ggplot(qcdata, aes_string(x=metric)) +
+               geom_histogram(colour=histColor, fill=histFill, size = histSize, alpha=histAlpha)}
     )
 
     #Draw hline xSD above or below the mean
-    # if((max(qcdata[,metric]) - metricMean) > (metricMean - min(qcdata[,metric]))){
-    #   SD <- metricMean + (hlineSD * metricSD)
-    # } else {
-    #   SD <- metricMean - (hlineSD * metricSD)
-    # }
     SD <- metricSD * hlineSD
-    if (hlineSD > 0) {
+    if (hlineSD > 0 & tolower(plot_type) == "histogram") {
+
+      #plot vlines for the histogram
+      p <- p +
+        geom_vline(xintercept=metricMedian, color="grey70") +
+        geom_vline(xintercept= metricMean + SD, color="firebrick3", linetype="longdash") +
+        geom_vline(xintercept= metricMean - SD, color="firebrick3", linetype="longdash")
+    } else if (hlineSD > 0) {  #use hlines for other plot types
       p <- p +
         geom_hline(yintercept=metricMedian, color="grey70") +
         geom_hline(yintercept= metricMean + SD, color="firebrick3", linetype="longdash")
-
+      #most qc plots floor to 0 so no point plotting -SD if it goes below zero.
       if (metricMean - SD >0){
         p <- p + geom_hline(yintercept= metricMean - SD, color="firebrick3", linetype="longdash")
       }
     }
-
 
     #set x axis text angle
     hjust=1

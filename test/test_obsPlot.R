@@ -9,9 +9,11 @@ library(JRTutil)
 stashRoot <- getStashPath()
 stashRoot <- "//stash.pri.bms.com/stash"
 stashPath <- file.path(stashRoot, "data/nonclin/DGEobj_library")
-# dgeObj <- readRDS(file.path(stashPath, "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS"))
+dgeObj <- readRDS(file.path(stashPath, "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS"))
+
 # saveRDS (dgeObj, "../BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS")
-dgeObj <- readRDS("../BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS")
+# dgeObj <- readRDS("../BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS")
+
 #filter DGEobj for Lpar* gene family
 idx <- str_detect(dgeObj$geneData$GeneName, "^Lpar")
 dgeObj_filt <- dgeObj[idx,]
@@ -72,8 +74,7 @@ log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
 
 #filter for genes of interest
 ##let's plot lpar gene family
-idx <- str_detect(ga$GeneSymbol, "^Lpar")
-GOI <- ga$GeneSymbol[idx]
+idx <- rownames(log2cpm) %in% ga$EnsgID
 log2cpm <- log2cpm[idx,]
 
 tiDat <- tidyIntensity(log2cpm,
@@ -88,5 +89,7 @@ tiDat %<>% left_join(ga)
 myplot <- obsPlot2(tiDat, plotByCol="GeneSymbol",
                    groupCol="group",
                    valueCol="Log2CPM",
-                   scale="fixed")
+                   scale="fixed",
+                   facetRow=2,
+                   meanSize=2)
 myplot

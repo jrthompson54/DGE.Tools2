@@ -1,3 +1,9 @@
+library(DGEobj)
+library(DGE.Tools2)
+library(tidyverse)
+library(magrittr)
+library(JRTutil)
+
 x <- structure(list(EnsgID = c("Gene1", "Gene2", "Gene3", "Gene4",
                           "Gene1", "Gene2", "Gene3", "Gene4", "Gene1", "Gene2", "Gene3",
                           "Gene4", "Gene1", "Gene2", "Gene3", "Gene4"),
@@ -15,7 +21,7 @@ x <- structure(list(EnsgID = c("Gene1", "Gene2", "Gene3", "Gene4",
 MyPlot <- logRatioPlot(x,
                        facetColname = "EnsgID",
                        xColname = "Contrast",
-                       facetCol = 4,
+                       facetCol = 2,
                        scales = "fixed",
                        barWidth = 0.7)
 assertthat::assert_that("ggplot" %in% class(MyPlot))

@@ -9,16 +9,17 @@ QCplots(qcdata, metricNames, plotType = "bar",
   barAlpha = 1, barWidth = 0.9, pointColor = "dodgerblue4",
   pointFill = "dodgerblue3", pointShape = 21, pointAlpha = 1,
   pointSize = 4, lineColor = "dodgerblue4", lineSize = 1,
-  lineType = "solid", lineFit = "loess", xAngle = 45,
-  baseTextSize = 14, hlineSD = 3, winsorize = TRUE)
+  lineType = "solid", lineAlpha = 1, histColor = "dodgerblue4",
+  histFill = "dodgerblue3", histSize = 1, histAlpha = 1,
+  xAngle = 90, baseTextSize = 14, hlineSD = 3, winsorize = TRUE)
 }
 \arguments{
 \item{qcdata}{A dataframe or tibble with metric names in the first column and
 samples in columns 2-n.  Each row is a different QC metric. This matches
-the Omicsoft RNA-Seq.QCMetrics.Table.txt format.}
+the Omicsoft RNA-Seq.QCMetrics.Table.txt format. (required)}
 
 \item{metricNames}{A list of metrics to plot.  Values must exist in column 1
-of the data frame.}
+of the data frame. (required)}
 
 \item{plotType}{One of "bar", "point", "pointline".  If you want a different
 plottype for each metric, pass a list of plotTypes with length equal to
@@ -31,7 +32,7 @@ length(metricNames) (default="bar")}
 \item{barSize}{set the bar size (thickness of each bar perimeter; default =
 0.1)}
 
-\item{barAlpha}{Transparency for the bar layer (Default = 1)}
+\item{barAlpha}{Transparency for the bar layer (Range = 0-1) (Default = 1)}
 
 \item{barWidth}{set the bar width (Default = 0.8)}
 
@@ -41,21 +42,28 @@ length(metricNames) (default="bar")}
 
 \item{pointShape}{Shape for the point layer (Default = 21; fillable circle)}
 
-\item{pointAlpha}{Transparency for the box layer (Default = 1)}
+\item{pointAlpha}{Transparency for the box layer (Range = 0-1) (Default = 1)}
 
 \item{pointSize}{Size of the points (Default = 4)}
 
-\item{lineColor}{Color of the line fit (Default = "dodgerblue4")}
+\item{lineColor}{Color of the line (Default = "dodgerblue4")}
 
 \item{lineSize}{Size of the line fit (Default = 1)}
 
 \item{lineType}{One of c("solid", "dashed", "dotted", "dotdash", "longdash",
 "twodash"). (Default = "solid")}
 
-\item{lineFit}{Type of fit to use.  One of c("auto", "lm", "glm", "gam",
-"loess"). (Default = "loess")}
+\item{lineAlpha}{Transparency for the line layer (Range = 0-1) (default=1)}
 
-\item{xAngle}{Angle to set the sample labels on the Xaxis (Default =  45;
+\item{histColor}{Outline color for the histogram (Default = "dodgerblue4")}
+
+\item{histFill}{Fill color for the histogram (Default = "dodgerblue3")}
+
+\item{histSize}{Thickness of the bar borders (Default = 1)}
+
+\item{histAlpha}{Transparency of the histogram (Derault = 1)}
+
+\item{xAngle}{Angle to set the sample labels on the Xaxis (Default =  90;
 Range = 0-90)}
 
 \item{baseTextSize}{default = 14}
@@ -84,7 +92,7 @@ statistical reference points, NOT pass/fail limits.
 \examples{
 
   #Get some data from an Omicsoft project in S3
-  S3mount <- "Y:"
+  S3mount <- "/arrayserver" #where you mount the S3 bucket "bmsrd-ngs-arrayserver"
   s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
   qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
   qcdat <- readr::read_delim(file.path(s3path, qcfilename), delim="\\t")
