@@ -1,17 +1,18 @@
 ### Function profilePlot ###
-#' Deluxe Profile Plots
+#' Profile Plots
 #'
-#' A profile plot shows Log Intensity on the X axis and LogRatios on the Y axis.
+#' A profile plot shows Log Intensity on the X axis and Log Ratios on the Y axis.
 #' This function is intended to show the profile plot from a dataframe
 #' created by topTable or topTreat.  Properly normalized data will generally be
 #' centered around LogRatio = 0.
 #'
-#' By default, the plot places "logFC" on the Y axis and "AveExpr" on the X axis.
-#' By default, a reference horizontal line is shown at LogRatio = 0 on the Y axis.
-#' Optionally, additional reference lines will be drawn at +/- a user supplied
-#' logratio threshold. A loess line fit is drawn through the actual data.
-#' The points are color coded using the significance measure (pvalue or FDR threshold) supplied by the user.
-#' By default, the P.Value field is used with a threshold of 0.01 to color code the points.
+#' By default, the plot places "logFC" on the Y axis and "AveExpr" on the X
+#' axis. By default, a reference horizontal line is shown at LogRatio = 0 on the
+#' Y axis. Optionally, additional reference lines will be drawn at +/- a user
+#' supplied logratio threshold. A loess line fit is drawn through the actual
+#' data. The points are color coded using the significance measure (pvalue or
+#' FDR threshold) supplied by the user. By default, the P.Value field is used
+#' with a threshold of 0.01 to color code the points.
 #'
 #' The profilePlot has also been implemented
 #' with a scalable theme that makes it easy to scale font sizes larger

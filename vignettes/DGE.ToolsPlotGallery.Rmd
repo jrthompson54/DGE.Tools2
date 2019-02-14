@@ -1,0 +1,316 @@
+---
+title: "DGE.Tools Data Exploration Plotting Tools"
+author: "John Thompson"
+date: "13Feb2019"
+header-includes:
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{}
+- \fancyfoot[CO,CE]{\textit{BMS Confidential}}
+- \fancyfoot[LE,RO]{\thepage} 
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    number_sections: true
+    fig_width: 6
+    fig_height: 4
+fontsize: 10pt
+---
+ 
+\newpage 
+
+# DGE.Tools2: Plotting tools 
+
+DGE.Tools2 includes an assortment of standard data exploration plotting tools.
+The intention here is to make common plot types dead easy to produce and provide
+a consistent look and feel.  Generally, optional argument allow you to tweak the
+plots and since the plots are based on ggplot, you can further customize the
+resulting ggplot objects.  
+
+The Plotting functions are:  
+
+* profilePlot:  LogInt vs. LogRatio (aka MA plot)  
+* volcanoPlot:  LogRatio vs. NegLogP  
+* cdfPlot:  Rank(pvalue) vs. NegLogP  
+* comparePlot: Compare LogRatios for two contrasts  
+* obsPlot: Gene intensity boxplots (faceted)  
+* logRatioPlot: Plot logRatios +/- 95% confidence intervals  
+* plotPvalHist: faceted Pvalue histogram  
+* ggplotMDS: Multidimensional Scaling (like PCA but uses a intensity-based distance metric)  
+* MDS_var_explained: Plot the % variance explained by each MDS component
+
+Most of the plots are generated with ggplot, thus, the user can take a returned ggplot 
+object and further modify it to their heart's content.
+
+
+**Code Block:** Load some test data (IPF Fibroblast data) and set global heatmap options.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+rm(list=ls()) #Clear the workspace
+invisible(gc()) #garbage collection to masimize available memory
+startTime = Sys.time()
+
+
+
+setwd("~/R/lib/pkgsrc/DGE.Tools2/vignettes")
+library(tidyverse)
+library(magrittr)
+library(gridExtra)
+library(DGEobj)
+library(DGE.Tools2)
+library(JRTutil)
+library(grDevices)
+
+stashPath <- getStashPath()
+outputPath <- "./output"
+inputPath <- file.path(stashPath, "data/nonclin/DGEobj_library")
+dgeObj <- readRDS(file.path(inputPath, "UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018.RDS"))
+#apply a low intensity filter
+dgeObj <- lowIntFilter(dgeObj, zfpkmThreshold=-3, countThreshold=10)
+
+
+
+```
+
+\newpage
+
+# Table of Differential Gene Counts from Contrasts   
+
+**Code Block:** Signature Table
+
+```{r SignatureTable echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+#grab a topTable dataframe
+myContastList <- getType(dgeObj, "topTable")
+
+#Plot with defaults
+df <- summarizeSigCounts(myContastList)
+knitr::kable(df)
+
+#add a fold change threshold
+df <- summarizeSigCounts(myContastList, fcThreshold = 2)
+knitr::kable(df)
+
+```
+
+Arguments to summarizeSigCounts allow you to specify which fields to include
+and define the thresholds for significance.  see ?summarizeSigcounts
+
+
+\newpage
+
+# Profile Plot (aka MA plot): LogInt vs. LogRatio plots
+
+Function profilePlot uses defaults appropriate for topTable/topTreat dataframes.
+
+The printAndSave function sends the plot to the console with a 12pt base font
+(suitable for knitr/pdf output) and saves an image file with a 24pt base font
+which is more suitable for PPT use.  The file extension determines the image
+file type (allowed values include: .pdf, .png, .jpg, .tiff, .svg, bmp)
+
+**Code Block:** Profile Plot Example 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+#grab a topTable dataframe
+myTopTable <- dgeObj$TGFb25_vs_Veh
+
+#draw the plot
+MyProfilePlot <- profilePlot(myTopTable, 
+                             title="TGFbeta Signature",
+                             legendPosition = "ne")
+printAndSave(MyProfilePlot, file.path(outputPath, "ProfilePlot.PNG"))
+
+```
+
+
+See ?profilePlot for options to modify various attributes (color, shape, tranparency, reference lines, etc)  
+
+\newpage
+
+# Volcano Plot: LogRatio vs. Negative Log Pvalue
+
+Function volcanoPlot uses defaults appropriate for topTable dataframes.
+
+**Code Block:** Volcano Plot Example
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+#grab a topTable dataframe
+myTopTable <- dgeObj$TGFb25_vs_Veh
+
+#draw the plot
+MyVolcanoPlot <- volcanoPlot(myTopTable)
+printAndSave(MyVolcanoPlot, "VolcanoPlot.PNG")
+
+```
+
+See ?volcanoPlot for options to modify various attributes (color, shape, tranparency, reference lines, etc)  
+
+
+
+\newpage
+
+# CDF Plot: Evaluate model performance
+
+Plot the pvalue Rank vs. the actual pvalues.  A straight diagonal line indicate 
+no differential genes (null hypothesis satisfied), while differential genes appear
+as a break above the line at low pvalues.
+
+The main plot shows pvalues <= 0.1 (user settable).  An inset plot shows the full 
+range of pvalues and a blue box indicates the region shown in the main plot.
+Genes with p<0.01 (user settable) are shown in red.
+
+**Code Block:** CDF Plot Example
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+#grab a topTable dataframe
+myTopTable <- dgeObj$TGFb25_vs_Veh
+
+#draw the plot
+MyCDFPlot <- cdfPlot(myTopTable, plotFile="MyCdfPlot.PNG")
+
+```
+
+Note: printAndSave doesn't work with cdfPlot because a cdfPlot is really two plots.
+Therefore, cdfPlot has an argument to enable saving the plot to an image file.
+
+See ?cdfPlot options to modify various attributes (color, shape, tranparency, reference lines, etc)  
+
+\newpage
+
+# Compare Plot: compare two signature
+
+Plot the LogRatios of two contrasts, highlight common genes and genes unique
+to either contrast.
+
+The input for this plot requires pulling the log ratio and pvalue columns from two topTable dataframes together.  
+
+**Code Block:** Compare Plot Example
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+#Get two topTreat dataframes
+#grab a topTable dataframe
+tt1 <- dgeObj$TGFb25_vs_Veh
+tt2 <- dgeObj$TGFb10_vs_Veh
+
+#combine the LogRatios and pvalues into a dataframe
+compareData <- data.frame(cbind(TGFb25= tt1$logFC,
+                   Stable.Vs.Norm = tt2$logFC,
+                   xp = tt1$P.Value,
+                   yp = tt2$P.Value) )
+
+MyComparePlot = comparePlot(compareData, 
+                            title = "Compare/Contrast Rapid and Stable",
+                            legendPosition = "se")
+printAndSave (MyComparePlot, "ComparePlot.PNG")
+
+```
+
+See ?comparePlot options to modify various attributes (color, shape, tranparency, reference lines, etc) 
+
+\newpage
+
+
+# Observation Plot: Intensity boxplots by gene
+
+This is a gene of interest plot, intended to plot a reasonable small number of genes, a separate plot
+for each gene with a box for each treatment group.  It takes a tidy data frame as input and a tidyIntensity 
+function is supplied to simplify creation of the input file.
+
+The plot is faceted by default.  Setting facet = FALSE produces individual plots
+for each gene that are returned as a list of plots.
+
+**Code Block:** Observation Plot Example
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+  #get log2cpm data
+  log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+  #filter for a smallish set of genes
+  idx <- stringr::str_detect(dgeObj$geneData$GeneName, "^PPAR")
+  log2cpm <- log2cpm[idx,]
+  #swap gene symbols for Ensembl IDs
+  rownames(log2cpm) <- dgeObj[idx,]$geneData$GeneName
+  
+  #put in tidy format
+  tidyInt <- tidyIntensity(log2cpm,
+                           rowidColname="GeneID",
+                           keyColname="Sample",
+                           valueColname="Log2CPM",
+                           group=dgeObj$design$ReplicateGroup)
+
+  #Facetted boxplot
+  obsPlot2(tidyInt, plotByCol="GeneID",
+           groupCol = "group",
+           valueCol ="Log2CPM",
+           pointJitter = 0.1,
+           facetRow = 2)
+
+  #Facetted violin plot
+  obsPlot2(tidyInt, plotByCol = "GeneID",
+           violinLayer = TRUE,
+           boxLayer = FALSE,
+           groupCol="group",
+           valueCol = "Log2CPM",
+           pointJitter = 0.1,
+           facetRow = 2)
+  
+  #return a list of individual plots
+  myplots <- obsPlot2(tidyInt, plotByCol="GeneID",
+                      groupCol = "group",
+                      valueCol ="Log2CPM",
+                      pointJitter = 0.1,
+                      facet = FALSE)
+  #plot the first one
+  printAndSave(myplots[[1]], "plot1.png")
+              
+```
+
+See ?obsPlot2 options to modify various attributes (color, shape, tranparency, reference lines, etc)
+
+\newpage
+
+# Pvalue Histogram: Evaluate Quality of Fit
+
+
+**Code Block:** Pvalue Histogram Facet Plot Example
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+topTableList <- getType(dgeObj, "topTable")
+
+#Get all the pvalue columns from the contrasts 
+MyPval <- extractCol(topTableList, "P.Value")
+
+plotPvalHist(MyPval)
+
+```
+
+See ?plotPvalHist for optional arguments
+
+
+\newpage
+
+#logRatioPlot
+
+# checkSex
+# plotDisp
+# plotNorm
+# QCplots
+
+# Session Info
+
+***Time required to process this report:*** *`r format(Sys.time() - startTime)`* 
+
+**R Session Info**
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+library(envDocument)
+library(knitr)
+myenv = env_doc("return")
+kable(myenv)
+#sessionInfo()
+```

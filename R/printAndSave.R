@@ -1,9 +1,10 @@
 ### Function printAndSave ###
 #' Function  printAndSave
 #'
-#' Print a ggplot2 object to the console/knitr report and save as a graphic file.
-#' Defaults to larger fonts for the graphic file.  Graphic file type is taken from
-#' the given filename and can be one of (png, bmp, tiff, jpg, pdf, svg).
+#' printAndSave is a wrapper around ggsave.  It prints a ggplot2 object to the
+#' console/knitr report and saves as a graphic file. It defaults to larger fonts
+#' for the graphic file (more suitable for PPT).  Graphic filetype is taken
+#' from the given filename and can be one of (png, bmp, tiff, jpg, pdf, svg).
 #'
 #' I found I didn't like the default Legend sizes. I inserted code to increase the
 #' size of the print/knitr legend and decrease the size of the legend in the saved

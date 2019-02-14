@@ -60,7 +60,9 @@ Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,
     org.Rn.eg.db,
-    org.Cf.eg.db
+    org.Cf.eg.db,
+    knitr,
+    rmarkdown
 Collate:
     'DGE_Tools.R'
     'OmicsoftToDgeObj.R'
@@ -97,3 +99,4 @@ Collate:
     'graphDGEobj.R'
     'QCplots.R'
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr
