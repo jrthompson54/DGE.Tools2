@@ -38,9 +38,10 @@ printAndSave(plotObject, filename, width = 7, height = 5,
 The print object
 }
 \description{
-Print a ggplot2 object to the console/knitr report and save as a graphic file.
-Defaults to larger fonts for the graphic file.  Graphic file type is taken from
-the given filename and can be one of (png, bmp, tiff, jpg, pdf, svg).
+printAndSave is a wrapper around ggsave.  It prints a ggplot2 object to the
+console/knitr report and saves as a graphic file. It defaults to larger fonts
+for the graphic file (more suitable for PPT).  Graphic filetype is taken
+from the given filename and can be one of (png, bmp, tiff, jpg, pdf, svg).
 }
 \details{
 I found I didn't like the default Legend sizes. I inserted code to increase the

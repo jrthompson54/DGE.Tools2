@@ -132,10 +132,11 @@ Input is a tidy dataframe of intensity data.
 
  #Or get data from a DGEobj with RNA-Seq data
  log2cpm <- convertCount(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
- tidyInt <- tidayIntensity(log2cpm,
+ tidyInt <- tidyIntensity(log2cpm,
                            rowidColname="GeneID",
                            keyColname="Sample",
-                           valueColname="Log2CPM")
+                           valueColname="Log2CPM",
+                           group=dgeObj$design$ReplicateGroup)
 
   #Facetted boxplot
   obsPlot2(tidyInt, plotByCol="GeneID",
@@ -148,7 +149,7 @@ Input is a tidy dataframe of intensity data.
   obsPlot2(tidyInt, plotByCol = "GeneID",
            violinLayer = TRUE,
            boxLayer = FALSE,
-           groupCo l="group",
+           groupCol="group",
            valueCol = "Log2CPM",
            pointJitter = 0.1,
            facetRow = 2)

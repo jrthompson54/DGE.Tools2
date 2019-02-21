@@ -114,21 +114,27 @@ ggplots, one for each facetColname value (typically gene).
 \examples{
 
   #DGEobj example
-  contrastList <- getType(dgeObj, "topTable")
   #Put contrasts in tidy format keeping logFC, and confidence limits data
-  tidyDat <-tidyContrasts(dgeObj, rownameColumn="EnsgID", includeColumns = c("logFC", "CI.R", "CI.L")
+  tidyDat <-tidyContrasts(dgeObj, rownameColumn="EnsgID", includeColumns = c("logFC", "CI.R", "CI.L"))
+
   #add gene symbols from geneData
   ens2genesym <- dgeObj$geneData \%>\%
                  rownames_to_column(var="EnsgID") \%>\%
                  select(EnsgID, GeneSymbol=GeneName)
- tidyDat <-  left_join(tidyDat, ens2genesym)
- #simple barplot
- logRatioPlot(tcDat,
-              facetColname = "GeneSymbol",
-              xColname = "Contrast")
+  tidyDat <-  left_join(tidyDat, ens2genesym)
 
- #lineplot with some options
- logRatioPlot(tcDat, plotType="point",
+  #filter for a small set of genes of interest
+  idx <- stringr::str_detect(tidyDat$GeneSymbol, "^PPAR")
+  tidyDat <- tidyDat[idx,]
+
+  #simple barplot
+  logRatioPlot(tidyDat,
+              facetColname = "GeneSymbol",
+              xColname = "Contrast",
+              facetCol = 2)
+
+  #lineplot with some options
+  logRatioPlot(tidyDat, plotType="point",
                      facetColname = "GeneSymbol",
                      xColname = "Contrast",
                      facetCol=4,

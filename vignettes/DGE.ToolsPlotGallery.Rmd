@@ -37,6 +37,9 @@ The Plotting functions are:
 * comparePlot: Compare LogRatios for two contrasts  
 * obsPlot: Gene intensity boxplots (faceted)  
 * logRatioPlot: Plot logRatios +/- 95% confidence intervals  
+* checkSex: Plot X and Y chromosome genes to infer sex
+* plotDisp: Plot dispersion or BCV vs log intensity (type of QC plot)
+* plotNorm: Plot density or boxplots before/after normalization
 * plotPvalHist: faceted Pvalue histogram  
 * ggplotMDS: Multidimensional Scaling (like PCA but uses a intensity-based distance metric)  
 * MDS_var_explained: Plot the % variance explained by each MDS component
@@ -47,12 +50,10 @@ object and further modify it to their heart's content.
 
 **Code Block:** Load some test data (IPF Fibroblast data) and set global heatmap options.
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
+```{r setup, echo=TRUE, warning=FALSE, message=FALSE}
 rm(list=ls()) #Clear the workspace
 invisible(gc()) #garbage collection to masimize available memory
 startTime = Sys.time()
-
-
 
 setwd("~/R/lib/pkgsrc/DGE.Tools2/vignettes")
 library(tidyverse)
@@ -69,8 +70,6 @@ inputPath <- file.path(stashPath, "data/nonclin/DGEobj_library")
 dgeObj <- readRDS(file.path(inputPath, "UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018.RDS"))
 #apply a low intensity filter
 dgeObj <- lowIntFilter(dgeObj, zfpkmThreshold=-3, countThreshold=10)
-
-
 
 ```
 
@@ -225,7 +224,7 @@ for each gene that are returned as a list of plots.
 
 **Code Block:** Observation Plot Example
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r obsPlot2, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
   #get log2cpm data
   log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
@@ -265,11 +264,166 @@ for each gene that are returned as a list of plots.
                       pointJitter = 0.1,
                       facet = FALSE)
   #plot the first one
-  printAndSave(myplots[[1]], "plot1.png")
+  printAndSave(myplots[[1]], "obsPlot1.png")
               
 ```
 
 See ?obsPlot2 options to modify various attributes (color, shape, tranparency, reference lines, etc)
+
+\newpage
+
+# logRatioPlot
+
+Plotting logRatio data with 95% confidence limits is generally preferable to
+plotting intensity data with the Observation Plot.  This is because the ratio
+data is post-modeling and thus reflects adjustments for any "nusiance" factors
+included in the modeling (e.g. batch effect, demographic or sex effects).
+
+```{r logRatioPlot, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+  #Put contrasts in tidy format keeping logFC, and confidence limits data
+  tidyDat <-tidyContrasts(dgeObj, rownameColumn="EnsgID", includeColumns = c("logFC", "CI.R", "CI.L"))
+
+  #add gene symbols from geneData
+  ens2genesym <- dgeObj$geneData %>%
+                 rownames_to_column(var="EnsgID") %>%
+                 select(EnsgID, GeneSymbol=GeneName)
+  tidyDat <-  left_join(tidyDat, ens2genesym) 
+  
+
+  #filter for a small set of genes of interest
+  idx <- stringr::str_detect(tidyDat$GeneSymbol, "^PPAR")
+  tidyDat <- tidyDat[idx,]  
+  
+  #simple barplot
+  myLogRatioPlot <- logRatioPlot(tidyDat,
+                                 facetColname = "GeneSymbol",
+                                 xColname = "Contrast", 
+                                 title = "LogRatio Plots: PPAR genes",
+                                 facetCol = 2,
+                                 barWidth = 0.6
+  )
+
+  printAndSave(myLogRatioPlot, "logRatioPlot.png")
+```
+
+The companion function, tidyContrasts, aids in reformatting topTable contrast data for use with function logRatioPlot.
+tidyContrasts will accept a DGEobj as input and will find all topTable data in the DGEobj.  tidyContrasts will also work with a list of topTable dataframes which provides flexibility to mix and match topTable data from multiple projects for plotting.
+
+See ?logratio options to modify various attributes (color, shape, tranparency, reference lines, etc)
+
+\newpage
+
+# checkSex Plot
+
+The checkSex function uses expression intensity data from the X and Y chromosomes to infer sex.  When
+compared to actuall sex annotation, this can help to identify sample labeling problems and swaps.  
+
+The XIST gene us used as an X-linked reporter gene that is well expressed in
+most tissues.  Since most Y-linked genes are expressed predominantly in testes,
+we scan for and use the highest expressed Y-linked gene for the analysis.
+
+You can provide the name of the annotated sex column in the design table and it will be 
+used to color code the points.
+
+```{r checkSex, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+  sexPlot <- checkSex(dgeObj, species="human", sexCol="Sex")
+  printAndSave(sexPlot, "logRatioPlot.png")
+  
+```
+
+Note in this example each subject was tested twice.  There are two points from the same individual that are annotated male and plot as a female and vice versa.  Also, there are two points from one individual that plot in a position indicative of an XXY genotype.
+
+\newpage
+
+# Dispersion Plot (plotDisp function)
+
+Dispersion is a measure of variance that is plotted against intensity as a QC
+plot that illustrates heteroscedasticity.
+
+```{r plotDisp, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+# Note a DGEobj can have multiple design matrices or DGELists;  in this case
+# only one of each is present
+designMatrix <- getType(dgeObj, "designMatrix")[[1]]
+dgelist <- getType(dgeObj, "DGEList")[[1]]
+#dispersion plot
+dispersionPlot <- plotDisp(dgelist, designMatrix, lineFit="loess", plotType="BCV")
+printAndSave(dispersionPlot, "dispersionPlot.png")
+#BCV (biological coefficient of variation) plot
+BCV_Plot <- plotDisp(dgelist, designMatrix, lineFit="loess", plotType="BCV")
+printAndSave(BCV_Plot, "BCV_Plot.png")
+
+```
+
+\newpage
+
+# Plot Normalization (plotNorm function)
+
+This function plots distributions before and after normalization as a two panel
+facetted plot.  It uses edgeR::calcNormFactors and thus supports any
+normalization accepted by calcNormFactors.  
+
+Input can be a DGEobj or a raw counts matrix.  
+Output can be a box plot or density distribution.  
+
+```{r plotNorm, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+
+boxNorm <- plotNorm(dgeObj, plotType="box", normalize="tmm")
+printAndSave(boxNorm, "boxNorm.png")
+
+densityNorm <- plotNorm(dgeObj, plotType="density", normalize="tmm")
+printAndSave(densityNorm, "densityNorm.png")
+
+
+```
+
+
+\newpage
+# Alignment QCplots (Function QCplots)
+
+This function is intended to work on Omicsoft-style alignment QC data.  QC parameters are named 
+in the first column and subsequent columns hold data for each sample.  
+
+Since Omicsoft alignment QC includes hundreds of metrics, you typically want to limit the plots
+to a subset of the available metrics.
+
+```{r QCplots, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5 }
+  #Get some data from an Omicsoft project in S3
+  s3mount <- "Y:" #where you have mounted the S3 bucket "bmsrd-ngs-arrayserver"
+  s3path <- "/OmicsoftHome/output/P-20171107-0002/UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018/ExportedViewsAndTables"
+  qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
+  
+
+  qcdat <- readr::read_delim(file.path(s3mount, s3path, qcfilename), delim="\t")
+  #pick a column from the design table with shorter sample names
+  colnames(qcdat) <- c("Metric", make.names(dgeObj$design$Sample.Name))
+  #
+  
+  # qcdat <- qcdat[complete.cases(qcdat),]
+  
+   for (i in 2:ncol(qcdat)){ print(class(qcdat[,i,drop=TRUE]))}
+  
+  #pick some Omicsoft Metrics from column 1 of the data frame
+  someFavMetrics <- c("Alignment_MappedRate", "Alignment_PairedRate",
+                              "Source_rRNA", "Strand_Read1AntiSense",
+                              "Strand_ReadPairAntiSense", "Profile_ExonRate",
+                              "Profile_InterGene_FPK")
+
+  MyQCplots <- QCplots(qcdat, metricNames=someFavMetrics, debug=TRUE) #all defaults
+  # plots <- QCplots(qcdat, metricNames=someFavMetrics, plotType="bar", xAngle=90)
+  #draw the first plot
+  MyQCplots[[1]]
+
+```
+
+You need to download a QC data file from the S3 bucket bms-ngs-arrayserver or, preferrably, you can read data
+directly from S3 using software to mount an S3 bucket to a local location.
+
+To map and S3 bucket to local storage:  
+For Mac: see [s3fs](https://github.com/s3fs-fuse/s3fs-fuse)    
+For PC: see [Cloudberry Drive](https://www.cloudberrylab.com/drive.aspx)   
 
 \newpage
 
@@ -294,12 +448,11 @@ See ?plotPvalHist for optional arguments
 
 \newpage
 
-#logRatioPlot
 
-# checkSex
-# plotDisp
-# plotNorm
-# QCplots
+
+
+
+
 
 # Session Info
 

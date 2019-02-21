@@ -102,12 +102,25 @@ QCplots <- function(qcdata,
                     xAngle = 90,
                     baseTextSize=14,
                     hlineSD=3,
-                    winsorize=TRUE
+                    winsorize=TRUE,
+                    debug=FALSE
 ){
   assertthat::assert_that("data.frame" %in% class(qcdata),
                           tolower(plotType) %in% c("bar", "point", "pointline", "histogram"),
                           xAngle >= 0  && xAngle <= 90
   )
+
+  if (debug == TRUE) browser()
+
+  # Omicsoft data can be "contaminated" with cell values of "." which cause the
+  # column to be converted to character instead of numeric.  Replace "." in column
+  # 2-n with NA and convert columns 2-n to numeric.
+  dotIdx <- qcdata == "."
+  if (sum(dotIdx, na.rm=TRUE) > 0) {
+    qcdata[dotIdx] <- NA
+    for (columnName in colnames(qcdata)[2:ncol(qcdata)])
+      qcdata[columnName] <- as.numeric(qcdata[[columnName]])
+  }
 
   #convert first col to rownames and transpose
   qcdata %<>% column_to_rownames(var=colnames(qcdata)[1]) %>%

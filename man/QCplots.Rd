@@ -11,7 +11,8 @@ QCplots(qcdata, metricNames, plotType = "bar",
   pointSize = 4, lineColor = "dodgerblue4", lineSize = 1,
   lineType = "solid", lineAlpha = 1, histColor = "dodgerblue4",
   histFill = "dodgerblue3", histSize = 1, histAlpha = 1,
-  xAngle = 90, baseTextSize = 14, hlineSD = 3, winsorize = TRUE)
+  xAngle = 90, baseTextSize = 14, hlineSD = 3, winsorize = TRUE,
+  debug = FALSE)
 }
 \arguments{
 \item{qcdata}{A dataframe or tibble with metric names in the first column and
