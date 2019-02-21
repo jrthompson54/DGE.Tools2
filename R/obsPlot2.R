@@ -114,43 +114,45 @@
 #'
 #' @export
 obsPlot2 <- function(data,
-                      plotByCol,
-                      groupCol,
-                      valueCol,
-                      groupOrder=unique(as.character(data[groupCol,, drop=TRUE])),
-                      boxLayer = TRUE,
-                      violinLayer = FALSE,
-                      pointLayer = TRUE,
-                      meanLayer = TRUE,
-                      xlab=groupCol, ylab=valueCol, title,
-                      boxColor = "grey30",
-                      boxFill = "deepskyblue3",
-                      boxAlpha = 0.5,
-                      boxNotch = FALSE,
-                      boxNotchWidth = 0.8,
-                      violinColor = "grey30",
-                      violinFill = "goldenrod1",
-                      ViolinAlpha = 0.5,
-                      pointColor = "grey30",
-                      pointFill = "dodgerblue4",
-                      pointShape = 21, #fillable circle
-                      pointAlpha = 1,
-                      pointSize = 2,
-                      pointJitter = 0,
-                      meanColor = "red2",
-                      meanFill = "goldenrod1",
-                      meanShape = 22, #fillable square
-                      meanAlpha = 0.7,
-                      meanSize = 3,
-                      legenPosition = "right",
-                      baseFontSize = 12,
-                      themeStyle = "grey",
-                      facet = TRUE,
-                      facetRow,
-                      xAngle = 30,
-                      scales = "free_y",
-                      debug = FALSE
-                      )
+                     plotByCol,
+                     groupCol,
+                     valueCol,
+                     groupOrder=unique(as.character(data[groupCol,, drop=TRUE])),
+                     boxLayer = TRUE,
+                     violinLayer = FALSE,
+                     pointLayer = TRUE,
+                     meanLayer = TRUE,
+                     xlab=groupCol,
+                     ylab=valueCol,
+                     title,
+                     boxColor = "grey30",
+                     boxFill = "deepskyblue3",
+                     boxAlpha = 0.5,
+                     boxNotch = FALSE,
+                     boxNotchWidth = 0.8,
+                     violinColor = "grey30",
+                     violinFill = "goldenrod1",
+                     ViolinAlpha = 0.5,
+                     pointColor = "grey30",
+                     pointFill = "dodgerblue4",
+                     pointShape = 21, #fillable circle
+                     pointAlpha = 1,
+                     pointSize = 2,
+                     pointJitter = 0,
+                     meanColor = "red2",
+                     meanFill = "goldenrod1",
+                     meanShape = 22, #fillable square
+                     meanAlpha = 0.7,
+                     meanSize = 3,
+                     legenPosition = "right",
+                     baseFontSize = 12,
+                     themeStyle = "grey",
+                     facet = TRUE,
+                     facetRow,
+                     xAngle = 30,
+                     scales = "free_y",
+                     debug = FALSE
+)
 {
 
   .addGeoms <- function(MyPlot)
@@ -219,13 +221,10 @@ obsPlot2 <- function(data,
     outlier.shape <- "."
   }
 
-
   if (debug ==TRUE) browser()
 
-
-
 ### Plot code here
-  if (facet) {
+  if (facet == TRUE) {
 
     #set facet columns to sqrt of unique observations (rounded up)
     if (missing(facetRow)) {
@@ -233,10 +232,6 @@ obsPlot2 <- function(data,
     } else {
       numcol = facetRow
     }
-
-    # if (numcol > 6) {
-    #   warning ("You're putting a lot of plots into a Facet Plot")
-    # }
 
     MyPlot <- ggplot2::ggplot (data, aes_string(x=groupCol, y=valueCol))
     MyPlot <- .addGeoms(MyPlot)
@@ -247,9 +242,9 @@ obsPlot2 <- function(data,
     MyPlot <- MyPlot + ggplot2::ylab(ylab)
     if (!missing(title)) MyPlot <- MyPlot + ggplot2::ggtitle(title)
     if (tolower(themeStyle) == "bw" ){
-      MyPlot <- MyPlot + theme_bw() + baseTheme(baseFontSize)
+      MyPlot <- MyPlot + theme_bw(baseFontSize)
     } else {
-      MyPlot <- MyPlot + theme_grey() + baseTheme(baseFontSize)
+      MyPlot <- MyPlot + theme_grey(baseFontSize)
     }
 
     #rotate xaxis group labels
@@ -264,17 +259,17 @@ obsPlot2 <- function(data,
       for (obs in unique(data[[plotByCol]])) {  #for each gene
 
         dat <- data[data[[plotByCol]] == obs, ] #pull data for one gene
-        aplot <- ggplot(dat, aes(x=groupCol, y=valueCol)) + #Samples vs Log2CPM
+        aplot <- ggplot(dat, aes_string(x=groupCol, y=valueCol)) + #Samples vs Log2CPM
           xlab(xlab) +
           ylab(ylab) +
           ggtitle(obs) +
-          theme_grey() + facetTheme(baseFontSize)
+          theme_grey(baseFontSize) # + facetTheme(baseFontSize)
         aplot <- .addGeoms(aplot)
-        if (meanLayer == TRUE){
-          aplot <- aplot +
-            stat_summary(fun.y=mean, geom="point", shape=meanShape, size=meanSize,
-                         color="red", fill = "goldenrod1", alpha=1.0)
-        }
+        # if (meanLayer == TRUE){
+        #   aplot <- aplot +
+        #     stat_summary(fun.y=mean, geom="point", shape=meanShape, size=meanSize,
+        #                  color="red", fill = "goldenrod1", alpha=1.0)
+        # }
         #rotate xaxis group labels
         if (xAngle > 0){
           aplot <- aplot + theme(axis.text.x = element_text(angle = xAngle, hjust = 1))

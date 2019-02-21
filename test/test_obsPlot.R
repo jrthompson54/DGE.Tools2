@@ -67,9 +67,9 @@ MyPlot <- logRatioPlot(tcDat,
                        scales = "fixed",
                        barWidth = 0.7)
 
-#Intensity Plots
+####################################################
+#####  Intensity Plots
 log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
-
 
 
 #filter for genes of interest
@@ -85,7 +85,7 @@ tiDat <- tidyIntensity(log2cpm,
 #add gene symbols
 tiDat %<>% left_join(ga)
 
-
+#facetted plot
 myplot <- obsPlot2(tiDat, plotByCol="GeneSymbol",
                    groupCol="group",
                    valueCol="Log2CPM",
@@ -93,3 +93,12 @@ myplot <- obsPlot2(tiDat, plotByCol="GeneSymbol",
                    facetRow=2,
                    meanSize=2)
 myplot
+
+#Individual Plots
+myplot <- obsPlot2(tiDat, plotByCol="GeneSymbol",
+                   groupCol="group",
+                   valueCol="Log2CPM",
+                   scale="fixed",
+                   facet = FALSE,
+                   meanSize=2)
+myplot[[1]]

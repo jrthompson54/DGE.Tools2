@@ -31,24 +31,25 @@ resulting ggplot objects.
 
 The Plotting functions are:  
 
-* profilePlot:  LogInt vs. LogRatio (aka MA plot)  
-* volcanoPlot:  LogRatio vs. NegLogP  
-* cdfPlot:  Rank(pvalue) vs. NegLogP  
-* comparePlot: Compare LogRatios for two contrasts  
-* obsPlot: Gene intensity boxplots (faceted)  
-* logRatioPlot: Plot logRatios +/- 95% confidence intervals  
-* checkSex: Plot X and Y chromosome genes to infer sex
-* plotDisp: Plot dispersion or BCV vs log intensity (type of QC plot)
-* plotNorm: Plot density or boxplots before/after normalization
-* plotPvalHist: faceted Pvalue histogram  
-* ggplotMDS: Multidimensional Scaling (like PCA but uses a intensity-based distance metric)  
-* MDS_var_explained: Plot the % variance explained by each MDS component
+* profilePlot:  LogInt vs. LogRatio (aka MA plot)   
+* volcanoPlot:  LogRatio vs. NegLogP    
+* cdfPlot:  Rank(pvalue) vs. NegLogP   
+* comparePlot: Compare LogRatios for two contrasts    
+* obsPlot2: Gene intensity boxplots (faceted)    
+* logRatioPlot: Plot logRatios +/- 95% confidence intervals    
+* checkSex: Plot X and Y chromosome genes to infer sex   
+* plotDisp: Plot dispersion or BCV vs log intensity (type of QC plot)   
+* plotNorm: Plot density or boxplots before/after normalization  
+* QCplots: Plot selected alignment QC metrics
+* plotPvalHist: faceted Pvalue histogram    
+* ggplotMDS: Multidimensional Scaling (like PCA but uses a intensity-based distance metric)    
+* MDS_var_explained: Plot the % variance explained by each MDS component   
 
 Most of the plots are generated with ggplot, thus, the user can take a returned ggplot 
-object and further modify it to their heart's content.
+object and further modify it to their heart's content.  
 
 
-**Code Block:** Load some test data (IPF Fibroblast data) and set global heatmap options.
+**Code Block:** Load some test data (IPF Fibroblast data).
 
 ```{r setup, echo=TRUE, warning=FALSE, message=FALSE}
 rm(list=ls()) #Clear the workspace
@@ -79,7 +80,7 @@ dgeObj <- lowIntFilter(dgeObj, zfpkmThreshold=-3, countThreshold=10)
 
 **Code Block:** Signature Table
 
-```{r SignatureTable echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r SignatureTable, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
 #grab a topTable dataframe
 myContastList <- getType(dgeObj, "topTable")
@@ -111,7 +112,7 @@ file type (allowed values include: .pdf, .png, .jpg, .tiff, .svg, bmp)
 
 **Code Block:** Profile Plot Example 
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r profilePlot, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
 #grab a topTable dataframe
 myTopTable <- dgeObj$TGFb25_vs_Veh
@@ -135,13 +136,13 @@ Function volcanoPlot uses defaults appropriate for topTable dataframes.
 
 **Code Block:** Volcano Plot Example
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r volcanoPlot, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 #grab a topTable dataframe
 myTopTable <- dgeObj$TGFb25_vs_Veh
 
 #draw the plot
 MyVolcanoPlot <- volcanoPlot(myTopTable)
-printAndSave(MyVolcanoPlot, "VolcanoPlot.PNG")
+printAndSave(MyVolcanoPlot, file.path(outputPath, "VolcanoPlot.PNG"))
 
 ```
 
@@ -163,13 +164,13 @@ Genes with p<0.01 (user settable) are shown in red.
 
 **Code Block:** CDF Plot Example
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r CDFplot, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
 #grab a topTable dataframe
 myTopTable <- dgeObj$TGFb25_vs_Veh
 
 #draw the plot
-MyCDFPlot <- cdfPlot(myTopTable, plotFile="MyCdfPlot.PNG")
+MyCDFPlot <- cdfPlot(myTopTable, plotFile=file.path(outputPath, "MyCdfPlot.PNG"))
 
 ```
 
@@ -189,7 +190,7 @@ The input for this plot requires pulling the log ratio and pvalue columns from t
 
 **Code Block:** Compare Plot Example
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r comparePlot, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 #Get two topTreat dataframes
 #grab a topTable dataframe
 tt1 <- dgeObj$TGFb25_vs_Veh
@@ -204,7 +205,7 @@ compareData <- data.frame(cbind(TGFb25= tt1$logFC,
 MyComparePlot = comparePlot(compareData, 
                             title = "Compare/Contrast Rapid and Stable",
                             legendPosition = "se")
-printAndSave (MyComparePlot, "ComparePlot.PNG")
+printAndSave (MyComparePlot, file.path(outputPath, "ComparePlot.PNG"))
 
 ```
 
@@ -264,7 +265,7 @@ for each gene that are returned as a list of plots.
                       pointJitter = 0.1,
                       facet = FALSE)
   #plot the first one
-  printAndSave(myplots[[1]], "obsPlot1.png")
+  printAndSave(myplots[[1]], file.path(outputPath, "obsPlot1.png"))
               
 ```
 
@@ -304,7 +305,7 @@ included in the modeling (e.g. batch effect, demographic or sex effects).
                                  barWidth = 0.6
   )
 
-  printAndSave(myLogRatioPlot, "logRatioPlot.png")
+  printAndSave(myLogRatioPlot, file.path(outputPath, "logRatioPlot.png"))
 ```
 
 The companion function, tidyContrasts, aids in reformatting topTable contrast data for use with function logRatioPlot.
@@ -329,7 +330,7 @@ used to color code the points.
 ```{r checkSex, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
   sexPlot <- checkSex(dgeObj, species="human", sexCol="Sex")
-  printAndSave(sexPlot, "logRatioPlot.png")
+  printAndSave(sexPlot, file.path(outputPath, "sexPlot.png"))
   
 ```
 
@@ -349,11 +350,12 @@ plot that illustrates heteroscedasticity.
 designMatrix <- getType(dgeObj, "designMatrix")[[1]]
 dgelist <- getType(dgeObj, "DGEList")[[1]]
 #dispersion plot
-dispersionPlot <- plotDisp(dgelist, designMatrix, lineFit="loess", plotType="BCV")
-printAndSave(dispersionPlot, "dispersionPlot.png")
+dispersionPlot <- plotDisp(dgelist, designMatrix, lineFit="loess", plotType="dispersion")
+printAndSave(dispersionPlot, file.path(outputPath, "dispersionPlot.png"))
+
 #BCV (biological coefficient of variation) plot
 BCV_Plot <- plotDisp(dgelist, designMatrix, lineFit="loess", plotType="BCV")
-printAndSave(BCV_Plot, "BCV_Plot.png")
+printAndSave(BCV_Plot, file.path(outputPath, "BCV_Plot.png"))
 
 ```
 
@@ -371,10 +373,10 @@ Output can be a box plot or density distribution.
 ```{r plotNorm, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
 boxNorm <- plotNorm(dgeObj, plotType="box", normalize="tmm")
-printAndSave(boxNorm, "boxNorm.png")
+printAndSave(boxNorm, file.path(outputPath, "boxNorm.png"))
 
 densityNorm <- plotNorm(dgeObj, plotType="density", normalize="tmm")
-printAndSave(densityNorm, "densityNorm.png")
+printAndSave(densityNorm, file.path(outputPath, "densityNorm.png"))
 
 
 ```
@@ -383,11 +385,12 @@ printAndSave(densityNorm, "densityNorm.png")
 \newpage
 # Alignment QCplots (Function QCplots)
 
-This function is intended to work on Omicsoft-style alignment QC data.  QC parameters are named 
-in the first column and subsequent columns hold data for each sample.  
+This function is intended to work on Omicsoft-style alignment QC data.  QC
+parameters are named in the first column and subsequent columns hold data for
+each sample.
 
-Since Omicsoft alignment QC includes hundreds of metrics, you typically want to limit the plots
-to a subset of the available metrics.
+Since Omicsoft alignment QC includes hundreds of metrics, you typically want to
+limit the plots to a subset of the available metrics.
 
 ```{r QCplots, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5 }
   #Get some data from an Omicsoft project in S3
@@ -397,31 +400,27 @@ to a subset of the available metrics.
   
 
   qcdat <- readr::read_delim(file.path(s3mount, s3path, qcfilename), delim="\t")
-  #pick a column from the design table with shorter sample names
-  colnames(qcdat) <- c("Metric", make.names(dgeObj$design$Sample.Name))
-  #
-  
+  #shorten the column names
+  colnames(qcdat) <- str_replace(colnames(qcdat), "_UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018", "")
+
   # qcdat <- qcdat[complete.cases(qcdat),]
   
-   for (i in 2:ncol(qcdat)){ print(class(qcdat[,i,drop=TRUE]))}
-  
   #pick some Omicsoft Metrics from column 1 of the data frame
-  someFavMetrics <- c("Alignment_MappedRate", "Alignment_PairedRate",
-                              "Source_rRNA", "Strand_Read1AntiSense",
-                              "Strand_ReadPairAntiSense", "Profile_ExonRate",
+  someFavMetrics <- c("Alignment_MappedRate", "Source_rRNA", "Profile_ExonRate",
                               "Profile_InterGene_FPK")
 
-  MyQCplots <- QCplots(qcdat, metricNames=someFavMetrics, debug=TRUE) #all defaults
+  MyQCplots <- QCplots(qcdat, metricNames=someFavMetrics) #all defaults
   # plots <- QCplots(qcdat, metricNames=someFavMetrics, plotType="bar", xAngle=90)
   #draw the first plot
-  MyQCplots[[1]]
+  printAndSave(MyQCplots[[1]], file.path(outputPath, "QCplot.png"))
 
 ```
 
-You need to download a QC data file from the S3 bucket bms-ngs-arrayserver or, preferrably, you can read data
-directly from S3 using software to mount an S3 bucket to a local location.
+You need to download a QC data file from the S3 bucket bms-ngs-arrayserver or,
+preferrably, you can read data directly from S3 using software to mount an S3
+bucket to a local location.
 
-To map and S3 bucket to local storage:  
+To map an S3 bucket to local storage:  
 For Mac: see [s3fs](https://github.com/s3fs-fuse/s3fs-fuse)    
 For PC: see [Cloudberry Drive](https://www.cloudberrylab.com/drive.aspx)   
 
@@ -432,27 +431,56 @@ For PC: see [Cloudberry Drive](https://www.cloudberrylab.com/drive.aspx)
 
 **Code Block:** Pvalue Histogram Facet Plot Example
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+```{r pvalHist, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
 topTableList <- getType(dgeObj, "topTable")
 
 #Get all the pvalue columns from the contrasts 
 MyPval <- extractCol(topTableList, "P.Value")
 
-plotPvalHist(MyPval)
+pvalPlot <- plotPvalHist(MyPval)
+printAndSave(pvalPlot, file.path(outputPath, "pvalHist.png"))
 
 ```
 
 See ?plotPvalHist for optional arguments
 
+\newpage
+
+# ggplotMDS
+
+Multidimentional scaling as implemented by limma::plotMDS is PCA-like but uses a distance metric instead
+of a correlation metric.  As such, when you plot log2cpm values, the axes represent log2cpm units and you can interpret the distance between points accordingly.  
+
+ggplotMDS is a ggplot wrapper around limma::plotMDS
+
+```{r ggplotMDS, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
+dgeList <- getItem(dgeObj, "DGEList")
+result <- ggplotMDS(dgeList, colorBy = dgeObj$design$Treatment, 
+                    shapeBy = dgeObj$design$DiseaseStatus, labels = NULL)
+printAndSave(result[[1]], file.path(outputPath, "MDSplot.png"))
+
+```
 
 \newpage
 
+# MDS_var_explained
 
+Takes the mds object from the ggplotMDS result list (item 2) and returns a list with:     
+* a plot of the amount of variance explained by each component  
+* a cumulative plot of the variance explained  
+* the underlying data table   
 
+```{r MDS_var_explained, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
 
+MDSvarResult <- MDS_var_explained(result[["mdsobj"]])
 
+printAndSave(MDSvarResult$varexp, file.path(outputPath, "varExplained.png"))
+printAndSave(MDSvarResult$cumvar, file.path(outputPath, "cumVarExplained.png"))           
 
+```
+
+\newpage
 
 # Session Info
 
@@ -460,10 +488,6 @@ See ?plotPvalHist for optional arguments
 
 **R Session Info**
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 7, fig.height = 5}
-library(envDocument)
-library(knitr)
-myenv = env_doc("return")
-kable(myenv)
-#sessionInfo()
+```{r SessionInfo, echo=FALSE, warning=FALSE, message=FALSE}
+sessionInfo()
 ```
