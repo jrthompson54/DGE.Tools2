@@ -59,11 +59,11 @@ startTime = Sys.time()
 setwd("~/R/lib/pkgsrc/DGE.Tools2/vignettes")
 library(tidyverse)
 library(magrittr)
-library(gridExtra)
+# library(gridExtra)
 library(DGEobj)
 library(DGE.Tools2)
 library(JRTutil)
-library(grDevices)
+# library(grDevices)
 
 stashPath <- getStashPath()
 outputPath <- "./output"
