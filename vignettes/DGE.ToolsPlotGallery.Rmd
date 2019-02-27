@@ -59,16 +59,15 @@ startTime = Sys.time()
 setwd("~/R/lib/pkgsrc/DGE.Tools2/vignettes")
 library(tidyverse)
 library(magrittr)
-# library(gridExtra)
 library(DGEobj)
 library(DGE.Tools2)
 library(JRTutil)
-# library(grDevices)
 
-stashPath <- getStashPath()
 outputPath <- "./output"
-inputPath <- file.path(stashPath, "data/nonclin/DGEobj_library")
-dgeObj <- readRDS(file.path(inputPath, "UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018.RDS"))
+
+#get a dataset to work with from Stash
+dgeObj <- getRDSobjFromStash("UCSD_Lung_Fibroblasts_P-20171107-0002_8Feb2018.RDS")
+
 #apply a low intensity filter
 dgeObj <- lowIntFilter(dgeObj, zfpkmThreshold=-3, countThreshold=10)
 
