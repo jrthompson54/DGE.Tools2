@@ -13,11 +13,11 @@
 #'
 #' @param dgeObj  A class dgeObj with counts, gene annotation and sample annotation
 #' @param formula A text representation of the formula you want to use
-#' @param projectName
+#' @param projectName This should be the project name from Xpress or Omicsoft
 #' @param designMatrixName User defined name for the design matrix
 #' @param fracThreshold Fraction of samples that must meet intensity thresholds to keep a gene (Default = 0.5)
 #' @param outputPath Where to send output plots
-#' @param annotationFile File of key=value pairs to populate required attributes
+#' @param annotationFile File of key=value pairs to populate required attributes (optional but highly advised)
 #'
 #' @return A DGEobj with a modified object definition embedded.
 #'
@@ -43,7 +43,6 @@ voomWorkflow <- function(dgeObj,
                           !missing(designMatrixName),
                           "DGEobj" %in% class(dgeObj),
                           "character" %in% class(formula),
-                          file.exists(annotationFile),
                           "character" %in% class(projectName),
                           "character" %in% class(designMatrixName))
 

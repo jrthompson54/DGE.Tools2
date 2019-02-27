@@ -98,5 +98,6 @@ Collate:
     'logRatioPlot.R'
     'graphDGEobj.R'
     'QCplots.R'
+    'voomWorkflow.R'
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
