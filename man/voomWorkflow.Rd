@@ -5,7 +5,8 @@
 \title{Function voomWorkflow}
 \usage{
 voomWorkflow(dgeObj, formula, projectName, designMatrixName,
-  fracThreshold = 0.5, outputPath = "./", annotationFile)
+  fracThreshold = 0.5, outputPath = "./", annotationFile,
+  proteinCodingOnly = FALSE)
 }
 \arguments{
 \item{dgeObj}{A class dgeObj with counts, gene annotation and sample annotation}
@@ -20,27 +21,38 @@ voomWorkflow(dgeObj, formula, projectName, designMatrixName,
 
 \item{outputPath}{Where to send output plots}
 
-\item{annotationFile}{File of key=value pairs to populate required attributes (optional but highly advised)}
+\item{annotationFile}{Text file of key=value pairs to populate DGEobj attributes (optional but highly advised)}
+
+\item{proteinCodingOnly}{Set to TRUE to keep only protein coding genes (default = FALSE)}
 }
 \value{
-A DGEobj with a modified object definition embedded.
+A DGEobj with analysis results added
 }
 \description{
 This function runs several steps in the RNA-Seq pipeline in one fell swoop.
-It supports duplicateCorrelation if you provide a blocking vector.  It does
-not directly support SVA.
+It supports duplicateCorrelation if you provide a blocking vector.  It includes
+low intensity filtering, filtering for protein coding genes and filters out zero
+effective length genes (genes shorter than library size).  Then it runs TMM normalization,
+voomWithQualityWeights, lmFit and eBayes.
 }
 \details{
-For SVA, you need to run SVA first and add the SVA variables to your design
+To incorporate SVA analysis, you need to run SVA first and add the SVA variables to your design
 table. Then you can proceed with this function.
 }
 \examples{
 
-   MyDgeObj <- newType(MyDgeObj,
+   MyDgeObj <- voomWorkflow(MyDgeObj,
+                            formula = "~ 0 + ReplicateGroup",
+                            projectName = "MyProjectName",
+                            designMatrixName = "ReplicateGroup",
+                            annotationFile = "MyProjectName.txt",
+                            proteinCodingOnly = TRUE)
 
 }
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }
-\keyword{DGEobj}
+\keyword{DGEobj,}
 \keyword{RNA-Seq,}
+\keyword{limma}
+\keyword{voom}

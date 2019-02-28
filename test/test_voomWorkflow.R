@@ -4,25 +4,33 @@ library(tidyverse)
 library(DGEobj)
 library(DGE.Tools2)
 library(JRTutil)
+library(Xpress2R)
 
 
-
+#Test1 Omicsoft project
+#
 #projectName as it appears in Omicsoft and the Regfile
-# projectName <- "MOGAT2_Inhib_MCD-HFD_P-20161026-0001_29Nov2016"
-# dgeObj <- buildOmicsoftDGEobj(projectName, mountPoint="y:")
+projectName <- "omicsoft/TB3_TGFB_Stim_HuIPF_Fibroblasts_Ensembl_30Jun2018"
+dgeObj <- buildOmicsoftDGEobj(projectName, mountPoint="y:", PID="TB3", omicsoftHomePath = "omicsoft-legacy/omicsoft_ngs")
+dim(dgeObj)
+inventory(dgeObj)
 
+designMatrixName <- "ReplicateGroup"   #appropriate name for this model
+formula <- "~ 0 + ReplicateGroup"
 
-projectName <- "RNA-Seq_Analysis_of_FL_IBD_Human_Biopsy_P-20170717-0001"
-# regfile <- file.path(inputPath, str_c(projectName, ".txt"))  #omicsoft registration file; .txt or .gz file
-designMatrixName <- "Category2"   #appropriate name for this model
-formula <- '~ 0 + Category2'
-
-#Use Design$TRDSample.x for this dataset
 dupcorBlock <- NULL    #define duplicates for dupliceCorrelation method; set to NULL to disable
 
-dgeObj <- getRDSobjFromStash(stringr::str_c(projectName, ".RDS"))
-dgeObj <- voomWorkflow(dgeObj,
+d <- voomWorkflow(dgeObj,
                        formula=formula,
                        projectName = projectName,
                        designMatrixName = designMatrixName,
                        outputPath = "z:/testOutput")
+dim(d)
+inventory(d)
+
+
+
+#test2 Xpress
+d2 <- getRDSobjFromStash("RNA-Seq_Analysis_of_FL_IBD_Human_Biopsy_P-20170717-0001.RDS")
+#Use Design$TRDSample.x for this dataset
+dupcorBlock <- NULL    #define duplicates for dupliceCorrelation method; set to NULL to disable
