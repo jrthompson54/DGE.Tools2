@@ -20,7 +20,11 @@ fontsize: 10pt
 ---
 
 \newpage
- 
+
+# Setup
+
+Load packages, set the working dir and output path.  
+
 
 ```{r setup, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 rm(list=ls()) #Clear the workspace
@@ -68,6 +72,8 @@ opensource tool [s3fs](https://github.com/s3fs-fuse/s3fs-fuse).  On the PC you
 can use Cloudberry Drive ([commercial
 software](https://www.cloudberrylab.com/drive/amazon-s3.aspx); $40).  
 
+\newpage
+
 ```{r getOmicosoftDataFromS3, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 
 OmicsoftProjectID = "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017"
@@ -75,7 +81,7 @@ mountPoint <- "y:"
 
 dgeObj <- JRTutil::buildOmicsoftDGEobj(projectName = OmicsoftProjectID, level="gene", mountPoint=mountPoint)
 
-inventory(dgeObj)
+knitr::kable(inventory(dgeObj))
 
 ```
 
@@ -98,7 +104,7 @@ RDSfile <- "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS"
 
 dgeObj_FromStash <- JRTutil::getRDSobjFromStash(RDSfile)
 
-inventory(dgeObj)
+knitr::kable(inventory(dgeObj))
 
 ```
 
@@ -110,10 +116,11 @@ the whole workflow.
 
 dgeObj_FromStash <- reset(dgeObj)
 
-inventory(dgeObj)
+knitr::kable(inventory(dgeObj))
 
 ```
 
+\newpage
 
 # Load project from Xpress
 
@@ -147,13 +154,15 @@ dgeObj_FromXpress <- Xpress2DGEO(20261, level = "rn6ERCC-ensembl82-genes")
 
 ```
 
+\newpage
+
 # Custom Cleanup   
 
 Here's a good spot to look at your annotation and perform any custom curation needed
 before you start your analysis.  
 
 Careful here. If you use tidyverse functions to manipulate these tables you must
-take care to preserve the rownames in th design and gene annotation dataframes.  
+take care to preserve the rownames in the design and gene annotation dataframes.  
 
 ## Gene annotation cleanup  
 
@@ -177,8 +186,8 @@ all(rownames(dgeObj$geneData) == rownames(dgeObj))
 ## Design table cleanup  
 
 In this case, I just don't like one of the column names.  The "treatment" column
-in the design table is more acurately call "pretreatment" as it defines which
-animals were pretreated with a disease inducing surgery and were later treated
+in the design table is more acurately called "pretreatment" as it defines which
+animals were pretreated with a disease-inducing surgery and were later treated
 with potentially efficacious compounds.
 
 
@@ -186,8 +195,9 @@ with potentially efficacious compounds.
 # saveRDS(dgeObj_FromXpress, file.path(outputPath, "dgeObj_FromXpress.RDS"))
 # saveRDS(dgeObj, file.path(outputPath, "dgeObj.RDS"))
 # 
-dgeObj_FromXpress <- readRDS (file.path(outputPath, "dgeObj_FromXpress.RDS"))
-dgeObj <- readRDS (file.path(outputPath, "dgeObj.RDS"))
+# dgeObj_FromXpress <- readRDS (file.path(outputPath, "dgeObj_FromXpress.RDS"))
+# dgeObj <- readRDS (file.path(outputPath, "dgeObj.RDS"))
+
 all(rownames(dgeObj$design) == colnames(dgeObj))
 
 # Let's fix the Omicsoft DGEobj first
@@ -234,7 +244,10 @@ dgeObj_FromXpress$design %<>% rownames_to_column() %>%
 
 # Reality check to make sure we didn't screw up the rownames
 all(rownames(dgeObj$design) == colnames(dgeObj))
+
 ```
+
+\newpage
 
 # Low Intensity Filtering
 
@@ -318,8 +331,9 @@ dgeObj <- lowIntFilter(dgeObj,
 
 ```
 
-Dimensions after filtering:  
+Dimensions after filtering: 
 `r dim(dgeObj)`
+
 
 # Filter for Protein Coding Genes  
 
@@ -339,6 +353,8 @@ dgeObj <- dgeObj[idx,]
 Dimensions after filtering for protein_coding:  
 `r dim(dgeObj)`
 
+\newpage  
+
 # EdgeR Normalization
 
 This step simply applies edgeR::calcNormFactors to effect TMM normalization.
@@ -349,13 +365,17 @@ edgeR cpm function to extract normalized counts from the DGEList.  More
 conveniently, you can use the DGE.Tools2::convertCounts function to produce
 normalized counts.
 
-```{r Normalize, echo=TRUE, warning=FALSE, message=FALSE}
+```{r Normalize, echo=TRUE, warning=FALSE, message=FALSE, fig.width=5, fig.height=3}
 
 dgeObj <- runEdgeRNorm(dgeObj, plotFile = file.path(outputPath, "TMM_NormFactors.PNG"))
 
-inventory(dgeObj)
-
 ```
+
+\newpage  
+
+`r knitr::kable(inventory(dgeObj))`  
+
+\newpage
 
 # Define the model formula
 
@@ -425,15 +445,16 @@ dgeObj <- addItem(dgeObj, item=designMatrix,
                   overwrite=TRUE)
 ```
 
+\newpage
 
-# QC: Dispersion Plot
+# QC: Dispersion Plot  
 
-```{r DispersionPlot, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r DispersionPlot, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE, fig.width=4, fig.height=3}
 
 dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
 
 # print the plot to the console (and change the base font size)
-dispPlot + baseTheme(18)
+dispPlot + baseTheme(14)
 
 # save the plot with ggsave
 ggsave(file.path(outputPath, "dispersion.png"), dispPlot + baseTheme(18))
@@ -444,18 +465,20 @@ DGE.Tools2::printAndSave(dispPlot, file.path(outputPath, "dispersion.png"))
 
 ```
 
+\newpage
+
 # Check for Surrogate Variables (unaccounted for variation)
 
-If SVA find surrogate variables,  you cbind the surrogate variables to the design table create a new 
-formula including the SVA variables as terms then run voom/lmFit as you would normally.   
-
-
-## runSVA
+SVA looks for hidden structure in the data using PCA-like methods.  It 
+defines surrogate variables that can be added to your model to account 
+for systematic trends that don't map to known experiment factors.  This
+can improve you power to detect changes due to factors of interest.  
 
 ```{r snapshot, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 # Let's save a snapshot of the DGEobj at this point
 saveRDS (dgeObj, file.path(outputPath, "dgeobj.RDS"))
 ```
+
 
 ```{r SVA, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 
@@ -466,14 +489,17 @@ dgeObj_sva <- runSVA(dgeObj, designMatrixName="PreTreat_Compound")
 
 SVA found `r dgeObj_sva$PreTreat_Compound_svobj$n.sv` surrogate variables in this dataset.
 
-If SVA found 1 or more variables, it created a new design matrix with the SV
-columns added and you can include the SV columns in your formula.
+If SVA analysis finds 1 or more variables, it adds a column for each SV to both
+the design matrix and design table.  You can include the SV columns in your
+formula.
 
-If there are more than a few SV found, we suggest you use the variantPartition
-package to evaluate the variance fraction associated with each SV and consider
-using just the top few SVs in your formula.  To accomplish this, you need to
-manually edit the design matrix and remove SV columns you don't want to use.
+Especially if there are more than a few SV found, we suggest you use the
+variantPartition package to evaluate the variance fraction associated with each
+SV and consider using just the top few SVs in your formula.  To accomplish this,
+you need to manually edit the design matrix and remove SV columns you don't want
+to use.
 
+\newpage
 
 # Run Voom and fit the model (lmfit)
 
@@ -481,7 +507,7 @@ For now we'll ignore the sva results (dgeObj_sva) and continue analysis with the
 data structure.  
 
 
-```{r runVoom, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r runVoom, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE, fig.height=3.5}
 
 dgeObj <- runVoom(dgeObj, designMatrixName)
 # note: qualityWeights = TRUE,  runEBayes = TRUE and robust = TRUE are the defaults.
@@ -554,11 +580,12 @@ dgeObj_vd <- runVoom(dgeObj, designMatrixName,
 ```
 
 
-```{r postvoom_snapshot, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r snapshot2, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 # Let's save a snapshot of the DGEobj at this point
-saveRDS (dgeObj, file.path(outputPath, "postvoom_dgeobj.RDS"))
+saveRDS (dgeObj, file.path(outputPath, "dgeobj.RDS"))
 ```
 
+\newpage
 
 # Data Exploration: MDS plot  
 
@@ -569,7 +596,7 @@ perform MDS on log2cpm data, the units of the plot are in log2cpm units.  So
 the scale of an MDS plot is more interpretable that correlation-based methods.
 
 
-```{r MDSplot, echo=TRUE, warning=FALSE, message=FALSE}
+```{r MDSplot, echo=TRUE, warning=FALSE, message=FALSE, fig.width=5, fig.height=3.5}
 #use color and shape with labels and labelSize
 # See ?ggplotMDS for more options
 m <- DGE.Tools2::ggplotMDS(dgeObj, colorBy = design$treatment, 
@@ -594,7 +621,9 @@ printAndSave(results[[2]], file.path(outputPath, "cumVarExplained.PNG"))
 
 ```
 
-#Set up and run contrasts
+\newpage
+
+# Set up and run contrasts  
 
 Function runContrasts takes a named list of contrasts.  The values in the list
 should correspond to columns in the design matrix.
@@ -602,17 +631,21 @@ should correspond to columns in the design matrix.
 Checking the inventory we see that PreTreat_Compound is the itemName of our
 design matrix:
 
-`r knitr::kable(inventory(dgeObj))`
+\small
+
+`r knitr::kable(inventory(dgeObj))`  
+
+\normalsize
 
 Here's the column names we can use to build out contrasts:  
-`r knitr::kable(colnames(dgeObj$PreTreat_Compound), col.names=c("ReplicateGroups"))`
+`r knitr::kable(colnames(dgeObj$PreTreat_Compound), col.names=c("ReplicateGroups"))`  
 
 In this experiment we have a disease state signature (BDL vs Normal).  We'll
 also specify contrasts of drug treated diseased (BDL) animals vs the untreated
-BDL animals baseline (disease reversal signatures).
+BDL animals baseline (disease reversal signatures).  
 
 The names for the contrasts should be as short as possible but also human
-recognizable as these names are the default labels when plotting contrast data.  
+recognizable as these names are the default labels when plotting contrast data.    
 
 
 ```{r runContrasts, echo=TRUE, warning=FALSE, message=FALSE}
@@ -629,30 +662,38 @@ dgeObj <- runContrasts(dgeObj,
                        contrastList=contrastList, 
                        Qvalue=TRUE,
                        IHW = TRUE)
-
-knitr::kable(inventory(dgeObj))
-
 ```
+
+\newpage  
+
+\small  
+
+`r knitr::kable(inventory(dgeObj))`  
+
+\normalsize  
 
 After runContrasts, the topTable dataframes are present in the DGEobj.
 
-## Alternative FDR scores
+## Alternative FDR scores  
 
 topTable provides a BH FDR value (adj.P.Val).  You can also add other optional 
 FDR measures to the topTable output using the Qvalue and IHW arguments.  
 
 Qvalue = TRUE adds "qvalue" and "qvalue.lfdr" columns to the topTable output.  
+
 IHW = TRUE adds columns "ihw.adj_pvalue" and "ihw.weight".
 
 Browse the vignettes for the qvalue and IHW packages for more details on these 
 alternative FDR measures.  
+
+\newpage
 
 # Inspect pvalue histograms  
 
 Pvalue histograms can reveal problems with your model.  [David Robinson has a good
 webpage describing how to interpret p-value histograms](http://varianceexplained.org/statistics/interpreting-pvalue-histogram/).
 
-```{r pvalueHistograms, echo=TRUE, warning=FALSE, message=FALSE}
+```{r pvalueHistograms, echo=TRUE, warning=FALSE, message=FALSE, fig.height=4}
 
 # We need to collect a pvalue column from each topTable dataframe
 listOfTopTable <- getType(dgeObj, "topTable")
@@ -660,6 +701,8 @@ MyPvalMatrix <- DGE.Tools2::extractCol(listOfTopTable, colName="P.Value")
 plotPvalHist (MyPvalMatrix)
 
 ```
+
+\newpage
 
 # Count Significant differential genes  
 
@@ -680,6 +723,8 @@ listOfTopTable <- getType(dgeObj, "topTable")
 knitr::kable(DGE.Tools2::summarizeSigCounts(listOfTopTable, fcThreshold = 2))
 
 ```
+
+\newpage
 
 #  Run a Power Analysis  
 
@@ -709,24 +754,26 @@ printAndSave(pwr$NvP, file.path(outputPath, "power_NvP.PNG"))
 
 ```
 
+\newpage
+
 # Wrapup and other documentation
 
 This completes the DGE calculations. 
 
-[The training slides are available here](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/DGE_Tools_Training_Mar2019.pptx)  
+The __[training slides](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/DGE_Tools_Training_Mar2019.pptx)__ are available.  
 
-See the [DGE.Tools Plot Gallery pdf]() for additional data exploration plots.
+See the __[DGE.Tools Plot Gallery pdf](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.Tools2_Workflow.pdf)__ for additional data exploration plots.
 
 See browseVignettes("DGEobj") for  detailed documentation on the DGEobj datastructure and associated functions.  
 
 See browseVignettes("variancePartition") for instructions on evaluating the
 variance contribution of experiment factors to inform formula selection. 
 
-Install the latest stable versions of the DGEobj, DGE.Tools2 and JRTutil packages from BRAN using install.packages.  
+Install the latest stable versions of the DGEobj, DGE.Tools2 and JRTutil packages from __[BRAN](http://kraken.pri.bms.com/biohtml/nositeminder/BRAN/)__ using install.packages. See the __[BRAN webpage](http://kraken.pri.bms.com/biohtml/nositeminder/BRAN/)__ 
+for instructions in adding the BRAN repository to your repos list.  
 
 Install the dev version of these packages from the respective Biogit repos
 and inspect the commit messages to see what's new.  
-
 
 \newpage
 

@@ -18,7 +18,7 @@
 #' @examples
 #' MyDgeObj = runSVA (MyDgeObj)
 #'
-#' @importFrom sva sva
+#' @importFrom sva sva num.sv
 #' @import magrittr
 #' @importFrom assertthat assert_that
 #' @importFrom DGEobj getItem addItem
@@ -46,7 +46,7 @@ runSVA<- function(dgeObj, designMatrixName, method="leek"){
   # log2cpm <- DGEobj::getItem(dgeObj, paste(designMatrixName, "_Elist", sep=""))$E
   log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
   designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
-  n.sv <- num.sv(log2cpm, designMatrix, method=method)
+  n.sv <- sva::num.sv(log2cpm, designMatrix, method=method)
   svobj <- sva::sva(log2cpm, designMatrix, NullDesignMatrix, n.sv=n.sv)
 
   #pull out the surrogate variables
