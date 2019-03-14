@@ -762,7 +762,7 @@ This completes the DGE calculations.
 
 The __[training slides](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/DGE_Tools_Training_Mar2019.pptx)__ are available.  
 
-See the __[DGE.Tools Plot Gallery pdf](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.Tools2_Workflow.pdf)__ for additional data exploration plots.
+See the __[DGE.Tools Plot Gallery pdf](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.ToolsPlotGallery.pdf)__ for additional data exploration plots.
 
 See browseVignettes("DGEobj") for  detailed documentation on the DGEobj datastructure and associated functions.  
 
