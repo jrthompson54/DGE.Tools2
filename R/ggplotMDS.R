@@ -47,6 +47,7 @@
 #' @param symFill Set color for the fill on open symbols (Default = "blue2")
 #' @param symColor set color for solid symbols or outline for open symbols
 #'   (Default = "blue2")
+#' @param alpha Set transparency (Default = 0.7)
 #' @param shapes A vector of shapes to override the default 8 shapes used in shapeBy (optional)
 #' @param colors A color pallet to substitute for the default 8 color pallet used by colorBy (optional)
 #' @param dim.plot Define which dimension to plot (default = c(1,2))
@@ -92,6 +93,7 @@ ggplotMDS <- function(DGEdata,
                       symSize = 5,
                       symFill = "blue2",
                       symColor = "blue2",
+                      alpha = 0.7,
                       shapes,
                       colors,
                       dim.plot = c(1,2),
@@ -215,23 +217,23 @@ ggplotMDS <- function(DGEdata,
   #start the plot
   if (byShape == FALSE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode)) +
-        geom_point(shape=symShape, size=symSize)
+        geom_point(shape=symShape, size=symSize, alpha=alpha)
 
   else if (byShape == TRUE & bySize == FALSE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                   shape=Shape)) +
-        geom_point(size=symSize) +
+        geom_point(size=symSize, alpha=alpha) +
         scale_shape_manual(values=shapes)
 
   else if (byShape == FALSE & bySize == TRUE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode, size=Size)) +
-    geom_point(shape=symShape)
+    geom_point(shape=symShape, alpha=alpha)
 
   else if (byShape == TRUE & bySize == TRUE)
     mdsplot = ggplot(xydat, aes(x=x, y=y, color=ColorCode,
                                 shape=Shape,
                                 size=Size)) +
-    geom_point() +
+    geom_point(alpha=alpha) +
     scale_shape_manual(values=shapes)
 
   #add point labels
