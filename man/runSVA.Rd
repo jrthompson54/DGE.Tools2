@@ -4,13 +4,17 @@
 \alias{runSVA}
 \title{Function  runSVA}
 \usage{
-runSVA(dgeObj, designMatrixName)
+runSVA(dgeObj, designMatrixName, method = "leek")
 }
 \arguments{
 \item{dgeObj}{A DGEobj with normalized counts and a DesignMatrix.}
+
+\item{designMatrixName}{The itemName of the design matrix in DGEobj}
+
+\item{method}{method passed to num.sv. ["leek" or "be"; default = "leek"]}
 }
 \value{
-dgeObj The DGEobj is returned containing a new design matrix.
+dgeObj The DGEobj is returned containing a new design matrix and an updated design table.
 }
 \description{
 Takes an DGEobj from runVoom and tests for surrogate variables.  Adds a new
@@ -25,5 +29,7 @@ MyDgeObj = runSVA (MyDgeObj)
 \author{
 John Thompson, \email{john.thompson@bms.com}
 }
-\keyword{SLOA}
+\keyword{DGEobj}
 \keyword{SVA}
+\keyword{surrogate}
+\keyword{variable}
