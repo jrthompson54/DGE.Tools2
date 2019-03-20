@@ -75,7 +75,7 @@ software](https://www.cloudberrylab.com/drive/amazon-s3.aspx); $40).
 
 \newpage
 
-```{r getOmicosoftDataFromS3, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r getOmicosoftDataFromS3, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 
 OmicsoftProjectID = "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017"
 mountPoint <- "y:"
@@ -99,11 +99,11 @@ Note that the stash root path is different on Mac/Linux and Windows.  The
 getRDSobjFromStash function checks the OS and sets the path accordingly and 
 thus provides an OS-indepedent way to load RDS files.  
 
-```{r getDGEobjFromStash, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r getDGEobjFromStash, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 
 RDSfile <- "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017.RDS"
 
-dgeObj_FromStash <- JRTutil::getRDSobjFromStash(RDSfile)
+dgeObj <- JRTutil::getRDSobjFromStash(RDSfile)
 
 knitr::kable(inventory(dgeObj))
 
@@ -113,9 +113,9 @@ The data from the DGEobj_library folder has already been analyzed.  We'll use
 function resetDGEobj to restore it to it's original state so we can go through
 the whole workflow.
 
-```{r resetDGEobj, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r resetDGEobj, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 
-dgeObj_FromStash <- reset(dgeObj)
+dgeObj <- resetDGEobj(dgeObj)
 
 knitr::kable(inventory(dgeObj))
 
@@ -142,7 +142,7 @@ has not been implemented in Xpress2DGEO yet.  So expect a warning from Xpress2DG
 Xpress2DGEO will still return the design table tagged as DEFAULT.  
 
 
-```{r RetrieveFromXpress, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r RetrieveFromXpress, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 
 library(Xpress2R)
 
@@ -169,7 +169,7 @@ take care to preserve the rownames in the design and gene annotation dataframes.
 
 There's one column we'll rename in the Xpress design table to be consistent with the column name in the Omicsoft data. 
 
-```{r fixXpressGeneAnnotation, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r fixXpressGeneAnnotation, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 
 dgeObj_FromXpress$geneData %<>% rownames_to_column() %>%
   mutate(Source = Biotype) %>%
@@ -224,13 +224,13 @@ dgeObj$design_orig %<>% rownames_to_column() %>%
 
 # let's do the same for the DGEobj from Xpress 
 # create more intuitive column names for the main experiment factors in the design table
-dgeObj_FromXpress$design %<>% rownames_to_column() %>%
-  mutate(pretreatment = BMS_Compound_Dose_1) %>%
-  column_to_rownames()
-
-dgeObj_FromXpress$design_orig %<>% rownames_to_column() %>%
-  mutate(pretreatment = BMS_Compound_Dose_1) %>%
-  column_to_rownames() 
+# dgeObj_FromXpress$design %<>% rownames_to_column() %>%
+#   mutate(pretreatment = BMS_Compound_Dose_1) %>%
+#   column_to_rownames()
+# 
+# dgeObj_FromXpress$design_orig %<>% rownames_to_column() %>%
+#   mutate(pretreatment = BMS_Compound_Dose_1) %>%
+#   column_to_rownames() 
 
 # creating the ReplicateGroup column from existing compound column
 # (Generic_Compound_Dose_1) is rather complicated. So we're going to pull the

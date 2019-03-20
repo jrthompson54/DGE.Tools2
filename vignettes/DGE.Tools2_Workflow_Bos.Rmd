@@ -57,7 +57,7 @@ Several chunks are provided to show how to get data from various sources.
 
 Set eval=TRUE in the chunk header for the method you wish to use.  
 
-## Load project from Omicsoft S3 bucket  
+saveRDS## Load project from Omicsoft S3 bucket  
 
 This builds a DGEobj with the mimimal set of raw data.  Here raw data is defined 
 as a matrix of counts with associated dataframes to annotate the genes (rowData) and
