@@ -16,6 +16,12 @@
 #'   the Omicsoft RNA-Seq.QCMetrics.Table.txt format. (required)
 #' @param metricNames A list of metrics to plot.  Values must exist in column 1
 #'   of the data frame. (required)
+#' @param sampleNames By default will use the samplenames in qcdata (colnames).
+#'   Optionally use this argument to provide different sample names.  Supply the
+#'   alternative samplenames here in the order they appear in the qcdata
+#'   data.frame (columns 2-n). The plot order is based on an alphabetical sort
+#'   of the original column names so might be different from the order in the
+#'   supplied data.frame.
 #' @param plotType One of "bar", "point", "pointline".  If you want a different
 #'   plottype for each metric, pass a list of plotTypes with length equal to
 #'   length(metricNames) (default="bar")
@@ -55,22 +61,31 @@
 #'
 #' @examples
 #'
-#'   #Get some data from an Omicsoft project in S3
+#'   Example 1:
+#'   # Get QC data from an Omicsoft project in S3
 #'   S3mount <- "/arrayserver" #where you mount the S3 bucket "bmsrd-ngs-arrayserver"
 #'   s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
 #'   qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
-#'   qcdat <- readr::read_delim(file.path(s3path, qcfilename), delim="\t")
+#'   qcdata <- readr::read_delim(file.path(s3path, qcfilename), delim="\t")
 #'   colnames(qcdat) <- stringr::str_sub(colnames(qcdat), 1, 16) #shorten the samplenames
 #'
-#'   #pick some Omicsoft Metrics from column 1 of the data frame
+#'   # pick some Omicsoft Metrics from column 1 of the data frame
 #'   someFavMetrics <- c("Alignment_MappedRate", "Alignment_PairedRate",
 #'                               "Source_rRNA", "Strand_Read1AntiSense",
 #'                               "Strand_ReadPairAntiSense", "Profile_ExonRate",
 #'                               "Profile_InterGene_FPK")
 #'
 #'   MyQCplots <- QCplots(qcdata, metricNames=someFavMetrics) #all defaults
-#'   #draw the first plot
-#'   MyQCplots[[1]]
+#'   # draw the first plot
+#'   print(MyQCplots[[1]])
+#'
+#'   Example 2:
+#'   # Get QC data from an Xpress Project
+#'   plotdat <- Xpress2R::getXpressQC(xid="20261", level = "rn6ERCC-ensembl82-genes")
+#'   myMetrics <- c("QC_CodingBases", "QC_EstimatedLibrarySize")
+#'   p <- QCplots(plotdat, metricNames=myMetrics)
+#'   # draw the first plot
+#'   print(p[[1]])
 #'
 #' @import ggplot2 magrittr
 #' @importFrom assertthat assert_that
@@ -80,6 +95,7 @@
 #' @export
 QCplots <- function(qcdata,
                     metricNames,
+                    sampleNames,
                     plotType = "bar",
                     barColor = "dodgerblue4",
                     barFill = "dodgerblue3",
@@ -190,10 +206,26 @@ QCplots <- function(qcdata,
       theme_gray(baseTextSize) +
       theme(axis.text.x = element_text(angle=xAngle, hjust=hjust, vjust=vjust))
 
+    #set user supplied axis tick labels
+    if (!missing(sampleNames)){
+      if (length(sampleNames) == nrow(qcdata)){
+        p <- p + scale_x_discrete(breaks=qcdata$Sample,
+                                  labels=sampleNames)
+      }
+    }
+
     plots[[metric]] <- p
   }
 
-  if (length(plots) ==1) {plots <- plots[[1]]}
+  #put the warning outside the loop so it only gets called once.
+  if (!missing(sampleNames)){
+    if (length(sampleNames) != nrow(qcdata)){
+      warning("sampleNames not the right length, thus ignored")
+    }
+  }
+
+  if (length(plots) == 1) {plots <- plots[[1]]}
+
   return(plots)
 }
 

@@ -16,7 +16,9 @@ m <- "Alignment_MappedRate"
 plots <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=90)
 plots_NoWin <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=90, winsorize=FALSE)
 
-plots <- QCplots(qcdat, metricNames=m, plotType="bar", xAngle=45)
+plots <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=90, sampleNames = as.character(1:(ncol(qcdat)-1)))
+plots <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=0, sampleNames = colnames(qcdat)[2:ncol(qcdat)])
+plots <- QCplots(qcdat, metricNames=metrics, plotType="bar", xAngle=90)
 
 plots <- QCplots(qcdat, metricNames=metrics, plotType="histogram", xAngle=0)
 
