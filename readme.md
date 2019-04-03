@@ -1,4 +1,4 @@
-# DGE.Tools2: RNA-Seq Analysis Package
+# DGE.Tools2: RNA-Seq Analysis Workflow Package
 
 DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to store DGE data and analysis results.  
 
@@ -29,7 +29,8 @@ Several QC plots are availble to monitor the quality of your results. These incl
 **EdgeR dispersion plot**   
 **voom Mean-Variance plot**   
 **plotPvalHist**: Faceted plot of pvalue distributions for each contrast to evaluate quality of your Fit.   
-**cdfPlot**: Faceted plot of pvalue distributions for each contrast to evaluate quality of your Fit.   
+**cdfPlot**: Faceted plot of pvalue distributions for each contrast to evaluate quality of your Fit. 
+**QCplots**: Plot alignment metrics from Omicsoft or Xpress  
 
 ## Data Exploration Plots:
 
@@ -41,95 +42,52 @@ Several QC plots are availble to monitor the quality of your results. These incl
 
 ## Other Documentation
 
-See DGE_Tools Rollout 2017.pptx for information on the workflow tools.   
-  
-See DGE.ToolsPlotGallery.pdf for code examples and example plots from the data exploration plots. 
+* DGE_Tools_Training_Mar2019.pptx   
+* vignettes/DGE.Tools2_Workflow.pdf:  Workflow example  
+* vignettes/DGE.ToolsPlotGallery.pdf: code examples for data exploration plots  
 
-## Test Data and Markdown
 
-A test dataset can be found in the installed library folder (../library/DGE.Tools2/extdata).
-To load the test data:
-
-```
-rawDataPath <- paste(.libPaths()[[1]], "/DGE.Tools2/extdata", sep="")
-dgeObj <- OmicsoftToDgeObj(path=rawDataPath)
-```
-
-A sample analysis markdown is being prepared using this dataset and will be
-added to the package as a vignette.  The draft (and fairly complete) version
-is [found here](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.Tools2_TestWorkflow.Rmd)
-
-## Installation
+## Installation 
 
 It is best to run the install from a fresh R session before loading any
 packages because loaded packages cannot be updated.
 
+Charles Tilford has created a BMS repository, BRAN.  Packages from BRAN
+can now be installed simply with install.packages (after a little setup).
 
-One time setup :
-
-CRAN and Bioconductor package dependencies should be installed automatically. 
-However, we use a few tools not yet deposited in those places.  So there are a
-few pre-requisites before installing DGE.Tools.
+One time setup for BRAN :
 
 ```
-    #GIT-based packages
-
-    # You may need to set proxy information to install from external github accounts
-    httr::set_config(httr::use_proxy(url="http://proxy-server.bms.com:8080"))
-    
-    #This one provides Ensembl annotation (used by a few gene ID conversion functions)  
-    devtools::install_github("stephenturner/annotables")
+   # Sourcing this file modifies your .Rprofile file to add BRAN to your list of repositories
+   source('http://bran.pri.bms.com/resources/configureRepo.R')
 ```
 
-Then install or update DGE.Tools2 and related packages with the following commands:  
+Install or update DGEobj:  
 
 ```
-    install.packages("JRTutil", repos="http://BRAN.pri.bms.com")
-    install.packages("zFPKM")
-    install.packages("DGEobj", repos="http://BRAN.pri.bms.com")
     install.packages("DGE.Tools2", repos="http://BRAN.pri.bms.com")
-    install.packages("Xpress2R", repos="http://BRAN.pri.bms.com")
 ```
 
-# Installation directly from BioGit (Backup method)
-
-You can also install directly from BioGit if the BMS repository is down for some
-reason.
+For reproducible research reasons, you may want to specify a specific version when you install:
 
 ```
+   install.packages("DGE.Tools2", version = "0.9.65", repos="http://BRAN.pri.bms.com")
+```
+
+**Note:**  CRAN and Bioconductor package dependencies should be installed automatically.  
+Sometimes this doesn't work.  Watch the error messages and install any package that are reported missing. Then try again.  
+
+## Installation from Biogit (backup method)
+
+You can also install directly from GIT.  Versions released to BRAN are tagged version numbers.  
+
+```r
     #if you don't have the devtools package already
-    install.packages("devtools")
+    install.packages("devtools") 
 
-    #next line required so that missing Bioconductor packages will install  
-    source("https://bioconductor.org/biocLite.R")
-
-    #you may also need to set proxy information to install from external github accounts  
-    httr::set_config(httr::use_proxy(url="http://proxy-server.bms.com:8080"))
-
-    #This one provides Ensembl annotation (used by a few gene ID conversion functions)  
-    devtools::install_github("stephenturner/annotables")  
-
-    #Install Xpress2R package if you wish to retrieve Xpress data as a DGEobj  
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/Xpress2R",
-                           repos=BiocInstaller::biocinstallRepos())   
-
-    #Install the zFPKM package from CRAN
-    install.packages("zFPKM")  
-	
-    #now you should have all the dependencies in place to install DGE.Tools 
-
-    #Install the DGEobj Package (The S3 class data structure used by DGE.Tools2
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGEobj",
-                            repos=BiocInstaller::biocinstallRepos())   
-
-    #Install the DGE.Tools2
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2",
-                            repos=BiocInstaller::biocinstallRepos()) 
-
+    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tools2@0.9.65", repos=BiocInstaller::biocinstallRepos()) 
+  
 ```   
-    If the install fails, inspect the error messages. For reasons we don't understand, certain
-    dependencies don't get installed.  The error messages will name the missing packages and they can
-    be installed manually before installing DGE.Tools2.
 
 # Mac install
  
