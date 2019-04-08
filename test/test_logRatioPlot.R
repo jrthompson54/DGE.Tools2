@@ -34,10 +34,10 @@ MyPlot2 <- logRatioPlot(x, plotType = "point",
                        scales = "fixed")
 assertthat::assert_that("ggplot" %in% class(MyPlot2))
 
-#individual point plots
-MyPlot3 <- logRatioPlot(x, plotType = "point",
+#individual point plots; facet = FALSE; result is a list
+MyPlot3 <- logRatioPlot(x, plotType = "bar",
                         facetColname = "EnsgID",
                         xColname = "Contrast",
                         facet = FALSE,
                         scales = "fixed")
-assertthat::assert_that(class(MyPlot3 == "list"))
+assertthat::assert_that(class(MyPlot3) == "list")

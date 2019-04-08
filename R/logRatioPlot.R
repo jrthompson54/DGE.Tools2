@@ -230,7 +230,7 @@ logRatioPlot <- function(data,
         dat <- data[data[[facetColname]] == obs, ] #pull data for one gene
         # dat <- dplyr::filter(data, !!facetColname == !!obs)
 
-        aplot <- ggplot(dat, aes(x=xColname, y=yColname)) + #Samples vs Log2CPM
+        aplot <- ggplot(dat, aes_string(x=xColname, y=yColname)) + #Samples vs Log2CPM
           xlab(xlab) +
           ylab(ylab) +
           ggtitle(obs) +
