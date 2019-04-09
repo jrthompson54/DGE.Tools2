@@ -72,7 +72,7 @@ For reproducible research reasons, you may want to specify a specific version wh
 
 ```
    require(devtools)
-   devtools::install_version("DGE.Tool2", version = "0.9.65", repos="http://BRAN.pri.bms.com")
+   devtools::install_version("DGE.Tool2", version = "0.9.66", repos="http://BRAN.pri.bms.com")
 ```
 
 **Note:**  CRAN and Bioconductor package dependencies should be installed automatically.  Sometimes this doesn't work.  Watch the error messages and install any package that are reported missing. Then try again.  
