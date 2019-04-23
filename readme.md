@@ -68,14 +68,6 @@ Install or update DGEobj:
     install.packages("DGE.Tool2", repos="http://BRAN.pri.bms.com")
 ```
 
-For reproducible research reasons, you may want to specify a specific version when you install:
-
-```
-   require(devtools)
-   devtools::install_version("DGE.Tool2", version = "0.9.66", repos="http://BRAN.pri.bms.com")
-```
-
-**Note:**  CRAN and Bioconductor package dependencies should be installed automatically.  Sometimes this doesn't work.  Watch the error messages and install any package that are reported missing. Then try again.  
 
 ## Installation from Biogit (backup method)
 
@@ -85,5 +77,5 @@ You can also install directly from GIT.  Versions released to BRAN are tagged ve
     #if you don't have the devtools package already
     install.packages("devtools") 
 
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tool2@0.9.65", repos=BiocInstaller::biocinstallRepos()) 
+    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tool2", repos=BiocInstaller::biocinstallRepos()) 
 ```   
