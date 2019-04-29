@@ -5,9 +5,9 @@
 \title{Profile Plots}
 \usage{
 profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
-  pvalCol = "P.Value", pthreshold = 0.01, geneSym, rugColor = NULL,
-  rugAlpha = 1, xlab = NULL, ylab = NULL, title = NULL,
-  symbolSize = c(4, 1, 4), symbolShape = c(21, 20, 21),
+  pvalCol = "P.Value", pthreshold = 0.01, geneSymLabels, geneSymCol,
+  rugColor = NULL, rugAlpha = 1, xlab = NULL, ylab = NULL,
+  title = NULL, symbolSize = c(4, 1, 4), symbolShape = c(21, 20, 21),
   symbolColor = c("black", "grey25", "grey0"), symbolFill = c("red3",
   "grey25", "deepskyblue4"), alpha = 0.5, sizeBySignificance = FALSE,
   referenceLine = "grey25", foldChangeLines = log2(1.5),
@@ -27,7 +27,7 @@ profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
 
 \item{pthreshold}{Used to color points (default = 0.01)}
 
-\item{geneSym}{Name of the gene symbol column in df.  The gene symbol is
+\item{geneSymCol}{Name of the gene symbol column in df.  The gene symbol is
 not in topTable output by default so the user has to bind this column
 to the dataframe in advance.  Then this column will be used to label
 significantly changed points}
@@ -95,6 +95,9 @@ Default = bw"}
 \item{footnoteColor}{applies to footnote. (default = "black")}
 
 \item{footnoteJust}{Value 0-1. 0 is left justified, 1 is right justified, 0.5 is centered. (default=1)}
+
+\item{geneSym}{A character vector of gene to label (must be the name space of the column
+specified by geneSymCol)}
 }
 \value{
 ggplot object

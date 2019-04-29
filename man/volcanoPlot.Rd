@@ -5,11 +5,11 @@
 \title{Deluxe Volcano Plots}
 \usage{
 volcanoPlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
-  pvalCol = "P.Value", pthreshold = 0.01, xlab = NULL, ylab = NULL,
-  title = NULL, symbolSize = c(4, 3.999, 4), symbolShape = c(21, 1,
-  21), symbolColor = c("black", "grey25", "grey0"),
-  symbolFill = c("red3", "grey25", "deepskyblue4"), alpha = 0.5,
-  sizeByIntensity = TRUE, pthresholdLine = NULL,
+  pvalCol = "P.Value", pthreshold = 0.01, geneSymLabels, geneSymCol,
+  xlab = NULL, ylab = NULL, title = NULL, symbolSize = c(4, 3.999,
+  4), symbolShape = c(21, 1, 21), symbolColor = c("black", "grey25",
+  "grey0"), symbolFill = c("red3", "grey25", "deepskyblue4"),
+  alpha = 0.5, sizeByIntensity = TRUE, pthresholdLine = NULL,
   foldChangeLines = log2(1.5), refLineThickness = 1,
   legendPosition = "right", rugColor = NULL, rugAlpha = 1,
   baseFontSize = 12, themeStyle = "grey", footnote, footnoteSize = 3,
@@ -26,6 +26,14 @@ pvalue or FDR column (typically a topTable dataframe).}
 \item{pvalCol}{name of the pvalue or FDR column (Default = "P.Value")}
 
 \item{pthreshold}{Used to color points (default = 0.01)}
+
+\item{geneSymLabels}{A character vector of gene to label (must be the name space of the column
+specified by geneSymCol)}
+
+\item{geneSymCol}{Name of the gene symbol column in df.  The gene symbol is
+not in topTable output by default so the user has to bind this column
+to the dataframe in advance.  Then this column will be used to label
+significantly changed points}
 
 \item{xlab}{X axis label (default the LogIntensity column name)}
 

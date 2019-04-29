@@ -47,6 +47,12 @@
 #' @param ylab Y axis label (default the LogRatio column name)
 #' @param title Plot title (optional)
 #' @param pthreshold Used to color points (default = 0.01)
+#' @param geneSymLabels A character vector of gene to label (must be the name space of the column
+#'   specified by geneSymCol)
+#' @param geneSymCol Name of the gene symbol column in df.  The gene symbol is
+#'    not in topTable output by default so the user has to bind this column
+#'    to the dataframe in advance.  Then this column will be used to label
+#'    significantly changed points
 #' @param pthresholdLine Color for a horizontal line at the pthreshold (Default
 #'   = NULL (disabled))
 #' @param symbolSize Size of symbols for Up, no change and Down. default = c(4,
@@ -109,13 +115,15 @@
 #'
 #' @import ggplot2 magrittr
 #' @importFrom dplyr left_join
-#'
+#' @importFrom ggrepel geom_text_repel
 #' @export
 volcanoPlot <- function(df,
                         logRatioCol = "logFC",
                         logIntCol = "AveExpr",
                         pvalCol = "P.Value",
                         pthreshold=0.01,
+                        geneSymLabels,
+                        geneSymCol,
                         xlab=NULL, ylab=NULL, title=NULL,
                         symbolSize = c(4, 3.999, 4),
                         symbolShape = c(21, 1, 21),
@@ -150,17 +158,11 @@ volcanoPlot <- function(df,
 #   )
 
   #argument checks
-  #
   # Make sure specified columns exist
-  if (!logRatioCol %in% colnames(df)) {
-    stop("LogRatio Ccolumn not found.")
-  }
-  if (!logIntCol %in% colnames(df)) {
-    stop("LogIntensity column not found.")
-  }
-  if (!pvalCol %in% colnames(df)) {
-    stop("Significance measure column not found.")
-  }
+  assertthat::assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
+  assertthat::assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
+  assertthat::assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
+  assertthat::assert_that (geneSymCol %in% colnames(df), msg="geneSymol column not found in df.")
 
   #symbol parameters must all be length=3
   if (!length(symbolSize)==3 || !length(symbolShape)==3 ||
@@ -283,6 +285,16 @@ volcanoPlot <- function(df,
                  alpha=0.5, size=refLineThickness) +
       geom_vline(xintercept=-foldChangeLines, color=symbolFill["Decreased"],
                  alpha=0.5, size=refLineThickness)
+  }
+
+  #Add genesym labels to increased, decreased genes.
+  if (!missing(geneSymLabels) & !missing(geneSymCol)){
+    #filter df to changed genes
+    idx <- df[[geneSymCol]] %in% geneSymLabels
+    dfsubset <- df[idx,]
+    volcanoPlot <- volcanoPlot +
+      geom_text_repel(data=dfsubset, aes_string(x=x, y=y, label=geneSymCol),
+                      show.legend=FALSE)
   }
 
   ### Add Labels

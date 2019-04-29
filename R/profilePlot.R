@@ -49,7 +49,9 @@
 #' @param ylab Y axis label (default the LogRatio column name)
 #' @param title Plot title (optional)
 #' @param pthreshold Used to color points (default = 0.01)
-#' @param geneSym Name of the gene symbol column in df.  The gene symbol is
+#' @param geneSym A character vector of gene to label (must be the name space of the column
+#'   specified by geneSymCol)
+#' @param geneSymCol Name of the gene symbol column in df.  The gene symbol is
 #'    not in topTable output by default so the user has to bind this column
 #'    to the dataframe in advance.  Then this column will be used to label
 #'    significantly changed points
@@ -114,6 +116,7 @@
 #' @import ggplot2 magrittr
 #' @importFrom dplyr left_join filter arrange
 #' @importFrom assertthat assert_that
+#' @importFrom ggrepel geom_text_repel
 #'
 #' @export
 profilePlot <- function(df,
@@ -121,7 +124,8 @@ profilePlot <- function(df,
                         logIntCol = "AveExpr",
                         pvalCol = "P.Value",
                         pthreshold=0.01,
-                        geneSym,
+                        geneSymLabels,
+                        geneSymCol,
                         rugColor = NULL,
                         rugAlpha = 1.0,
                         xlab=NULL, ylab=NULL, title=NULL,
@@ -153,16 +157,8 @@ profilePlot <- function(df,
   assertthat::assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
   assertthat::assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
   assertthat::assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
+  assertthat::assert_that (geneSymCol %in% colnames(df), msg="geneSymol column not found in df.")
 
-  # if (!logRatioCol %in% colnames(df)) {
-  #   stop("LogRatio column not found.")
-  # }
-  # if (!logIntCol %in% colnames(df)) {
-  #   stop("LogIntensity column not found.")
-  # }
-  # if (!pvalCol %in% colnames(df)) {
-  #   stop("Significance measure column not found.")
-  # }
 
   #symbol parameters must all be length=3
   if (!length(symbolSize)==3 || !length(symbolShape)==3 ||
@@ -274,11 +270,12 @@ profilePlot <- function(df,
   }
 
   #Add genesym labels to increased, decreased genes.
-  if (!missing(geneSym)){
+  if (!missing(geneSymLabels) & !missing(geneSymCol)){
     #filter df to changed genes
-    dfc <- dplyr::filter(df, group != "No Change")
+    idx <- df[[geneSymCol]] %in% geneSymLabels
+    dfsubset <- df[idx,]
     profilePlot <- profilePlot +
-      geom_text_repel(data=dfc, aes_string(x=x, y=y, label=geneSym),
+      geom_text_repel(data=dfsubset, aes_string(x=x, y=y, label=geneSymCol),
                       show.legend=FALSE)
   }
 
