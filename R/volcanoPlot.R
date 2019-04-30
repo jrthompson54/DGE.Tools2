@@ -162,7 +162,8 @@ volcanoPlot <- function(df,
   assertthat::assert_that (logRatioCol %in% colnames(df), msg="logRatioCol column not found in df.")
   assertthat::assert_that (logIntCol %in% colnames(df), msg="logIntCol column not found in df.")
   assertthat::assert_that (pvalCol %in% colnames(df), msg="pvalCol column not found in df.")
-  assertthat::assert_that (geneSymCol %in% colnames(df), msg="geneSymol column not found in df.")
+  if (!missing(geneSymCol))
+    assertthat::assert_that (geneSymCol %in% colnames(df), msg="geneSymol column not found in df.")
 
   #symbol parameters must all be length=3
   if (!length(symbolSize)==3 || !length(symbolShape)==3 ||
