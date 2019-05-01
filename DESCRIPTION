@@ -1,6 +1,6 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.69
+Version: 0.9.70
 Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
@@ -94,7 +94,6 @@ Collate:
     'plotNorm.R'
     'checkSex.R'
     'topTable.merge.R'
-    'GOIplot.R'
     'lowIntFilter.R'
     'tidyContrasts.R'
     'tidyIntensity.R'
@@ -104,5 +103,6 @@ Collate:
     'QCplots.R'
     'voomWorkflow.R'
     'rsq_calc.R'
+    'rctutils.R'
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
