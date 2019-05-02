@@ -78,7 +78,6 @@ eBayes_autoprop <- function(..., prop.method = "lfdr") {
 #'
 #' @export
 get_mds <- function(x, k, ...) {
-  req_ns("limma")
   dmat <- limma::plotMDS(x, ..., plot = FALSE)$distance.matrix %>% as.dist
   max_k <- attr(dmat, "Size") - 1
   if (missing(k)) {
