@@ -2,7 +2,7 @@
 % Please edit documentation in R/comparePlot.R
 \name{comparePlot}
 \alias{comparePlot}
-\title{Deluxe Compare Plots}
+\title{Function ComparePlot}
 \usage{
 comparePlot(df, pthreshold = 0.01, xlab = NULL, ylab = NULL,
   title = NULL, symbolSize = c(4, 4, 4, 2), symbolShape = c(21, 21,
@@ -119,11 +119,21 @@ Note if you're not using pvalues or FDR values to color the plot, the X Unique c
 values are used.
 }
 \examples{
-   All defaults with a custom title
 
-   MyPlot = comparePlot(df, title = "Plot Title")
+  #Retrieve the 1st two contrasts from a DGEobj as a list of dataframes (length=2; named items)
+  ttList <- getType(dgeObj, "topTable")[1:2]
 
-   Deluxe Plot with all the bells and whistles. Note df contains columns xp and yp.
+  #capture the default logFC and P.Value
+  compareDat <- comparePrep(ttList)
+
+  #switch to an FDR value for the significance measure
+  compareDat <- comparePrep(ttList, significanceCol="adj.P.Val")
+
+  #draw the plot
+  cPlot <- comparePlot(compareDat, title = "Plot Title")
+  print(cPlot)
+
+   Deluxe Plot with bells and whistles.
 
    MyPlot = comparePlot (df, pthreshold = 0.5,
      xlab = "x Axis Label", ylab = "y Axis Label",

@@ -1,5 +1,5 @@
 ### Function comparePlot ###
-#' Deluxe Compare Plots
+#' Function ComparePlot
 #'
 #' In the simpliest form it draws a nicely formatted scatterplot of the
 #' first two columns in a dataframe.  Several formatting options are
@@ -83,11 +83,21 @@
 #' @return ggplot object
 #'
 #' @examples
-#'    All defaults with a custom title
 #'
-#'    MyPlot = comparePlot(df, title = "Plot Title")
+#'   #Retrieve the 1st two contrasts from a DGEobj as a list of dataframes (length=2; named items)
+#'   ttList <- getType(dgeObj, "topTable")[1:2]
 #'
-#'    Deluxe Plot with all the bells and whistles. Note df contains columns xp and yp.
+#'   #capture the default logFC and P.Value
+#'   compareDat <- comparePrep(ttList)
+#'
+#'   #switch to an FDR value for the significance measure
+#'   compareDat <- comparePrep(ttList, significanceCol="adj.P.Val")
+#'
+#'   #draw the plot
+#'   cPlot <- comparePlot(compareDat, title = "Plot Title")
+#'   print(cPlot)
+#'
+#'    Deluxe Plot with bells and whistles.
 #'
 #'    MyPlot = comparePlot (df, pthreshold = 0.5,
 #'      xlab = "x Axis Label", ylab = "y Axis Label",
@@ -289,5 +299,90 @@ comparePlot <- function(df, pthreshold=0.01,
                              yoffset = 0.05)
 
   return(CompPlot)
+}
+
+### Function comparePrep ###
+#' Function comparePrep
+#'
+#' Takes two topTable dataframes and outputs a dataframe suitable for function
+#' comparePlot (2 columns of LogRatio data and 2 columns of significant
+#' measures). Filter the two topTable to contain just the intersecting genes
+#' (present in both datasets). The two dataframes must have the same type of
+#' gene IDs as rownames.
+#'
+#'
+#' @param ttList A named list of 2 topTable dataframes (required).  The
+#'   names are used as column names for the value columns in the output.
+#' @param valueCol Name of column containing values to plot (default = "logFC")
+#' @param significanceCol Name of column to use for significance (default = "P.Value")
+#'
+#' @return A data frame with 2 LogRatio measurements and 2 significance columns.  Columns 1 and 3 map
+#' to sample 1 and columns 2 and 4 map to sample 2.  The returned dataframe is formatted as expected
+#' by the comparePlot function.
+#'
+#'
+#' @examples
+#'
+#'   #Retrieve the 1st two contrasts from a DGEobj
+#'   ttList <- getType(dgeObj, "topTable")[1:2]
+#'
+#'   #capture the default logFC and P.Value
+#'   compareDat <- comparePrep(ttList)
+#'
+#'   #switch to an FDR value for the significance measure
+#'   compareDat <- comparePrep(ttList, significanceCol="adj.P.Val")
+#'
+#'   #draw the plot
+#'   cPlot <- comparePlot(compareDat)
+#'
+#' @importFrom assertthat assert_that
+#' @import magrittr
+#'
+#' @export
+comparePrep <- function(ttList, valueCol="logFC", significanceCol="P.Value"){
+
+  assertthat::assert_that(length(ttList) == 2,
+                          !is.null(names(ttList)),
+                          "data.frame" %in% class(ttList[[1]]),
+                          "data.frame" %in% class(ttList[[2]]),
+                          valueCol %in% colnames(ttList[[1]]),
+                          valueCol %in% colnames(ttList[[2]]),
+                          significanceCol %in% colnames(ttList[[1]]),
+                          significanceCol %in% colnames(ttList[[2]]))
+
+  ttNames <- names(ttList)
+  tt1 <- ttList[[1]]
+  tt2 <- ttList[[2]]
+
+  commonIDs <- intersect(rownames(tt1), rownames(tt2))
+  if (length(commonIDs) <1)
+    stop("No common gene ids between the two dataframes")
+
+  #filter both tables to the same set of genes in the same order.
+  tt1 %<>% rownames_to_column(var="geneid") %>%
+    filter(geneid %in% commonIDs) %>%
+    arrange(geneid)
+  tt2 %<>% rownames_to_column(var="geneid") %>%
+    filter(geneid %in% commonIDs) %>%
+    arrange(geneid)
+
+  if (!all(tt1$geneid == tt2$geneid))
+    stop ("Could NOT align the gene ids in the two topTable files")
+
+  #assemble the return df
+  df <- bind_cols(fc1=tt1[[valueCol]],
+                         fc2=tt2[[valueCol]],
+                         xp=tt1[[significanceCol]],
+                         yp=tt2[[significanceCol]],
+                         ) %>%
+    as.matrix() %>%
+    as.data.frame() %>%
+    set_colnames(c(ttNames[1], ttNames[2], "xp", "yp")) %>%
+    set_rownames(tt1$geneid)
+
+  # colnames(df) <- c(ttNames[1], ttNames[2], "xp", "yp")
+  # rownames(df) <- tt1$geneid
+  return(df)
+
 }
 
