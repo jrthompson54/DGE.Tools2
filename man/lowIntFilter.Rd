@@ -4,11 +4,11 @@
 \alias{lowIntFilter}
 \title{Function  lowIntFilter}
 \usage{
-lowIntFilter(x, zfpkmThreshold, fpkThreshold, countThreshold,
+lowIntFilter(x, zfpkmThreshold, fpkThreshold, countThreshold, tpmThreshold,
   sampleFraction = 0.5, genelength = NULL, verbose = FALSE)
 }
 \arguments{
-\item{x}{A counts matrix or data.frame OR a DGEobj with RNA-Seq (counts) data
+\item{x}{A DGEobj with RNA-Seq (counts) data
 (required).}
 
 \item{zfpkmThreshold}{Genes below this threshold are removed (-3.0 is recommended)}
@@ -18,11 +18,14 @@ lowIntFilter(x, zfpkmThreshold, fpkThreshold, countThreshold,
 \item{countThreshold}{Genes below this threshold are removed (recommend 10).
 Set to 0 to disable this filter.}
 
+\item{tpmThreshold}{Genes below this threshold are removed (tpm is supported
+by request, but FPK is a better length-normalized value to use as a filter)}
+
 \item{sampleFraction}{The proportion of samples that must meet the thresholds
 (Default = 0.5). Range >0 and <=1.}
 
 \item{genelength}{Vector of genelengths for rows of x. Required for FPK and
-zFPKM filters, unless x is a DGEobj.  In the DGEobj case, genelength is
+zFPKM filters, unless x is a DGEobj.  If a DGEobj is supplied, genelength is
 retrieved from the DGEobj, unless supplied by the genelength argument.}
 
 \item{verbose}{Prints some messages about the filtering process.}

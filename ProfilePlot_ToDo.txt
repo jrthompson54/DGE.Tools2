@@ -1,0 +1,8 @@
+profile, volcano plots
+
+Add a layer to ggrepel label a subset list of genesymbols
+	arguments: tags = list of genes to tag using the row name of df
+				tagColumn = df colname holding label (genesymbol)
+				
+				Uses tags to rowfilter df then plot that as a ggrepel layer 
+	
