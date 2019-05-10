@@ -8,7 +8,7 @@ runContrasts(dgeObj, designMatrixName, contrastList,
   contrastSetName = fitName, runTopTable = TRUE, runTopTreat = FALSE,
   FoldChangeThreshold = 1.5, PvalueThreshold = 0.01,
   FDRthreshold = 0.1, runEBayes = TRUE, robust = TRUE,
-  proportion = 0.01, Qvalue = FALSE, IHW = FALSE)
+  proportion = 0.01, Qvalue = FALSE, IHW = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{dgeObj}{A DGEobj object containing a Fit object and design matrix (required)}
@@ -41,6 +41,8 @@ to "fitName_cf".  Change only if you need to create 2 or more contrast sets from
 \item{Qvalue}{Set TRUE to include Qvalues in topTable output (Default=FALSE)}
 
 \item{IHW}{Set TRUE to add FDR values from the IHW package (Defulat=FALSE)}
+
+\item{verbose}{Set TRUE to print some information during processing (Default=FALSE)}
 }
 \value{
 The DGEobj with contrast fits and topTable/topTreat dataframes added.

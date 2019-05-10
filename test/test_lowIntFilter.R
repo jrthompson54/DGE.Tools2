@@ -31,3 +31,7 @@ x <- lowIntFilter(dgeObj, tpmThreshold = 1,
 
 x <- lowIntFilter(dgeObj, tpmThreshold = 1, countThreshold=10,
                   genelength = dgeObj$geneData$ExonLength, verbose=TRUE)
+
+#diable with fracThrshold = 0
+x <- lowIntFilter(dgeObj, sampleFraction = 0, fpkThreshold = 5, countThreshold=10,
+                  genelength = dgeObj$geneData$ExonLength, verbose=TRUE)

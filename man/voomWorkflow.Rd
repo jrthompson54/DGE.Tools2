@@ -4,40 +4,59 @@
 \alias{voomWorkflow}
 \title{Function voomWorkflow}
 \usage{
-voomWorkflow(dgeObj, formula, projectName, designMatrixName,
-  fracThreshold = 0.5, outputPath = "./", annotationFile,
-  proteinCodingOnly = FALSE)
+voomWorkflow(dgeObj, formula, projectName, designMatrixName, dupcorBlock,
+  outputPath = "./", annotationFile, proteinCodingOnly = FALSE,
+  sampleFraction = 0.5, ...)
 }
 \arguments{
-\item{dgeObj}{A class dgeObj with counts, gene annotation and sample annotation}
+\item{dgeObj}{A class dgeObj with counts, gene annotation and sample
+annotation}
 
-\item{formula}{A text representation of the formula you want to use}
+\item{formula}{A text representation of the formula you want to use (clas
+character not formula)}
 
 \item{projectName}{This should be the project name from Xpress or Omicsoft}
 
 \item{designMatrixName}{User defined name for the design matrix}
 
-\item{fracThreshold}{Fraction of samples that must meet intensity thresholds to keep a gene (Default = 0.5)}
+\item{dupcorBlock}{A blocking vector to define which samples belong to the
+same subject to be used with the duplicateCorrelation function.}
 
 \item{outputPath}{Where to send output plots}
 
-\item{annotationFile}{Text file of key=value pairs to populate DGEobj attributes (optional but highly advised)}
+\item{annotationFile}{Text file of key=value pairs to populate DGEobj
+attributes (optional but highly advised)}
 
-\item{proteinCodingOnly}{Set to TRUE to keep only protein coding genes (default = FALSE)}
+\item{proteinCodingOnly}{Set to TRUE to keep only protein coding genes
+(default = TRUE)}
+
+\item{sampleFraction}{Fraction of samples that must meet intensity thresholds
+to keep a gene (Default = 0.5)}
+
+\item{...}{Additional named arguments passed to the low intensity filter
+function to define the desired intensity filter type (see ?lowIntFilter). Settable
+arguments for low intensity filtering are: fracThreshold (default = 0.5),
+countThreshold, fpkThreshold, zfpkmThreshold, tpmThreshold.  You can use
+countThreshold plus one other argument.  If no arguments supplied here, the
+following defaults apply (fracThreshold=0.5, countThreshold=10,
+fpkThreshold=5).  To disable intensity filtering use: sampleFraction = 0.}
 }
 \value{
 A DGEobj with analysis results added
 }
 \description{
 This function runs several steps in the RNA-Seq pipeline in one fell swoop.
-It supports duplicateCorrelation if you provide a blocking vector.  It includes
-low intensity filtering, filtering for protein coding genes and filters out zero
-effective length genes (genes shorter than library size).  Then it runs TMM normalization,
-voomWithQualityWeights, lmFit and eBayes.
+It supports duplicateCorrelation if you provide a blocking vector.  It
+includes low intensity filtering, filtering for protein coding genes and
+filters out zero effective length genes (genes shorter than library size).
+Then it runs TMM normalization, voomWithQualityWeights, lmFit and eBayes.
 }
 \details{
-To incorporate SVA analysis, you need to run SVA first and add the SVA variables to your design
-table. Then you can proceed with this function.
+To incorporate SVA analysis, you need to run SVA first and add the SVA
+variables to your design table. Then you can proceed with this function.
+
+After running this step. You define your contrasts and execute runContrast to
+complete DGE calculations.
 }
 \examples{
 
@@ -46,7 +65,8 @@ table. Then you can proceed with this function.
                             projectName = "MyProjectName",
                             designMatrixName = "ReplicateGroup",
                             annotationFile = "MyProjectName.txt",
-                            proteinCodingOnly = TRUE)
+                            proteinCodingOnly = TRUE,
+                            )
 
 }
 \author{

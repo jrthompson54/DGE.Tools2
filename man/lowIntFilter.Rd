@@ -34,8 +34,8 @@ retrieved from the DGEobj, unless supplied by the genelength argument.}
 Same class as input object with low intensity rows removed
 }
 \description{
-Takes a DGEobj or counts matrix as input and applies a combination of low
-intensity filters. raw count, zFPKM and/or FPK filters are supported.  A gene
+Takes a DGEobj as input and applies a combination of low
+intensity filters. raw count, zFPKM, TPM and/or FPK filters are supported.  A gene
 must pass all active filters.  Not setting a threshold argument inactivates that threshold.
 }
 \examples{

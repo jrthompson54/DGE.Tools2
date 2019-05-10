@@ -46,6 +46,7 @@
 #'   (used by eBayes) (Default = 0.01)
 #' @param Qvalue Set TRUE to include Qvalues in topTable output (Default=FALSE)
 #' @param IHW Set TRUE to add FDR values from the IHW package (Defulat=FALSE)
+#' @param verbose Set TRUE to print some information during processing (Default=FALSE)
 #' @return The DGEobj with contrast fits and topTable/topTreat dataframes added.
 #'
 #' @examples
@@ -58,6 +59,7 @@
 #' @importFrom limma contrasts.fit eBayes makeContrasts topTable topTreat treat
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
+#' @importFrom stringr str_c
 #'
 #' @export
 runContrasts <- function(dgeObj, designMatrixName,
@@ -72,7 +74,8 @@ runContrasts <- function(dgeObj, designMatrixName,
                          robust = TRUE,
                          proportion=0.01,
                          Qvalue=FALSE,
-                         IHW=FALSE) {
+                         IHW=FALSE,
+                         verbose=FALSE) {
 
   assertthat::assert_that (!missing(dgeObj),
                            !missing(designMatrixName),
@@ -104,6 +107,7 @@ runContrasts <- function(dgeObj, designMatrixName,
 
   #run eBayes
   if (runEBayes) {
+    if (verbose == TRUE) tsmsg(stringr::str_c("running EBayes: proportion = ", proportion))
     MyFit.Contrasts = limma::eBayes(MyFit.Contrasts, robust=robust, proportion=proportion)
     MyFit.Contrasts.treat = limma::treat(MyFit.Contrasts, lfc=log2(FoldChangeThreshold),
                                   robust=robust)
@@ -112,6 +116,7 @@ runContrasts <- function(dgeObj, designMatrixName,
   #run topTable on each contrast and add each DF to a list
 
   if (runTopTable == TRUE){
+    if (verbose == TRUE) tsmsg("Running topTable...")
     #Run topTable via lapply to generate a bunch of contrasts.
     MyCoef = 1:length(contrastList) %>% as.list
     TopTableList = lapply (MyCoef, function(x) (limma::topTable(MyFit.Contrasts, coef=x,
@@ -129,6 +134,7 @@ runContrasts <- function(dgeObj, designMatrixName,
   }
 
   if (runTopTreat == TRUE) {
+    if (verbose == TRUE) tsmsg("Running topTreat...")
     #Run topTreat via lapply to generate a bunch of contrasts.
     LFC = log2(FoldChangeThreshold)
     MyCoef = 1:length(contrastList) %>% as.list
