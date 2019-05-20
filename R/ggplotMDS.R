@@ -32,6 +32,7 @@
 #'   text labels
 #' @param labelSize control the Size for the text labels in the plot if you
 #'   don't like the default
+#' @param title A title for the plot (Optional)
 #' @param textColor Color for the text labels in the plot (default = "blue2")
 #' @param vlineIntercept X intercept of vertical line (Optional)
 #' @param hlineIntercept Y intercept of horizontal line (Optional)

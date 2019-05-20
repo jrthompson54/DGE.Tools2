@@ -75,6 +75,8 @@ voomWorkflow <- function(dgeObj,
                           "character" %in% class(projectName),
                           "character" %in% class(designMatrixName))
 
+  ellipsisArgs <- list(...)
+
   RDSname <- file.path(outputPath, str_c(projectName, ".RDS"))
 
   #add project metadata
@@ -86,16 +88,13 @@ voomWorkflow <- function(dgeObj,
     dir.create(file.path(outputPath))
 
   #Filter out genes with any zero efflength (only needed for data from Xpress)
-  el <- getItem(dgeObj, "effectiveLength")
+  suppressMessages(el <- getItem(dgeObj, "effectiveLength"))
   if (!is.null(el)){  #only Xpress data contains an effectiveLength item
     rowmin <- apply(el, 1, min)
     idx <- rowmin > 0
     dgeObj <- dgeObj[idx,]
   }
 
-  #Low Intensity Filter
-  #default filters:
-  fpkThreshold <- 5
 
   #trap for too many intensity filter arguments
   if (length(ellipsisArgs) > 2) stop("Only 1-2 intensity filtering args allowed")
@@ -117,8 +116,9 @@ voomWorkflow <- function(dgeObj,
 
   #construct filtering command
   cmd <- ("dgeObj <- lowIntFilter(dgeObj, sampleFraction=sampleFraction, ")
-  for (i in length(ellipsisArgs)){
+  for (i in 1:length(ellipsisArgs)){
     cmd <- str_c(cmd, names(ellipsisArgs)[i], " = ", ellipsisArgs[[i]])
+    if (i < length(ellipsisArgs)) cmd <- str_c(cmd, ", ")
   }
   cmd <- str_c(cmd, ")")
   eval(parse(text=cmd))
@@ -127,23 +127,14 @@ voomWorkflow <- function(dgeObj,
   if (proteinCodingOnly == TRUE){
     idx <- NULL
     if ("Source" %in% colnames(dgeObj$geneData)){ #Omicsoft field is Source
-
       idx <- dgeObj$geneData$Source == "protein_coding"
-
     } else if ("Source" %in% colnames(dgeObj$isoformData)){
-
       idx <- dgeObj$isoformData$Source == "protein_coding"
-
-    } else if ("Biotype" %in% colnames(dgeObj$geneData)){ #Xpress field is Biotype
-
-      idx <- dgeObj$geneData$Biotype == "protein_coding"
-
-    } else if ("Biotype" %in% names(dgeObj$isoformData)){
-
-      idx <- dgeObj$isoformData$Biotype == "protein_coding"
     }
 
     if (is.null(idx) == FALSE){
+      #Xpress sometines has NA in the Source/Biotype field; need to convert those to FALSE
+      idx [is.na(idx)] <- FALSE
       dgeObj <- dgeObj[idx,]
     }
   }
@@ -168,7 +159,7 @@ voomWorkflow <- function(dgeObj,
   message("Running Voom... this takes some time...")
 
   #voom/lmfit
-  if (is.null(dupcorBlock)){
+  if (missing(dupcorBlock) || is.null(dupcorBlock)){
     dgeObj <- runVoom(dgeObj, designMatrixName,
                       qualityWeights = TRUE,
                       mvPlot = TRUE)

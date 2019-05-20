@@ -31,6 +31,8 @@ text labels}
 \item{labelSize}{control the Size for the text labels in the plot if you
 don't like the default}
 
+\item{title}{A title for the plot (Optional)}
+
 \item{textColor}{Color for the text labels in the plot (default = "blue2")}
 
 \item{hlineIntercept}{Y intercept of horizontal line (Optional)}

@@ -10,8 +10,15 @@ library(Xpress2R)
 #Test1 Omicsoft project
 #
 #projectName as it appears in Omicsoft and the Regfile
-projectName <- "omicsoft/TB3_TGFB_Stim_HuIPF_Fibroblasts_Ensembl_30Jun2018"
-dgeObj <- buildOmicsoftDGEobj(projectName, mountPoint="y:", PID="TB3", omicsoftHomePath = "omicsoft-legacy/omicsoft_ngs")
+# projectName <- "omicsoft/TB3_TGFB_Stim_HuIPF_Fibroblasts_Ensembl_30Jun2018"
+# dgeObj <- buildOmicsoftDGEobj(projectName, mountPoint="y:", PID="TB3", omicsoftHomePath = "omicsoft-legacy/omicsoft_ngs")
+mountPoint <- "y:"
+projectName <- "BDL_Rat_LiverSlice_P-20170808-0001_03Dec2017"
+dgeObj <- JRTutil::buildOmicsoftDGEobj(projectName = projectName,
+                                       level="gene",
+                                       mountPoint=mountPoint)
+dgeObj$design$ReplicateGroup <- dgeObj$design$replicate_group
+
 dim(dgeObj)
 inventory(dgeObj)
 
@@ -21,10 +28,12 @@ formula <- "~ 0 + ReplicateGroup"
 dupcorBlock <- NULL    #define duplicates for dupliceCorrelation method; set to NULL to disable
 
 d <- voomWorkflow(dgeObj,
-                       formula=formula,
-                       projectName = projectName,
-                       designMatrixName = designMatrixName,
-                       outputPath = "z:/testOutput")
+                  formula=formula,
+                  projectName = projectName,
+                  designMatrixName = designMatrixName,
+                  outputPath = "z:/testOutput",
+                  countThreshold = 10,
+                  tpmThreshold = 1)
 dim(d)
 inventory(d)
 
