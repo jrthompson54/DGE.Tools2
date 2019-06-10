@@ -91,13 +91,13 @@ runContrasts <- function(dgeObj, designMatrixName,
   funArgs <- match.call() #capture arguments
 
   #need to retrieve designMatrix
-  result <- try({designMatrix <- getItem(dgeObj, designMatrixName)}, silent=TRUE)
-  if (class(result) == "try-error")
+  designMatrix <- try({getItem(dgeObj, designMatrixName)}, silent=TRUE)
+  if (class(designMatrix) == "try-error")
     stop(paste("Couldn't find", designMatrixName, "in dgeObj.", sep=" "))
 
   fitName <- paste(designMatrixName, "_fit", sep="")
-  result <- try((fit <- getItem(dgeObj, fitName)), silent=TRUE)
-  if (class(result) == "try-error") {
+  fit <- try((getItem(dgeObj, fitName)), silent=TRUE)
+  if (class(fit) == "try-error") {
     stop(paste(fitName, "not found in dgeObj", sep=" "))
   }
 
@@ -121,6 +121,7 @@ runContrasts <- function(dgeObj, designMatrixName,
     MyCoef = 1:length(contrastList) %>% as.list
     TopTableList = lapply (MyCoef, function(x) (limma::topTable(MyFit.Contrasts, coef=x,
                               confint=T, number=Inf, p.value=1, sort.by="none")))
+
     #transfer the contrast names
     names(TopTableList) = names(contrastList)
 

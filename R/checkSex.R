@@ -71,7 +71,8 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #add sample identifier data
   dtemp <- getItem(dgeObj, "design_orig") %>%
     tibble::rownames_to_column(var="rowname")
-  #add labelCo and sexCol data as needed
+  browser()
+  #add labelCol and sexCol data as needed
   if (!missing(labelCol) & !missing(sexCol)){
     dtemp %<>% dplyr::select(rowname, labelCol=labelCol, sexCol=sexCol)
     plotDat <- dplyr::left_join(plotDat, dtemp, by="rowname")
