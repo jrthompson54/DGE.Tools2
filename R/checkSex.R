@@ -19,6 +19,7 @@
 #' @param chrY Character string name of the Y chromosome in the gene annotation within the geneData object (Default = "Y")
 #' @param baseFontSize Sets the base font size for ggplot themes (Default = 14)
 #' @param orig Set to FALSE to use your filtered DGEobj data.  Set to TRUE to use original unfiltered data (Default = TRUE)
+#' @param debug Default=FALSE. Set to TRUE to open a debug browser when entering this function
 #'
 #' @return A ggplot object
 #'
@@ -34,7 +35,7 @@
 #'
 #' @export
 checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
-                     chrX = "X", chrY = "Y", baseFontSize=14, orig=TRUE) {
+                     chrX = "X", chrY = "Y", baseFontSize=14, orig=TRUE, debug=FALSE) {
 
   #convert this to a function in DGE.Tools2
   #input dgeObj, optionally specify x and y genes
@@ -44,7 +45,9 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
               tolower(species) %in% c("human", "mouse", "rat")
               )
 
-  if (tolower(species) == "rat") { #no XIST in Rat
+  if (debug == TRUE) browser()
+
+  if (tolower(species) == "rat") { #no XIST gene in Rat
     x <- .getTopExpressedGene(dgeObj, chr=chrX, orig=TRUE)
   } else {
     x <- switch(tolower(species),
@@ -71,7 +74,7 @@ checkSex <- function(dgeObj, species, sexCol, labelCol, showLabels=FALSE,
   #add sample identifier data
   dtemp <- getItem(dgeObj, "design_orig") %>%
     tibble::rownames_to_column(var="rowname")
-  browser()
+
   #add labelCol and sexCol data as needed
   if (!missing(labelCol) & !missing(sexCol)){
     dtemp %<>% dplyr::select(rowname, labelCol=labelCol, sexCol=sexCol)

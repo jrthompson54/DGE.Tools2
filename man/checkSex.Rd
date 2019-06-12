@@ -5,7 +5,8 @@
 \title{Function checkSex}
 \usage{
 checkSex(dgeObj, species, sexCol, labelCol, showLabels = FALSE,
-  chrX = "X", chrY = "Y", baseFontSize = 14, orig = TRUE)
+  chrX = "X", chrY = "Y", baseFontSize = 14, orig = TRUE,
+  debug = FALSE)
 }
 \arguments{
 \item{dgeObj}{A DGEobj (Required)}
@@ -25,6 +26,8 @@ checkSex(dgeObj, species, sexCol, labelCol, showLabels = FALSE,
 \item{baseFontSize}{Sets the base font size for ggplot themes (Default = 14)}
 
 \item{orig}{Set to FALSE to use your filtered DGEobj data.  Set to TRUE to use original unfiltered data (Default = TRUE)}
+
+\item{debug}{Default=FALSE. Set to TRUE to open a debug browser when entering this function}
 }
 \value{
 A ggplot object
