@@ -55,17 +55,17 @@ packages because loaded packages cannot be updated.
 Charles Tilford has created a BMS repository, BRAN.  Packages from BRAN
 can now be installed simply with install.packages (after a little setup).
 
-One time setup for BRAN :
+Setup for BRAN :
 
 ```
-   # Sourcing this file modifies your .Rprofile file to add BRAN to your list of repositories
+   # Sourcing this file enables install.packages to work with BRAN
    source('http://bran.pri.bms.com/resources/configureRepo.R')
 ```
 
 Install or update DGEobj:  
 
 ```
-    install.packages("DGE.Tool2", repos="http://BRAN.pri.bms.com")
+    install.packages("DGE.Tool2")
 ```
 
 
@@ -77,5 +77,5 @@ You can also install directly from GIT.  Versions released to BRAN are tagged ve
     #if you don't have the devtools package already
     install.packages("devtools") 
 
-    devtools::install_git("http://biogit.pri.bms.com/thompj27/DGE.Tool2", repos=BiocInstaller::biocinstallRepos()) 
+    devtools::install_git("https://biogit.pri.bms.com/thompj27/DGE.Tool2") 
 ```   

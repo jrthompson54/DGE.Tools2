@@ -4,9 +4,9 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgeObj, designMatrixName, dupcorBlock, qualityWeights = TRUE,
-  var.design, mvPlot = TRUE, runEBayes = TRUE, robust = TRUE,
-  proportion = 0.01)
+runVoom(dgeObj, designMatrixName, dupcorBlock, runDupCorTwice = TRUE,
+  qualityWeights = TRUE, var.design, mvPlot = TRUE, runEBayes = TRUE,
+  robust = TRUE, proportion = 0.01)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}
@@ -16,6 +16,9 @@ runVoom(dgeObj, designMatrixName, dupcorBlock, qualityWeights = TRUE,
 \item{dupcorBlock}{Supply a block argument to trigger duplicateCorrelation (optional).
 Should be a vector the same length as ncol with values to indicate common
 group membership for duplicateCorrelation.}
+
+\item{runDupCorTwice}{Default = TRUE.  Gordon Smyth recommends running duplicateCorrelation
+twice.   Set this to false to run duplicateCorrelation just once.}
 
 \item{qualityWeights}{Runs VoomWithQualityWeights if set to TRUE (default=TRUE).
 This should normally be set to TRUE.}

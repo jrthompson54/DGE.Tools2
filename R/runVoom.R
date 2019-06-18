@@ -36,6 +36,8 @@
 #' @param dupcorBlock Supply a block argument to trigger duplicateCorrelation (optional).
 #'    Should be a vector the same length as ncol with values to indicate common
 #'    group membership for duplicateCorrelation.
+#' @param runDupCorTwice Default = TRUE.  Gordon Smyth recommends running duplicateCorrelation
+#'   twice.   Set this to false to run duplicateCorrelation just once.
 #' @param qualityWeights Runs VoomWithQualityWeights if set to TRUE (default=TRUE).
 #'    This should normally be set to TRUE.
 #' @param var.design Provide a design matrix (from model.matrix) to identify
@@ -61,6 +63,7 @@
 #' @export
 runVoom <- function(dgeObj, designMatrixName,
                     dupcorBlock,
+                    runDupCorTwice = TRUE,
                     qualityWeights = TRUE,
                     var.design,
                     mvPlot = TRUE,
@@ -106,7 +109,7 @@ runVoom <- function(dgeObj, designMatrixName,
 # Actually, should interate until asymtope achieved but normally twice is sufficient.
 # https://support.bioconductor.org/p/59700/#67620
 
-#Main Calculations (one of six blocks will be run)
+# Main Calculations (one of six blocks will be run)
 
     #set type of analysis
     if (dupcor==F & qualityWeights==F & blockQW==F){ #baseOptions
@@ -135,12 +138,14 @@ runVoom <- function(dgeObj, designMatrixName,
         corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- limma::voom(dgelist, designMatrix,
-                          correlation=corfit$consensus.correlation,
-                          plot=mvPlot, col="blue")
-        corfit <- limma::duplicateCorrelation(VoomElist,
-                                       designMatrix,
-                                       block=dupcorBlock)
+        if (runDupCorTwice == TRUE){
+          VoomElist <- limma::voom(dgelist, designMatrix,
+                                   correlation=corfit$consensus.correlation,
+                                   plot=mvPlot, col="blue")
+          corfit <- limma::duplicateCorrelation(VoomElist,
+                                                designMatrix,
+                                                block=dupcorBlock)
+        }
 
         fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                   correlation=corfit$consensus.correlation)
@@ -151,12 +156,14 @@ runVoom <- function(dgeObj, designMatrixName,
         corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
-                                            plot=mvPlot, col="blue",
-                                            correlation=corfit$consensus.correlation)
-        corfit <- limma::duplicateCorrelation(VoomElist,
-                                       designMatrix,
-                                       block=dupcorBlock)
+        if (runDupCorTwice == TRUE){
+          VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
+                                                     plot=mvPlot, col="blue",
+                                                     correlation=corfit$consensus.correlation)
+          corfit <- limma::duplicateCorrelation(VoomElist,
+                                                designMatrix,
+                                                block=dupcorBlock)
+        }
 
         fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                      correlation=corfit$consensus.correlation)
@@ -168,13 +175,15 @@ runVoom <- function(dgeObj, designMatrixName,
         corfit <- limma::duplicateCorrelation(VoomElist,
                                        designMatrix,
                                        block=dupcorBlock)
-        VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
-                                            plot=mvPlot, col="blue",
-                                            correlation=corfit$consensus.correlation,
-                                            var.design = var.design)
-        corfit <- limma::duplicateCorrelation(VoomElist,
-                                       designMatrix,
-                                       block=dupcorBlock)
+        if (runDupCorTwice == TRUE){
+          VoomElist <- limma::voomWithQualityWeights(dgelist, designMatrix,
+                                                     plot=mvPlot, col="blue",
+                                                     correlation=corfit$consensus.correlation,
+                                                     var.design = var.design)
+          corfit <- limma::duplicateCorrelation(VoomElist,
+                                                designMatrix,
+                                                block=dupcorBlock)
+        }
 
         fit <- limma::lmFit(VoomElist, designMatrix, block=dupcorBlock,
                      correlation=corfit$consensus.correlation)
@@ -195,7 +204,7 @@ runVoom <- function(dgeObj, designMatrixName,
       attr(fit, "DupCor") <- corfit$consensus.correlation
     }
 
-    #save the several objects
+    #save several objects
 
     VoomElistName = paste(designMatrixName, "_Elist", sep="")
     dgeObj %<>% DGEobj::addItem(VoomElist, VoomElistName,
