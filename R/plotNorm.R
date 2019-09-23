@@ -1,9 +1,12 @@
 ### Function plotNorm ###
 #' Function plotNorm
 #'
-#' Takes a DGEobj or counts matrix as input. Returns ggplot object containing
-#' a faceted plot of before/after normalization. Either a box plot or density plot
+#' Takes a DGEobj (containing counts) or a counts matrix as input. Returns ggplot object containing
+#' a faceted plot of log2CPM before/after normalization. Either a box plot or density plot
 #' type can be chosen.
+#'
+#' Normalization is performed by edgeR::calcNormFactors. Note TMM is specifically tailored to count-based
+#' data.  Thus this function is only appropriate for count-based data.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, DGEobj
@@ -14,6 +17,7 @@
 #'   values are: "RLE","upperquartile", "none". Invokes edgeR::calcNormFactors for
 #'   normalization.
 #' @param baseFontSize Passed on as base font size in ggplot theme. (default=12)
+#' @param ... additional arguments are passed to calcNormFactors.
 #'
 #' @return A  facetted ggplot plot showing before/after normalization
 #'
@@ -38,7 +42,7 @@
 # library(stringr)
 plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
 
-  assertthat::assert_that(class(dat)[[1]] %in% c("matrix", "DGEobj"),
+  assertthat::assert_that(any(c("matrix", "DGEobj") %in% class(dat)),
                           tolower(plotType) %in% c("box", "density"),
                           tolower(normalize) %in% c("tmm", "rle", "upperquartile", "none")
   )
@@ -50,7 +54,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
   }
 
   log2cpm <- convertCounts(counts, unit="cpm", log=TRUE, normalize="none")
-  log2CPM_tmm <- convertCounts(counts, unit="cpm", log=TRUE, normalize="tmm")
+  log2CPM_tmm <- convertCounts(counts, unit="cpm", log=TRUE, normalize=normalize)
 
   #convert to tall/shinny for facetted plotting
   tall <- log2cpm %>%
@@ -63,7 +67,7 @@ plotNorm <- function(dat, plotType="box", normalize="tmm", baseFont=12){
     as.data.frame %>%
     tibble::rownames_to_column(var="GeneID") %>%
     tidyr::gather (SampleID, Log2CPM, -GeneID)
-  tall_tmm$Normalization = "TMM"
+  tall_tmm$Normalization = toUpper(normalize)
 
   tall %<>% rbind(tall_tmm)
 

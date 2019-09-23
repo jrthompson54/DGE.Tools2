@@ -110,7 +110,7 @@ ggplotMDS <- function(DGEdata,
   if (missing(labels)){ #set default labels
     labels <- colnames(DGEdata)
     # Get labels from ReplicateGroup if present
-    if (class(DGEdata)[[1]] == "DGEobj"){
+    if ("DGEobj" %in% class(DGEdata)){
       design <- getItem(DGEdata, "design")
       if (exists("design"))
         if (with (design, exists("ReplicateGroup")))
@@ -120,9 +120,9 @@ ggplotMDS <- function(DGEdata,
     addLabels <- FALSE
 
   #argument checks
-  if (class(DGEdata)[[1]] == "DGEobj") #pull out the DGEList
+  if ("DGEobj" %in% class(DGEdata)) #pull out the DGEList
     DGEdata <- getItem(DGEdata, "DGEList")
-  else if (!class(DGEdata)[[1]] %in% c("DGEList", "matrix"))
+  else if (!any(c("DGEList", "matrix") %in% class(DGEdata)))
     stop("DGEdata must be class DGEList or DGEobj or matrix")
 
   assertthat::assert_that(!missing(colorBy),
@@ -246,14 +246,20 @@ ggplotMDS <- function(DGEdata,
         geom_text_repel(aes(label = Labels), size=labelSize)
   }
 
+  # For discrete color values
+  if (length(unique(colorBy)) <= length(colors)){
+    mdsplot <- mdsplot +
+      scale_fill_manual(values=colors) +
+      scale_colour_manual(values=colors)
+  }
+
   #add some other common elements
   mdsplot <- mdsplot +
-    scale_fill_manual(values=colors) +
-    scale_colour_manual(values=colors) +
     coord_fixed() +
     xlab (xylab[[1]]) +
     ylab (xylab[[2]]) +
     ggtitle (title)
+
 
   #place an annotation on the bottom left of the plot
   xrange <- getXrange(mdsplot)

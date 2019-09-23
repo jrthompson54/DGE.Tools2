@@ -16,14 +16,20 @@ values are: "RLE","upperquartile", "none". Invokes edgeR::calcNormFactors for
 normalization.}
 
 \item{baseFontSize}{Passed on as base font size in ggplot theme. (default=12)}
+
+\item{...}{additional arguments are passed to calcNormFactors.}
 }
 \value{
 A  facetted ggplot plot showing before/after normalization
 }
 \description{
-Takes a DGEobj or counts matrix as input. Returns ggplot object containing
-a faceted plot of before/after normalization. Either a box plot or density plot
+Takes a DGEobj (containing counts) or a counts matrix as input. Returns ggplot object containing
+a faceted plot of log2CPM before/after normalization. Either a box plot or density plot
 type can be chosen.
+}
+\details{
+Normalization is performed by edgeR::calcNormFactors. Note TMM is specifically tailored to count-based
+data.  Thus this function is only appropriate for count-based data.
 }
 \examples{
    MyggPlot <- plotNorm(MyDgeObj, plotType="box")
