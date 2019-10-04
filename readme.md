@@ -65,7 +65,7 @@ Setup for BRAN :
 Install or update DGEobj:  
 
 ```
-    install.packages("DGE.Tool2")
+    install.packages("DGE.Tools2")
 ```
 
 
@@ -77,5 +77,5 @@ You can also install directly from GIT.  Versions released to BRAN are tagged ve
     #if you don't have the devtools package already
     install.packages("devtools") 
 
-    devtools::install_git("https://biogit.pri.bms.com/thompj27/DGE.Tool2") 
+    devtools::install_git("https://biogit.pri.bms.com/thompj27/DGE.Tools2") 
 ```   

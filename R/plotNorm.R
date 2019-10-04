@@ -1,7 +1,7 @@
 ### Function plotNorm ###
 #' Function plotNorm
 #'
-#' Takes a DGEobj (containing counts) or a counts matrix as input. Returns ggplot object containing
+#' Takes a DGEobj (containing counts) or a counts matrix as input. Returns a ggplot object containing
 #' a faceted plot of log2CPM before/after normalization. Either a box plot or density plot
 #' type can be chosen.
 #'
@@ -17,7 +17,6 @@
 #'   values are: "RLE","upperquartile", "none". Invokes edgeR::calcNormFactors for
 #'   normalization.
 #' @param baseFontSize Passed on as base font size in ggplot theme. (default=12)
-#' @param ... additional arguments are passed to calcNormFactors.
 #'
 #' @return A  facetted ggplot plot showing before/after normalization
 #'
