@@ -103,5 +103,6 @@ Collate:
     'voomWorkflow.R'
     'rsq_calc.R'
     'rctutils.R'
+    'df_to_excel.R'
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
