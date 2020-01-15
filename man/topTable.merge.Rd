@@ -4,8 +4,11 @@
 \alias{topTable.merge}
 \title{Function  topTable.merge}
 \usage{
-topTable.merge(ttlist, colNames = c("logFC", "AveExpr", "P.Value",
-  "adj.P.Val"), digits = c(2, 2, 4, 3))
+topTable.merge(
+  ttlist,
+  colNames = c("logFC", "AveExpr", "P.Value", "adj.P.Val"),
+  digits = c(2, 2, 4, 3)
+)
 }
 \arguments{
 \item{ttlist}{A named list of topTable data.frames which all have the same colnames and same row counts.

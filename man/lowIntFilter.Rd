@@ -4,8 +4,16 @@
 \alias{lowIntFilter}
 \title{Function  lowIntFilter}
 \usage{
-lowIntFilter(x, zfpkmThreshold, fpkThreshold, countThreshold, tpmThreshold,
-  sampleFraction = 0.5, genelength = NULL, verbose = FALSE)
+lowIntFilter(
+  x,
+  zfpkmThreshold,
+  fpkThreshold,
+  countThreshold,
+  tpmThreshold,
+  sampleFraction = 0.5,
+  genelength = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{A DGEobj with RNA-Seq (counts) data

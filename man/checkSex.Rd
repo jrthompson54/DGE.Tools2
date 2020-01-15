@@ -4,9 +4,18 @@
 \alias{checkSex}
 \title{Function checkSex}
 \usage{
-checkSex(dgeObj, species, sexCol, labelCol, showLabels = FALSE,
-  chrX = "X", chrY = "Y", baseFontSize = 14, orig = TRUE,
-  debug = FALSE)
+checkSex(
+  dgeObj,
+  species,
+  sexCol,
+  labelCol,
+  showLabels = FALSE,
+  chrX = "X",
+  chrY = "Y",
+  baseFontSize = 14,
+  orig = TRUE,
+  debug = FALSE
+)
 }
 \arguments{
 \item{dgeObj}{A DGEobj (Required)}

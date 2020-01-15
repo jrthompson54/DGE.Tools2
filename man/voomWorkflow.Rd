@@ -4,9 +4,18 @@
 \alias{voomWorkflow}
 \title{Function voomWorkflow}
 \usage{
-voomWorkflow(dgeObj, formula, projectName, designMatrixName, dupcorBlock,
-  outputPath = "./", annotationFile, proteinCodingOnly = FALSE,
-  sampleFraction = 0.5, ...)
+voomWorkflow(
+  dgeObj,
+  formula,
+  projectName,
+  designMatrixName,
+  dupcorBlock,
+  outputPath = "./",
+  annotationFile,
+  proteinCodingOnly = FALSE,
+  sampleFraction = 0.5,
+  ...
+)
 }
 \arguments{
 \item{dgeObj}{A class dgeObj with counts, gene annotation and sample

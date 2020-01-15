@@ -4,8 +4,14 @@
 \alias{dflist_to_excel}
 \title{Function  dflist_to_excel}
 \usage{
-dflist_to_excel(dflist, filename, widthFirstCol = 40,
-  widthOtherCol = 10, baseFontSize = 10, useRownames = TRUE)
+dflist_to_excel(
+  dflist,
+  filename,
+  widthFirstCol = 40,
+  widthOtherCol = 10,
+  baseFontSize = 10,
+  useRownames = TRUE
+)
 }
 \arguments{
 \item{dflist}{A named list of dataframes with rownames and colnames (Required).}

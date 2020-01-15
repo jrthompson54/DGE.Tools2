@@ -4,11 +4,24 @@
 \alias{plotDisp}
 \title{Function  plotDisp}
 \usage{
-plotDisp(x, designMatrix, plotType = "dispersion", symbolSize = 1,
-  symbolShape = 1, symbolColor = "darkblue", symbolFill = "darkblue",
-  symbolAlpha = 0.3, linefitSize = 1, linefitColor = "yellow",
-  lineFit = NULL, lineType = 1, lineAlpha = 1, rugColor = NULL,
-  rugAlpha = 0.02, ...)
+plotDisp(
+  x,
+  designMatrix,
+  plotType = "dispersion",
+  symbolSize = 1,
+  symbolShape = 1,
+  symbolColor = "darkblue",
+  symbolFill = "darkblue",
+  symbolAlpha = 0.3,
+  linefitSize = 1,
+  linefitColor = "yellow",
+  lineFit = NULL,
+  lineType = 1,
+  lineAlpha = 1,
+  rugColor = NULL,
+  rugAlpha = 0.02,
+  ...
+)
 }
 \arguments{
 \item{x}{A Counts matrix or DGEList (required)}

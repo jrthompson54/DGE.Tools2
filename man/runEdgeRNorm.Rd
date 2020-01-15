@@ -4,8 +4,12 @@
 \alias{runEdgeRNorm}
 \title{Function  runEdgeRNorm (edgeR normlization )}
 \usage{
-runEdgeRNorm(dat, normMethod = "TMM",
-  plotFile = "TMM_Norm.Factors.PNG", plotLabels = NULL)
+runEdgeRNorm(
+  dat,
+  normMethod = "TMM",
+  plotFile = "TMM_Norm.Factors.PNG",
+  plotLabels = NULL
+)
 }
 \arguments{
 \item{dat}{A DGEobj or RSE object data structure containing counts, design

@@ -4,10 +4,16 @@
 \alias{OmicsoftToDgeObj}
 \title{Function  OmicsoftToDgeObj}
 \usage{
-OmicsoftToDgeObj(counts = "RNA-Seq.Count.Table.txt",
+OmicsoftToDgeObj(
+  counts = "RNA-Seq.Count.Table.txt",
   seqAnnotation = "RNA-Seq.Count.Annotation.txt",
-  design = "RNA-Seq.Design.txt", level = "gene", source = "Omicsoft",
-  path = ".", customAttr, gz = FALSE)
+  design = "RNA-Seq.Design.txt",
+  level = "gene",
+  source = "Omicsoft",
+  path = ".",
+  customAttr,
+  gz = FALSE
+)
 }
 \arguments{
 \item{counts}{A text file name for count data (gene rows by sample columns) (required)

@@ -87,9 +87,11 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
     }
     supportedFiletypes <- c("png", "bmp", "tiff", "jpeg", "pdf", "svg", "wmf")
     if (filetype %in% supportedFiletypes) {
-    	ggsave(filename=basename(filename), plot=plot,
-    	       device=filetype, path=dirname(filename),
-    	       width=width, height=height, units=units, dpi=res)
+    	# ggsave(filename=basename(filename), plot=plot,
+    	#        device=filetype, path=dirname(filename),
+    	#        width=width, height=height, units=units, dpi=res)
+      ggsave(filename=filename, plot=plot,
+             width=width, height=height, units=units, dpi=res)
     } else {
       warning("Warning: File extension not recognized. No file saved.")
     }

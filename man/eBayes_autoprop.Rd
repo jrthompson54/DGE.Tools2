@@ -9,9 +9,7 @@ eBayes_autoprop(..., prop.method = "lfdr")
 eBayes_autoprop(..., prop.method = "lfdr")
 }
 \arguments{
-\item{...}{See ?eBayes}
-
-\item{prop.method}{defaults to "lfdr"}
+\item{...}{All other arguments are passed to [limma::eBayes()].}
 
 \item{prop.method}{The method by which to calculate the proportion
 of true null hypotheses (i.e. non-differentially expressed
@@ -19,8 +17,6 @@ genes). This can be a string to be used as the `method`
 argument to [limma::propTrueNull()], or a function that accepts
 a vector of p-values and returns a single value between 0 and
 1. This argument can only be passed by name.}
-
-\item{...}{All other arguments are passed to [limma::eBayes()].}
 }
 \value{
 A fit is returned

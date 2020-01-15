@@ -4,17 +4,38 @@
 \alias{profilePlot}
 \title{Profile Plots}
 \usage{
-profilePlot(df, logRatioCol = "logFC", logIntCol = "AveExpr",
-  pvalCol = "P.Value", pthreshold = 0.01, geneSymLabels, geneSymCol,
-  rugColor = NULL, rugAlpha = 1, xlab = NULL, ylab = NULL,
-  title = NULL, symbolSize = c(4, 1, 4), symbolShape = c(21, 20, 21),
-  symbolColor = c("black", "grey25", "grey0"), symbolFill = c("red3",
-  "grey25", "deepskyblue4"), alpha = 0.5, sizeBySignificance = FALSE,
-  referenceLine = "grey25", foldChangeLines = log2(1.5),
-  refLineThickness = 1, lineFitType = "loess",
-  lineFitColor = "goldenrod1", legendPosition = "right",
-  baseFontSize = 12, themeStyle = "grey", footnote, footnoteSize = 3,
-  footnoteColor = "black", footnoteJust = 1)
+profilePlot(
+  df,
+  logRatioCol = "logFC",
+  logIntCol = "AveExpr",
+  pvalCol = "P.Value",
+  pthreshold = 0.01,
+  geneSymLabels,
+  geneSymCol,
+  rugColor = NULL,
+  rugAlpha = 1,
+  xlab = NULL,
+  ylab = NULL,
+  title = NULL,
+  symbolSize = c(4, 1, 4),
+  symbolShape = c(21, 20, 21),
+  symbolColor = c("black", "grey25", "grey0"),
+  symbolFill = c("red3", "grey25", "deepskyblue4"),
+  alpha = 0.5,
+  sizeBySignificance = FALSE,
+  referenceLine = "grey25",
+  foldChangeLines = log2(1.5),
+  refLineThickness = 1,
+  lineFitType = "loess",
+  lineFitColor = "goldenrod1",
+  legendPosition = "right",
+  baseFontSize = 12,
+  themeStyle = "grey",
+  footnote,
+  footnoteSize = 3,
+  footnoteColor = "black",
+  footnoteJust = 1
+)
 }
 \arguments{
 \item{df}{A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.}

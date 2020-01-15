@@ -4,8 +4,14 @@
 \alias{addFootnote}
 \title{Function footnote}
 \usage{
-addFootnote(my.ggp, footnoteText, footnoteSize, footnoteColor,
-  footnoteJust = 1, yoffset = 0)
+addFootnote(
+  my.ggp,
+  footnoteText,
+  footnoteSize,
+  footnoteColor,
+  footnoteJust = 1,
+  yoffset = 0
+)
 }
 \description{
 Function footnote

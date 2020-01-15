@@ -4,9 +4,12 @@
 \alias{summarizeSigCounts}
 \title{Function  summarizeSigCounts}
 \usage{
-summarizeSigCounts(ContrastList, columns = c("P.Value", "adj.P.Val",
-  "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue"), sigThresholds = c(0.01,
-  0.1, 0.1, 0.1, 0.1), fcThreshold = 0)
+summarizeSigCounts(
+  ContrastList,
+  columns = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue"),
+  sigThresholds = c(0.01, 0.1, 0.1, 0.1, 0.1),
+  fcThreshold = 0
+)
 }
 \arguments{
 \item{ContrastList}{A list of topTable dataframes}

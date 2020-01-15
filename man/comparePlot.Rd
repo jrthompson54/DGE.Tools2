@@ -4,15 +4,31 @@
 \alias{comparePlot}
 \title{Function ComparePlot}
 \usage{
-comparePlot(df, pthreshold = 0.01, xlab = NULL, ylab = NULL,
-  title = NULL, symbolSize = c(4, 4, 4, 2), symbolShape = c(21, 21,
-  21, 20), symbolColor = c("black", "grey0", "grey1", "grey25"),
+comparePlot(
+  df,
+  pthreshold = 0.01,
+  xlab = NULL,
+  ylab = NULL,
+  title = NULL,
+  symbolSize = c(4, 4, 4, 2),
+  symbolShape = c(21, 21, 21, 20),
+  symbolColor = c("black", "grey0", "grey1", "grey25"),
   symbolFill = c("darkgoldenrod1", "deepskyblue4", "red3", "grey25"),
-  alpha = 0.5, rugColor = NULL, rugAlpha = 1, crosshair = "grey50",
-  referenceLine = "darkgoldenrod1", refLineThickness = 1,
-  dens2D = TRUE, legendPosition = "right", baseFontSize = 12,
-  themeStyle = "bw", footnote, footnoteSize = 3,
-  footnoteColor = "black", footnoteJust = 1)
+  alpha = 0.5,
+  rugColor = NULL,
+  rugAlpha = 1,
+  crosshair = "grey50",
+  referenceLine = "darkgoldenrod1",
+  refLineThickness = 1,
+  dens2D = TRUE,
+  legendPosition = "right",
+  baseFontSize = 12,
+  themeStyle = "bw",
+  footnote,
+  footnoteSize = 3,
+  footnoteColor = "black",
+  footnoteJust = 1
+)
 }
 \arguments{
 \item{df}{A dataframe with the first two columns representing the x and y variables.

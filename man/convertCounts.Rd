@@ -4,8 +4,15 @@
 \alias{convertCounts}
 \title{Function convertCounts}
 \usage{
-convertCounts(counts, unit, geneLength, log = FALSE,
-  normalize = "none", prior.count = NULL, debug = FALSE)
+convertCounts(
+  counts,
+  unit,
+  geneLength,
+  log = FALSE,
+  normalize = "none",
+  prior.count = NULL,
+  debug = FALSE
+)
 }
 \arguments{
 \item{counts}{A numeric matrix or dataframe of N genes x M Samples.  All columns

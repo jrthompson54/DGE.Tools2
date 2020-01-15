@@ -4,9 +4,16 @@
 \alias{MDS_var_explained}
 \title{Function MDS_var_explained}
 \usage{
-MDS_var_explained(mds, topN = 10, cumVarLimit = 0.9,
-  barColor = "dodgerblue4", barFill = "dodgerblue3", barWidth = 0.65,
-  barSize = 0.1, baseFontSize = 14)
+MDS_var_explained(
+  mds,
+  topN = 10,
+  cumVarLimit = 0.9,
+  barColor = "dodgerblue4",
+  barFill = "dodgerblue3",
+  barWidth = 0.65,
+  barSize = 0.1,
+  baseFontSize = 14
+)
 }
 \arguments{
 \item{mds}{A class MDS object from limma::plotMDS or a data matrix to analyze

@@ -4,15 +4,35 @@
 \alias{QCplots}
 \title{Function QCplots}
 \usage{
-QCplots(qcdata, metricNames, sampleNames, plotType = "bar",
-  barColor = "dodgerblue4", barFill = "dodgerblue3", barSize = 0.1,
-  barAlpha = 1, barWidth = 0.9, pointColor = "dodgerblue4",
-  pointFill = "dodgerblue3", pointShape = 21, pointAlpha = 1,
-  pointSize = 4, lineColor = "dodgerblue4", lineSize = 1,
-  lineType = "solid", lineAlpha = 1, histColor = "dodgerblue4",
-  histFill = "dodgerblue3", histSize = 1, histAlpha = 1,
-  xAngle = 90, baseTextSize = 14, hlineSD = 3, winsorize = TRUE,
-  debug = FALSE)
+QCplots(
+  qcdata,
+  metricNames,
+  sampleNames,
+  plotType = "bar",
+  barColor = "dodgerblue4",
+  barFill = "dodgerblue3",
+  barSize = 0.1,
+  barAlpha = 1,
+  barWidth = 0.9,
+  pointColor = "dodgerblue4",
+  pointFill = "dodgerblue3",
+  pointShape = 21,
+  pointAlpha = 1,
+  pointSize = 4,
+  lineColor = "dodgerblue4",
+  lineSize = 1,
+  lineType = "solid",
+  lineAlpha = 1,
+  histColor = "dodgerblue4",
+  histFill = "dodgerblue3",
+  histSize = 1,
+  histAlpha = 1,
+  xAngle = 90,
+  baseTextSize = 14,
+  hlineSD = 3,
+  winsorize = TRUE,
+  debug = FALSE
+)
 }
 \arguments{
 \item{qcdata}{A dataframe or tibble with metric names in the first column and
@@ -104,7 +124,7 @@ statistical reference points, NOT pass/fail limits.
   S3mount <- "/arrayserver" #where you mount the S3 bucket "bmsrd-ngs-arrayserver"
   s3path <- "/OmicsoftHome/output/P-20180326-0001/TempleUniv_HeartFailure2017_P-20180326-0001_R94_24Jan2019/ExportedViewsAndTables"
   qcfilename <- "RNA-Seq.QCMetrics.Table.txt" #standard name for QC file in Omicosoft projects
-  qcdata <- readr::read_delim(file.path(s3path, qcfilename), delim="\\t")
+  qcdata <- readr::read_delim(file.path(s3path, qcfilename), delim="\t")
   colnames(qcdat) <- stringr::str_sub(colnames(qcdat), 1, 16) #shorten the samplenames
 
   # pick some Omicsoft Metrics from column 1 of the data frame

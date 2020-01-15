@@ -4,18 +4,43 @@
 \alias{logRatioPlot}
 \title{Function logRatioPlot}
 \usage{
-logRatioPlot(data, facetColname, xColname, yColname = "logFC",
-  CI.R_colname = "CI.R", CI.L_colname = "CI.L",
+logRatioPlot(
+  data,
+  facetColname,
+  xColname,
+  yColname = "logFC",
+  CI.R_colname = "CI.R",
+  CI.L_colname = "CI.L",
   xOrder = unique(as.character(data[xColname, , drop = TRUE])),
-  plotType = "bar", refLine = TRUE, refLineColor = "red",
-  xlab = xColname, ylab = yColname, title, barColor = "dodgerblue4",
-  barFill = "dodgerblue3", barSize = 0.1, barAlpha = 1,
-  barWidth = 0.9, pointColor = "grey30", pointFill = "dodgerblue4",
-  pointShape = 21, pointAlpha = 1, pointSize = 2,
-  lineLayer = FALSE, lineColor = "dodgerblue4", lineSize = 1,
-  lineType = "solid", lineFit = "loess", baseFontSize = 12,
-  themeStyle = "grey", facet = TRUE, facetCol, xAngle = 45,
-  scales = "free_y", debug = FALSE)
+  plotType = "bar",
+  refLine = TRUE,
+  refLineColor = "red",
+  xlab = xColname,
+  ylab = yColname,
+  title,
+  barColor = "dodgerblue4",
+  barFill = "dodgerblue3",
+  barSize = 0.1,
+  barAlpha = 1,
+  barWidth = 0.9,
+  pointColor = "grey30",
+  pointFill = "dodgerblue4",
+  pointShape = 21,
+  pointAlpha = 1,
+  pointSize = 2,
+  lineLayer = FALSE,
+  lineColor = "dodgerblue4",
+  lineSize = 1,
+  lineType = "solid",
+  lineFit = "loess",
+  baseFontSize = 12,
+  themeStyle = "grey",
+  facet = TRUE,
+  facetCol,
+  xAngle = 45,
+  scales = "free_y",
+  debug = FALSE
+)
 }
 \arguments{
 \item{data}{A tidy dataframe of data to plot (required) (see ?tidyContrasts).}

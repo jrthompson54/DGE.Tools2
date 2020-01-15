@@ -4,9 +4,15 @@
 \alias{runPower}
 \title{Function runPower (DGE.Tools2)}
 \usage{
-runPower(counts, designMatrix, depth = c(10, 100, 1000), N = c(3, 6,
-  10, 20), FDR = c(0.05, 0.1), effectSize = c(1.2, 1.5, 2),
-  return = "both")
+runPower(
+  counts,
+  designMatrix,
+  depth = c(10, 100, 1000),
+  N = c(3, 6, 10, 20),
+  FDR = c(0.05, 0.1),
+  effectSize = c(1.2, 1.5, 2),
+  return = "both"
+)
 }
 \arguments{
 \item{counts}{A counts matrix (required)}

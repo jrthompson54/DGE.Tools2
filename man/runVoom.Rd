@@ -4,9 +4,18 @@
 \alias{runVoom}
 \title{Function  runVoom (voom then lmFit)}
 \usage{
-runVoom(dgeObj, designMatrixName, dupcorBlock, runDupCorTwice = TRUE,
-  qualityWeights = TRUE, var.design, mvPlot = TRUE, runEBayes = TRUE,
-  robust = TRUE, proportion = 0.01)
+runVoom(
+  dgeObj,
+  designMatrixName,
+  dupcorBlock,
+  runDupCorTwice = TRUE,
+  qualityWeights = TRUE,
+  var.design,
+  mvPlot = TRUE,
+  runEBayes = TRUE,
+  robust = TRUE,
+  proportion = 0.01
+)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) (required)}

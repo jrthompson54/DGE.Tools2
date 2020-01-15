@@ -4,8 +4,15 @@
 \alias{df_to_excel}
 \title{Function  df_to_excel}
 \usage{
-df_to_excel(df, filename, sheetname = "data", widthFirstCol = 40,
-  widthOtherCol = 10, baseFontSize = 10, useRownames = TRUE)
+df_to_excel(
+  df,
+  filename,
+  sheetname = "data",
+  widthFirstCol = 40,
+  widthOtherCol = 10,
+  baseFontSize = 10,
+  useRownames = TRUE
+)
 }
 \arguments{
 \item{df}{A dataframe with rownames and colnames (Required).}
