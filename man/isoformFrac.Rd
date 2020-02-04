@@ -24,18 +24,20 @@ normalizations have no effect.}
 A DGEobj with an isoform fraction dataframe added
 }
 \description{
-Takes a DGEobj as input (transcript level data) and adds an assay item containing isoform fraction data.
+Takes a dgeObj as input (transcript level data) and returns a matrix
+containing isoform fraction data.
 }
 \details{
 Isoform Fraction is calculated using length normalized data (FPKM or TPM), as
 length normalized data is required because different isoforms have different
 total exon lengths.  If FPKM is specified, you can also specify a
 normalization (via edgeR::calcNormFactors). Isoform fraction is calculated
-simply as the isoform intensity divided by the summed gene intensity for all isoforms of
-a given gene.
+simply as the isoform intensity divided by the summed gene intensity for all
+isoforms of a given gene.
 
 TPM or FPKM are calculated directly from counts using all data in the dgeObj.
-I recommend performing low intensity filtering at the gene level before running isoformFrac.
+I recommend performing low intensity filtering at the gene level before
+running isoformFrac.
 }
 \examples{
    MyDgeObj <- isoformFrac(MyDgeObj)

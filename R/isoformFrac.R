@@ -1,17 +1,19 @@
 ### Function isoformFrac ###
 #' Function isoformFrac
 #'
-#' Takes a DGEobj as input (transcript level data) and adds an assay item containing isoform fraction data.
+#' Takes a dgeObj as input (transcript level data) and returns a matrix
+#' containing isoform fraction data.
 #'
 #' Isoform Fraction is calculated using length normalized data (FPKM or TPM), as
 #' length normalized data is required because different isoforms have different
 #' total exon lengths.  If FPKM is specified, you can also specify a
 #' normalization (via edgeR::calcNormFactors). Isoform fraction is calculated
-#' simply as the isoform intensity divided by the summed gene intensity for all isoforms of
-#' a given gene.
+#' simply as the isoform intensity divided by the summed gene intensity for all
+#' isoforms of a given gene.
 #'
 #' TPM or FPKM are calculated directly from counts using all data in the dgeObj.
-#' I recommend performing low intensity filtering at the gene level before running isoformFrac.
+#' I recommend performing low intensity filtering at the gene level before
+#' running isoformFrac.
 #'
 #' @author John Thompson, \email{john.thompson@@bms.com}
 #' @keywords RNA-Seq, DGEobj, isoform fraction
@@ -91,18 +93,18 @@ isoformFrac <- function(dgeObj, dataType="fpkm", normalize="tmm"){
     IsoformFrac$TranscriptID <- NULL
 
     #put isoform fraction data in same order as dgeobj
-    IsoformFrac <- IsoformFrac[rownames(dgeObj),]
+    # IsoformFrac <- IsoformFrac[rownames(dgeObj),]
 
     #debug
     # saveRDS(IsoformFrac, "isoformFraction.RDS")
 
     #add isoform fraction to assays.
     funArgs <- match.call()
-    dgeObj <- DGEobj::addItem(dgeObj, IsoformFrac,
-                      itemName=paste("isoformFrac", dataType, sep="_"),
-                      itemType="assay", funArgs=funArgs,
-                      parent="counts")
+    # dgeObj <- DGEobj::addItem(dgeObj, IsoformFrac,
+    #                   itemName=paste("isoformFrac", dataType, sep="_"),
+    #                   itemType="assay", funArgs=funArgs,
+    #                   parent="counts")
 
-    return(dgeObj)
+    return(IsoformFrac)
 }
 
