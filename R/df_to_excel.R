@@ -38,7 +38,7 @@ df_to_excel <- function(df, filename,
                         ){
 
   assertthat::assert_that(!missing(df),
-                          class(df)[[1]] == "data.frame",
+                          "data.frame" %in% class(df),
                           !missing(filename),
                           class(filename)[[1]] == "character"
                           )
