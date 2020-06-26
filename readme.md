@@ -52,30 +52,9 @@ Several QC plots are availble to monitor the quality of your results. These incl
 It is best to run the install from a fresh R session before loading any
 packages because loaded packages cannot be updated.
 
-Charles Tilford has created a BMS repository, BRAN.  Packages from BRAN
-can now be installed simply with install.packages (after a little setup).
-
-Setup for BRAN :
-
-```
-   # Sourcing this file enables install.packages to work with BRAN
-   source('http://bran.pri.bms.com/resources/configureRepo.R')
-```
-
-Install or update DGEobj:  
-
-```
-    install.packages("DGE.Tools2")
-```
-
-
-## Installation from Biogit (backup method)
-
-You can also install directly from GIT.  Versions released to BRAN are tagged version numbers.  
+ 
 
 ```r
-    #if you don't have the devtools package already
-    install.packages("devtools") 
-
-    devtools::install_git("https://biogit.pri.bms.com/thompj27/DGE.Tools2") 
+    require(devtools)
+    devtools::install_git("https://github.com/jrthompson54/DGE.Tools2") 
 ```   
