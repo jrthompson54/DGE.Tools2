@@ -16,7 +16,7 @@
 #' So we run IHW on the complete set of detected genes from topTable results
 #' (not topTreat).
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
 #'
 #' @param contrastList A list of topTable dataframes.

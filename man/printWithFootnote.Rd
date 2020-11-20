@@ -42,7 +42,7 @@ labels.  Only prints the footnote once on a facetted plot.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{bmp,}
 \keyword{ggplot2,}

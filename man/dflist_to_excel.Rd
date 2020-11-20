@@ -38,7 +38,7 @@ MyContrastTable  = topTable.merge (topTablelist)
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{Excel}
 \keyword{dataframe,}

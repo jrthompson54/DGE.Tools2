@@ -55,7 +55,7 @@ for the plot to be interpretable.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGE,}
 \keyword{MDS,}

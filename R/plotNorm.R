@@ -8,7 +8,7 @@
 #' Normalization is performed by edgeR::calcNormFactors. Note TMM is specifically tailored to count-based
 #' data.  Thus this function is only appropriate for count-based data.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, DGEobj
 #'
 #' @param dat  A DGEobj or counts matrix

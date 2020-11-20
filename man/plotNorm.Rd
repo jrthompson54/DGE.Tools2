@@ -35,7 +35,7 @@ data.  Thus this function is only appropriate for count-based data.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGEobj}
 \keyword{RNA-Seq,}

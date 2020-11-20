@@ -24,7 +24,7 @@
 #' here.  annotateDGEobj reads key=value pairs from a text file to define
 #' attributes.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords Omicsoft, DGEObj, RNA-Seq, Data loading
 #'
 #' @param path File path for the three data files (Default = "./")

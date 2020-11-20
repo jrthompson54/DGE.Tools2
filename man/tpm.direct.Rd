@@ -32,7 +32,7 @@ myTPM <- tpm.classic(mycounts, mygenelength)
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{RNA-Seq,}
 \keyword{conversion}

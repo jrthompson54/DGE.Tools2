@@ -51,7 +51,7 @@ ggplots (plots) or the plots plus the dataframe (both).
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGEobj}
 \keyword{RNA-Seq,}

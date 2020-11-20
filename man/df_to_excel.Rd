@@ -44,7 +44,7 @@ df_to_excel(MyContrastTable, "myExcelFile.xlsx")
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{Excel}
 \keyword{dataframe,}

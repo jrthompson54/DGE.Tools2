@@ -22,7 +22,7 @@
 #' Colnames and Rownames will be used to label the plots by default but custom
 #' col/row names can also be supplied as separate vectors.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords boxplot violinplot ggplot2 logratio
 #'
 #' @param data matrix or dataframe of whatever data you want to plot with

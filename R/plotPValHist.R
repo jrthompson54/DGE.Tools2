@@ -5,7 +5,7 @@
 #' numbers.  Intended to perform histogram analysis of pvalue distributions.
 #' But should be useful for any dataframe of numeric columns.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords gene symbol, Entrez, GeneID
 #'
 #' @param P.Val a matrix or dataframe of numeric data; col=samples

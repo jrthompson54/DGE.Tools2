@@ -11,7 +11,7 @@
 #'
 #' Input is a tidy dataframe of intensity data.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords boxplot violinplot ggplot2 logratio
 #'
 #' @param data A tidy dataframe of intensity data with row and colnames (required)

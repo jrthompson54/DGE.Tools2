@@ -63,7 +63,7 @@ myplot <- plotPvalHist (MyPValMatrix, savePlot = T, fileNames = "MyPlot.PNG",
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{Entrez,}
 \keyword{GeneID}

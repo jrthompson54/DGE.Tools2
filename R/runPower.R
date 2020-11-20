@@ -12,7 +12,7 @@
 #' thresholds.  If return = "plots" or "both", a list is returned with two
 #' ggplots (plots) or the plots plus the dataframe (both).
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, DGEobj
 #'
 #' @param counts  A counts matrix (required)

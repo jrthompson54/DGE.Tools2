@@ -44,7 +44,7 @@ running isoformFrac.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGEobj,}
 \keyword{RNA-Seq,}

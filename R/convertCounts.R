@@ -13,7 +13,7 @@
 #'
 #' Note that log2 values for CPM, TPM and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, unit conversion
 #'
 #' @param counts A numeric matrix or dataframe of N genes x M Samples.  All columns
@@ -219,7 +219,7 @@ fpkmToTpm <- function(fpkm)
 #' Internally it uses edgeR::fpkm to calculate fpkm and converts to tpm
 #' using the formula provided  by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, unit conversion
 #'
 #' @param dgeo A DGEobj data structure
@@ -283,7 +283,7 @@ tpm.on.subset <- function(dgeo, applyFilter=TRUE){
 #' Genelength can be a vector (length == nrow(counts) or a matrix (same dim as counts).
 #' The genelength is used as is, or optionally collapsed to a vector by rowMeans.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, unit conversion
 #'
 #' @param counts A numeric matrix of N genes x M Samples.  All columns

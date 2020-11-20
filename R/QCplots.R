@@ -8,7 +8,7 @@
 #' at the median and +/- n SDs based on the hlineSD argument.  These are
 #' statistical reference points, NOT pass/fail limits.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords barplot lineplot gplot2 logratio confidence intervals contrasts
 #'
 #' @param qcdata A dataframe or tibble with metric names in the first column and

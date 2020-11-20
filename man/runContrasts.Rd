@@ -94,7 +94,7 @@ myDgeObj  = runContrasts (myDgeObj, myFitName, ConstrastList, runTopTable = TRUE
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGE;}
 \keyword{DGEobj}

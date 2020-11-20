@@ -7,7 +7,7 @@
 #' the low intensity threshold in tissues other than testes.  Nevertheless, there are usually enough reads
 #' for the plot to be interpretable.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
 #' @param dgeObj A DGEobj (Required)

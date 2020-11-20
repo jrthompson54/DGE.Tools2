@@ -173,7 +173,7 @@ ggplots, one for each facetColname value (typically gene).
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{barplot}
 \keyword{confidence}

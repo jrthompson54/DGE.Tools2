@@ -4,10 +4,10 @@
 #' Returns a DGEobj containing DGEList object representing the result of
 #'  edgeR TMM normalization.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords gene symbol, Entrez, GeneID
 #'
-#' @param dat A DGEobj or RSE object data structure containing counts, design
+#' @param dgeObj A DGEobj data structure containing counts, design
 #'    data and gene annotation
 #' @param normMethod One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"
 #' @param plotFile Enable a Barplot of the norm.factors produced (Default = "Norm.Factors.PNG")
@@ -24,25 +24,18 @@
 #'
 #' @import magrittr
 #' @importFrom edgeR calcNormFactors DGEList
-#' @importFrom DGEobj addItem getItem convertRSE
+#' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
 #'
 #'
 #' @export
-runEdgeRNorm <- function(dat, normMethod="TMM",
+runEdgeRNorm <- function(dgeObj, normMethod="TMM",
                          plotFile="TMM_Norm.Factors.PNG",
                          plotLabels = NULL){
 
-    funArgs <- match.call()
+  funArgs <- match.call()
 
-    datClass <- class(dat)[[1]]
-    assertthat::assert_that ((datClass == "RangedSummarizedExperiment") |
-                (datClass == "DGEobj"))
-
-#create the DGEobj if needed
-  if (datClass == "RangedSummarizedExperiment")
-      dgeObj <- DGEobj::convertRSE(dat, "DGEobj")
-  else dgeObj <- dat
+  assertthat::assert_that ((class(dat) %in% c("DGEobj")))
 
   #convert counts to a matrix
   CountsMatrix = as.matrix(DGEobj::getItem(dgeObj, "counts"))

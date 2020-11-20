@@ -56,7 +56,7 @@ data items in the DGEobj.  Plot them with Function graphDGEobj.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{RNA-Seq,}
 \keyword{conversion}

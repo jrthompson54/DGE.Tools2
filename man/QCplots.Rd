@@ -147,7 +147,7 @@ statistical reference points, NOT pass/fail limits.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{barplot}
 \keyword{confidence}

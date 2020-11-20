@@ -18,7 +18,7 @@
 #' See \url{http://genomine.org/papers/Storey_FDR_2011.pdf} for a brief introduction
 #' to FDRs and q-values.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords qvalue; lfdr; contrasts
 #'
 #' @param contrastList An list of dataframes with a pvalue column (all tables

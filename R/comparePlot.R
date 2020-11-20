@@ -40,7 +40,7 @@
 #' Note if you're not using pvalues or FDR values to color the plot, the X Unique color
 #' values are used.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords compare plot ggplot2 logratio scatterplot
 #'
 #' @param df A dataframe with the first two columns representing the x and y variables.

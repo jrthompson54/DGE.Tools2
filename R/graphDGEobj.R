@@ -4,7 +4,7 @@
 #' Reads a DGEobj and produces a node pair file defining parent/child relationships between
 #' data items in the DGEobj.  Plot them with Function graphDGEobj.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, unit conversion
 #'
 #' @param DGEobj A workflow object of DGEobj class data.

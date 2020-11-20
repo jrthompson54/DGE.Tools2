@@ -6,7 +6,7 @@
 #' you can plot Biological Coefficient of Variation instead (BCV is the sqrt of
 #' dispersion).
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, dispersion, plot, QC
 #'
 #' @param x A Counts matrix or DGEList (required)

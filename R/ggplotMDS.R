@@ -17,7 +17,7 @@
 #' at least try a number that is close to the number of differential genes
 #' detected in your data.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
 #' @param DGEdata A DGEList object taken after normalization
@@ -303,7 +303,7 @@ ggplotMDS <- function(DGEdata,
 #' it plots the first 10 dimensions or the first N dimensions totaling 90%. See
 #' topN and cumVarLimit arguments to change the defaults.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords MDS, RNA-Seq, DGE, QC
 #'
 #' @param mds A class MDS object from limma::plotMDS or a data matrix to analyze

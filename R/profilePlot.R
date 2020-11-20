@@ -38,7 +38,7 @@
 #' required for these arguments which applies the attributes in this order:
 #' Increased, NoChange, Decreased.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords compare plot ggplot2 logratio scatterplot
 #'
 #' @param df A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.

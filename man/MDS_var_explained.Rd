@@ -56,7 +56,7 @@ topN and cumVarLimit arguments to change the defaults.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{DGE,}
 \keyword{MDS,}

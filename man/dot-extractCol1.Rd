@@ -32,6 +32,6 @@ MyPvalues  = ExtractCol1 (TopTableList, colName="P.Value")
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{topTable}

@@ -5,14 +5,14 @@
 \title{Function  runEdgeRNorm (edgeR normlization )}
 \usage{
 runEdgeRNorm(
-  dat,
+  dgeObj,
   normMethod = "TMM",
   plotFile = "TMM_Norm.Factors.PNG",
   plotLabels = NULL
 )
 }
 \arguments{
-\item{dat}{A DGEobj or RSE object data structure containing counts, design
+\item{dgeObj}{A DGEobj data structure containing counts, design
 data and gene annotation}
 
 \item{normMethod}{One of "TMM", "RLE", "upperquartile" or "none". Default = "TMM"}
@@ -37,7 +37,7 @@ MyDgeObj <- runEdgeRNorm (MyDgeObj)
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{Entrez,}
 \keyword{GeneID}

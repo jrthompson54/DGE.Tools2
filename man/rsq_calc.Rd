@@ -26,7 +26,7 @@ Takes a Log2CPM numeric matrix and MArrayLM fit object from lmFit and calculates
 https://support.bioconductor.org/p/17431/  (Mark Robinson)
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{R-squared}
 \keyword{RNA-Seq;}

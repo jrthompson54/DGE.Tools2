@@ -26,7 +26,7 @@
 #'    \item{"TopTreatList"} {a List of dataframes}
 #'}
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq; DGE; contrasts; DGEobj
 #'
 #' @param dgeObj A DGEobj object containing a Fit object and design matrix (required)

@@ -34,7 +34,7 @@
 #' A length of 2 is required for these arguments which applies the attributes in
 #' this order: Significant, Not Significant.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords compare plot ggplot2 logratio scatterplot
 #'
 #' @param df A dataframe with LogRatio and LogIntensity columns and optionally a pvalue or FDR column.

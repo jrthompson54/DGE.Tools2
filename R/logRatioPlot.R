@@ -7,7 +7,7 @@
 #' Outputs a ggplot object facetted by the facetColname or a list of individual
 #' ggplots, one for each facetColname value (typically gene).
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords barplot lineplot gplot2 logratio confidence intervals contrasts
 #'
 #' @param data A tidy dataframe of data to plot (required) (see ?tidyContrasts).

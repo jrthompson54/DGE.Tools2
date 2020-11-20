@@ -3,7 +3,7 @@
 #'
 #' Takes a Log2CPM numeric matrix and MArrayLM fit object from lmFit and calculates R-squared for each gene fit.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @references https://support.bioconductor.org/p/17431/  (Mark Robinson)
 #' @keywords RNA-Seq; R-squared
 #'

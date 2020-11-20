@@ -4,7 +4,7 @@
 #' Take a dataframe with rownames and output to an Excel spreadsheet.
 #' Freezes the row and colnames and sets columns into Excel filter mode.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords dataframe, Excel
 #'
 #' @param df A dataframe with rownames and colnames (Required).
@@ -66,7 +66,7 @@ df_to_excel <- function(df, filename,
 #' Take a named list of dataframes with rownames and output to an Excel spreadsheet.
 #' Freezes the row and colnames and sets columns into Excel filter mode.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords dataframe, Excel
 #'
 #' @param dflist A named list of dataframes with rownames and colnames (Required).

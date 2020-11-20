@@ -193,7 +193,7 @@ Input is a tidy dataframe of intensity data.
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{boxplot}
 \keyword{ggplot2}

@@ -5,7 +5,7 @@
 #' intensity filters. raw count, zFPKM, TPM and/or FPK filters are supported.  A gene
 #' must pass all active filters.  Not setting a threshold argument inactivates that threshold.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq; counts; low intensity
 #'
 #' @param x A DGEobj with RNA-Seq (counts) data

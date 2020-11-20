@@ -46,7 +46,7 @@ MyContrastList \%<>\% runQvalue
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{contrasts}
 \keyword{lfdr;}

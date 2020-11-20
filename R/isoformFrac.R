@@ -15,7 +15,7 @@
 #' I recommend performing low intensity filtering at the gene level before
 #' running isoformFrac.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords RNA-Seq, DGEobj, isoform fraction
 #'
 #' @param dgeObj  An isoform level DGEobj created by function initDGEobj,

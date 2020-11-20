@@ -1,7 +1,7 @@
 Package: DGE.Tools2
 Title: A function library to facilitate Differential Gene Expression Analysis
-Version: 0.9.83
-Authors@R: person("John", "Thompson", email = "john.thompson@bms.com",
+Version: 0.9.84
+Authors@R: person("John", "Thompson", email = "jrt@thompsonclan.org",
                   role = c("aut", "cre"))
 Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
     analysis and improve TBio "branding" by standardizing several types of commmon
@@ -16,8 +16,8 @@ Description: Provides a function toolkit to facilite reproducible RNA-Seq DGE
     ggplotMDS and others. Function convertCounts is supplied to convert a counts
     matrix and produce CPM/TPM/FPKM, logged or not, normalized or not.
 Depends:
-    R (>= 3.3.1)
-License: BMS Proprietary
+    R (>= 3.4.1)
+License: GPL
 LazyData: true
 Imports:
     assertthat,
@@ -50,7 +50,6 @@ Imports:
     SummarizedExperiment (>= 1.10.0),
     sva,
     testthat,
-    tibble,
     tidyr,
     tools,
     zFPKM,
@@ -104,5 +103,5 @@ Collate:
     'rsq_calc.R'
     'rctutils.R'
     'df_to_excel.R'
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr

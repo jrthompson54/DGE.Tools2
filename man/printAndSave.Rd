@@ -67,7 +67,7 @@ printAndSave (Myggplot, "myfile.png", width=5, height=4, res=150, printFontSize=
 
 }
 \author{
-John Thompson, \email{john.thompson@bms.com}
+John Thompson, \email{jrt@thompsonclan.org}
 }
 \keyword{bmp,}
 \keyword{ggplot2,}

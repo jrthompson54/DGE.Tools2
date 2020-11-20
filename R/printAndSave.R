@@ -12,7 +12,7 @@
 #' well to other image sizes.  Set scaleLegend to FALSE to get the default behavior
 #' back or use legend.key.size in a theme to tweak to your own specifications.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
 #'
 #' @param plotObject A ggplot2 plotobject
@@ -116,7 +116,7 @@ printAndSave <- function (plotObject, filename, width=7, height=5,
 #' under the plot.  Use when you want the footnot to be underneath the plot
 #' labels.  Only prints the footnote once on a facetted plot.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords ggplot2, png, bmp, tiff, jpeg, pdf
 #'
 #' @param plotObject A ggplot2 plotobject

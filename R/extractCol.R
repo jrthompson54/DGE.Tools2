@@ -14,7 +14,7 @@
 #' are absolutely certain each dataframe in the input list has the same row count
 #' and row order.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords topTable
 #'
 #' @param dflist A list of data.frames which all have the same colnames and same row counts.
@@ -55,7 +55,7 @@ extractCol <- function(dflist, colName, robust="TRUE"){
 #'
 #' NOTE: all dataframes must have the same rownames and roworder
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords topTable
 #'
 #' @param dflist A list of data.frames which all have the same colnames and same row counts.
@@ -94,7 +94,7 @@ extractCol <- function(dflist, colName, robust="TRUE"){
 #' data frames and extract one column from each file to create
 #' a matrix of LogRatios or Pvalues.
 #'
-#' @author John Thompson, \email{john.thompson@@bms.com}
+#' @author John Thompson, \email{jrt@@thompsonclan.org}
 #' @keywords topTable
 #'
 #' @param dflist A named list of dataframes which all have some common colnames and
