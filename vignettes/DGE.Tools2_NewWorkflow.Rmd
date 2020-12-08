@@ -1,0 +1,903 @@
+---
+title: "DGE.Tools Sample Workflow"
+author: "John R. Thompson (jrt@thompsonclan.org)"
+date: '`r format.Date(Sys.Date(), "%B %d %Y")`'
+header-includes:
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \pagestyle{fancy}
+- \fancyhead[LE,RO]{}
+- \fancyfoot[CO,CE]{\textit{DGEtools Workflow}}
+- \fancyfoot[LE,RO]{\thepage}
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    number_sections: true
+    fig_width: 7
+    fig_height: 5
+fontsize: 10pt
+---
+
+\newpage
+
+# Environment Setup
+
+Load packages, set the working dir and input/output paths.  
+
+The working dir is typically a subfolder with each project (DGEobj) built from a markdown in
+its own subfolder.   
+
+The only edits in this chunk that should be necessary are:  
+* The second setwd command to specify the folder for this project (this markdown
+must reside in that folder)  
+* mountpoint for the bmsrd-ngs-arrayserver S3 bucket (only used to retrieve Omicsoft 
+project data from the arrayserver bucket)  
+
+
+```{r EnvironmentSetup, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+rm(list=ls()) #Clear the workspace
+invisible(gc()) #garbage collection to maximize available memory
+startTime = Sys.time() #used to time the run
+
+#set global chunk options
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.show="hold", fig.align="center", dpi=300, results='hold', cache=FALSE)
+
+library(tidyverse)
+library(magrittr)
+library(DGEobj)
+library(DGE.Tools2)
+library(JRTutil)  #need to remove this dependency (BMS internal package)
+library(variancePartition)
+library(Rtsne)
+library(parallel)
+library(doParallel)
+library(glue)
+library(biomaRt)
+library(knitr)
+library(conflicted)  #forces double colon references for function that appear in multiple packages.
+
+# change this to your working directory
+# my practice is to set the working directory based on a relative path from the git repo root.
+# setwd("~/R/lib/pkgsrc/DGE.Tools2")
+
+# This determines the path to the git root.  
+setwd (here::here())
+
+## set relative path to the markdown subfolder.
+setwd("./vignettes")
+
+## Set to the desired output destination
+outputPath <- "./output"
+if (!file.exists(outputPath)) dir.create(outputPath, recursive=TRUE)
+
+
+```
+
+\newpage   
+
+# Initializing a DGE object 
+
+Three dataframes are required to initialize a DGE object, a data matrix (observations by samples), row annotation (describing each observation), column annotation (one row for each column of the data matrix describing the sample).  
+
+## Example Data GSE120804
+
+The following dataset was selected to demonstrate building and working with the DGEobj data 
+structure.  
+
+Huang X, Cai H, Ammar R, Zhang Y et al. Molecular characterization of a
+precision-cut rat liver slice model for the evaluation of antifibrotic
+compounds. Am J Physiol Gastrointest Liver Physiol 2019 Jan 1;316(1):G15-G24.
+PMID: 30406699  
+
+Briefly, livers were taken from animals after bile duct ligation or sham
+operation.  Rat liver slices were incubated in vitro with potential
+anti-fibrotic compounds.  At the end of the incubation whole transcriptome
+RNA-Seq analysis was performed.  
+
+Files containing gene counts and sample annotations associated with this project
+will be downloaded from the GEO resource.
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE120804  
+
+Annotation for the genes will be retrieved from Ensembl.  
+
+## Data Format and Constraints  
+
+Three properly formatted dataframes are required to initialize a new DGEobj. 
+
+1. Counts matrix:  For RNA-Seq, this is typically a genes x samples matrix of
+numbers.  Rownames must be present and contain a unique identifier (e.g. Ensembl
+geneid).  Colnames should be a unique sample identifier. You will also need to
+specify the "level" of your data (allowedLevels = c("gene", "isoform", "exon",
+"proteingroup", "peptide", "ptm", "protein")).
+
+2. Row Data:  Additional annotations for the entities represented by each row.
+For the RNA-Seq case, this dataframe holds associated gene annotation.  The
+rownames in the RowData must match the rownames in the counts matrix.
+
+3. Col Data: Accordingly the ColData dataframe contains information about the
+samples (columns) of the counts matrix.  We often refer to this as the "design"
+table because it typically contains the experimental details of the treatment of
+each sample.  The rownames of ColData must match the colnames of the Counts
+Matrix.
+
+## Retrieve GEO data for GSE120804
+
+This project include a counts table and design table in the supplemental section. 
+The data is downloaded to temp files and imported into dataframes.
+
+
+```{r downloadProjectData}
+
+# Get the raw counts and sample annotation ("design") from GEO
+# Source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE120804
+getLocation <- "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE120nnn/GSE120804/suppl"
+countsFile <- "GSE120804_counts.txt.gz"
+designFile <- "GSE120804_geo_sample_annotation_edit.csv.gz"
+counts_url <- glue("{getLocation}/{countsFile}")
+design_url <- glue("{getLocation}/{designFile}")
+
+temp <- tempfile()
+if (download.file(counts_url, destfile = temp, mode = 'wb') > 0) print ("Counts Download Failed")
+counts <- read.delim(temp, stringsAsFactors = FALSE, row.names = 1)
+unlink(temp)
+
+temp <- tempfile()
+if (download.file(design_url, destfile = temp, mode = 'wb')) print("Design Download Failed")
+design <- read.csv(temp, stringsAsFactors = FALSE)
+unlink(temp)
+
+```
+
+This design file does NOT have a column that matches colnames of the counts
+file. However, the colnames from counts is present as a substring within the
+fastq filename column (design$raw.file).  So we'll parse the samplenames from
+the fastq filenames to create a proper link between the counts and design data.
+
+```{r cleanUpDesignTable}
+
+rownames(design) <- str_sub(design$raw.file, start = 1, end = 21)
+
+#correct the desired case/spelling of one column
+design %<>% dplyr::rename(ReplicateGroup = Replicate.group)
+
+# Let's also create (parse) a design column to indicate whether a sample was
+# from a BSL or sham animal
+design$DiseaseStatus <- rep("Sham", nrow(design))
+idx <- str_detect(design$ReplicateGroup, "BDL")
+design$DiseaseStatus[idx] <- "BDL"
+
+# Create an animal# column.  The animal number is encoded in the sample.name
+# column.  Each animal's liver produces multiple slices and we'll which to
+# account for this in our modeling.
+design$AnimalNum <- str_match(design$Sample.name, "r[0-9]{1,3}")
+
+```
+
+## Retrieve Gene Annotation from Ensembl  
+
+```{r getGeneAnnotation}
+
+# Now let's get the gene annotation from Ensembl/biomaRt
+ens.ds      <- "rnorvegicus_gene_ensembl"
+ens.mart    <- useMart(biomart = "ensembl", dataset = ens.ds)
+ens.columns <- c("ensembl_gene_id", "rgd_symbol", "chromosome_name", "start_position",
+                 "end_position", "strand", "gene_biotype", "description")
+ens.data    <- getBM(attributes = ens.columns, values = rownames(counts), mart = ens.mart) %>%
+    distinct(ensembl_gene_id, .keep_all = T)
+
+# Filter the list to the genes used in the test dataset and properly format gene
+# information for GenomicRanges use
+gene.data <- left_join(data.frame(ensembl_gene_id = rownames(counts), stringsAsFactors = F),
+                       ens.data,
+                       by = "ensembl_gene_id") %>%
+    dplyr::rename(start = start_position, end = end_position) %>%
+    mutate(strand = case_when(strand == -1 ~ "-",
+                              strand == 1  ~ "+",
+                              TRUE         ~ "*"))
+rownames(gene.data) <- gene.data$ensembl_gene_id
+
+```
+
+## Validate Dataframe Relationships
+
+The rownames in the gene annotation must match the rownames in the counts
+matrix.  Similarly, the rownames of the design table must match the colnames of
+the counts matrix.
+
+```{r realityCheck}
+
+all(rownames(counts) == rownames(gene.data))
+all(colnames(counts) == rownames(design))
+
+```
+
+## Instantiate the DGEobj  
+
+With the above contraints met, we're ready to instantiate a DGEobj.  In addition
+to the three dataframes prepared, we need to define the "level" of the data.
+Allowed levels include "gene", "isoform", "exon", "proteingroup", "peptide",
+"ptm", or "protein".  We also add two attributes to annotate the genome and 
+gene model set used for the alignments the counts were derived from.  
+
+```{r initializeDGEobj}
+
+dgeObj <- DGEobj::initDGEobj(counts  = counts,
+                       rowData = gene.data,
+                       colData = design,
+                       level = "gene",
+                       customAttr = list(Genome    = "Rat.B6.0",
+                                         GeneModel = "Ensembl.R89"))
+```
+
+Although it is possible to add all project attributes with the customAttr
+argument, this can be tedious when many more attributes are desired.  The more
+convenient way to add project attributes to the DGEobj is to use the
+annotateDGEobj to read attribute key/value pairs from a text file.  This makes
+it easy for a non-technical person to provide project documentation by editing a
+templated text file.
+
+```{r annotateFromTextFile}
+annotationFile <- system.file("GSE120804_ProjectAttributes.txt", package = "DGE.Tools2", mustWork = TRUE)
+
+dgeObj <- annotateDGEobj(dgeObj, annotationFile)
+
+```
+
+The DGE object is now built and analysis ready.   You can check the contents of
+the DGE object with the inventory function.
+
+```{r inventory}
+
+kable(inventory(dgeObj))
+
+```
+
+We can also examine the project metadata with the showMeta function.  
+
+```{r showMetaData}
+
+kable(showMeta(dgeObj))
+
+```
+
+# Limma/Voom Workflow
+
+The starting data for a DGE analysis is now contained within dgeObj.  We'll
+proceed to run the Limma/Voom DGE analysis as described in:
+
+```{r ProjectConfig, eval=TRUE}
+projectName <- "GEO120804"
+## Print columns available for building contrasts
+designCol <- "ReplicateGroup"
+levels <- str_c(designCol, (unique(dgeObj$design[[designCol]])))
+knitr::kable(levels)
+
+# Next step is probably unnecessary UNLESS you have a numeric column that you
+# want to treat as a factor. In other words, set columns used in formulas as
+# factors unless you want them treated as a continuous variable.
+dgeObj$design$ReplicateGroup %<>% as.factor()
+
+## The next step is only necessary  if you want to use a ~ 1 formula, then 
+## the desired baseline must be made the first factor and thus the default baseline..
+dgeObj$design$ReplicateGroup %<>% relevel("Sham")
+
+### End of Configuration  ###
+
+
+# Print the contents of the dgeObj
+cat ("## DGEobj Inventory  \n\n")
+knitr::kable(inventory(dgeObj))
+
+```
+
+\newpage
+
+# Pre-processing
+
+## Low Intensity Filtering
+
+Typically, genes with near zero counts are removed before further analysis. They
+contain no useful information, increase the multiple test burden, asnd could
+(under some conditions) compromise the normalization and violate assumptions
+implicit in linear modeling.
+
+Two methods for low intensity filtering are supplied; min counts, and
+FPK.  The lowIntFilter function will use any combination of these methods.  The
+sampleFraction argument defines the proportion of samples that must meet all
+specified criteria to keep a gene.  
+
+
+We typically recommend using counts >= 10 and FPK >=5.  But the filter should be
+set as close as possible to criteria the original analyst used.  A custom filter
+can also be substituted.
+
+Minmum counts >= 10 is commonly used to filter out low intensity genes.  But
+mincounts is biased against short genes.  In contrast, FPK (fragments per
+kilobase), described below, provides an intensity measure that is not length biased.  
+  
+
+Fragments Per Killobase (FPK) is another filtering criterion.  For an average
+size ~2kb mRNA FPK = 5 is equivalent to counts = 10, however, FPK is not length
+biased.   Another useful property of FPK is that FPK can be calculated for
+intergenic DNA and thus provides an empirical background level of stochastic or
+spurious transcription.  This estimate is surely conservative in that there is
+very likely some real transcription going on in intergenic regions.  Typically,
+the intergenic FPK level is below 5 so FPK >= 5 is an appropriate threshold.
+
+The FPK + mincount filters can both be applied together to selecte detected
+genes. The one must decide how to integrate this information across multiple
+samples and experiment groups. You can get more sophisticated and do this on a
+group-wise basis so you can include genes that were expressed in at least one of
+your treatment groups. I leave that as an exercise for the reader and note that
+groupwise filtering introduces a bias that affects your pvalue calibration.  To
+avoid such bias, we simply require 50% of samples to pass the intensity
+threshold and you can modify the percentage to adjust the stringency.
+
+If you use FPK, a length adjusted measure, you must also supply the geneLength
+argument. A Gene length vlue for each gene is thus required in the gene
+annotation if FPK is to be used.  The RSEM algorithm for generating gene counts
+also provide an effective length calculation for each gene that may be 
+conveniently used for the FPK calculations.
+
+In this example, only the counts were provided in the GEO source and thus the
+genelength information required to use FPK is not available.  Therefore, a
+simple count threshold will be used and 50% of samples are required to meet
+these criteria for the gene to be included.
+
+
+Dimensions before filtering:  
+`r dim(dgeObj)`
+
+```{r LowIntensityFilter, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+### Gene Filter Criteria ###
+countThreshold <- 10  # Must meet or exceed this value
+sampleFraction <- 0.5  # Fraction of samples that must meet the established criteria
+
+# low expression filter
+dgeObj <- lowIntFilter(dgeObj, 
+                       countThreshold = countThreshold,
+                       sampleFraction = sampleFraction)
+
+```
+
+Dimensions after filtering: 
+`r dim(dgeObj)`
+
+
+## Filter for Protein Coding Genes  
+
+Often an analysis is focused on protein-coding genes.  Here we use the Ensembl
+gene_biotype column in the gene annotation to keep only protein-coding genes.
+
+Here square bracket subsetting is used to sub-select protein-coding genes.  
+
+
+```{r filterProteinCoding, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+
+idx <- dgeObj$geneData$gene_biotype == "protein_coding"
+dgeObj <- dgeObj[idx,]
+
+```
+
+Dimensions after filtering for protein_coding:  
+`r dim(dgeObj)`
+
+\newpage
+
+## Sex Check
+
+Use the RNA-Seq to define sex and compare to Sex annotation.
+
+To enable, set the eval chunk option to TRUE and supply the name of a design
+column for the annotated sex.
+
+Omit the sexCol argument if sex annotation is missing. 
+
+We use the XIST gene and the highest expressed Y-linked gene in a scatter plot
+that often clearly separates males/females.  In limited use this has worked well
+with human and mouse data but rat seems to lack annotation on a Xist gene.
+Interpretation is easiest when a mix of males and females is present.
+
+JRT Note:  This function proved quite useful but was never fully developed to my
+satisfaction.   In my estimation, it should be re-written from scratch or
+dropped for the CRAN submission.  We wanted to pick a well expressed Xlinked and
+Ylinked gene for the plot.  We used XIST for an X-linked gene because it seems
+to be well expressed in all female tissues.  XIST is not annotated in Rat
+however.    For a y-linked gene, we tried selecting the highest expressed
+Y-linked gene but often No y-linked gene was our specified low intensity cutoff
+for limit of detection.  Thus we had to modify the function to consult the
+unfiltered data.  This is all very kludgy at this point, but the function often
+worked and provided useful reality checks on sex annotation. However,  it is
+not, in my estimation, a CRAN quality function.  Had I had time to further
+develop the function, I would use the sum of all X and Y-linked genes with
+options to specify a particular gene to use.
+
+```{r sexCheck,  eval=FALSE}
+## Set species and sexCol (for the sexCheck plot)
+species <- "rat"   #one of human, mouse or rat
+## nane of design column holding sex annotation; set to NULL if not available
+sexCol <- NULL 
+
+if (is.null(sexCol)){
+  sexPlot <- checkSex(dgeObj, species=species)
+  printAndSave(sexPlot, file.path(outputPath, "sexCheck.png"))
+} else {
+  sexPlot <- checkSex(dgeObj, species=species, sexCol = sexCol)
+  printAndSave(sexPlot + aes_string(fill=sexCol), file.path(outputPath, "sexCheck.png"))
+}
+
+```
+
+\newpage  
+
+# DGE Analysis  
+
+## EdgeR Normalization
+
+This step simply applies edgeR::calcNormFactors to effect TMM normalization.
+This results in a DGEList object being added to the DGEobj.  Note that the
+counts matrix within the DGEList object is NOT normalized counts.  Rather a
+separate item in the DGEList contains the norm factors and you should use the
+edgeR cpm function to extract normalized counts from the DGEList.  More
+conveniently, you can use the DGE.Tools2::convertCounts function to produce
+normalized counts.
+
+```{r Normalize, echo=TRUE, warning=FALSE, message=FALSE, fig.width=5, fig.height=3}
+
+dgeObj <- runEdgeRNorm(dgeObj, plotFile = file.path(outputPath, "TMM_NormFactors.PNG"))
+
+```
+
+
+\newpage
+
+## Define the model formula
+
+Provide a formula and construct the design matrix.   
+
+**Formula:** `r formula`   
+
+
+```{r ModelDefinition, echo=TRUE, warning=FALSE, message=FALSE}
+### Formula must be composed of column names from the design table.
+formula <- '~ 0 + ReplicateGroup'
+# User-defined name for the designMatrix
+designMatrixName <- "ReplicateGroupDesign"
+
+# build the designMatrix
+design <- getItem(dgeObj, "design")
+designMatrix <- model.matrix (as.formula(formula), design)
+
+# Make sure the column names in the design matrix are legal
+# convert spaces and other disallowed chars to underscores or dots
+colnames(designMatrix) <- make.names(colnames(designMatrix))
+
+#capture the formula as an attribute of the design matrix
+attr(designMatrix, "formula") <- formula
+
+#add the designMatrix to the DGEobj
+dgeObj <- addItem(dgeObj, item=designMatrix, 
+                  itemName=designMatrixName, 
+                  itemType="designMatrix",
+                  parent="design", 
+                  overwrite=TRUE)
+```
+
+\newpage
+
+## QC: Dispersion Plot  
+
+```{r DispersionPlot, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE, fig.width=4, fig.height=3}
+
+dispPlot <- plotDisp(getItem(dgeObj, "DGEList"), designMatrix)
+dispPlot
+ggsave(filename=file.path(outputPath, "dispersion.png"), plot=dispPlot)
+
+```
+
+
+```{r snapshot, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+# Let's save a snapshot of the DGEobj at this point
+saveRDS (dgeObj, file.path(outputPath, "dgeobj.RDS"))
+```
+
+\newpage
+
+## Check for Surrogate Variables (unaccounted for variation)
+
+SVA looks for hidden structure in the data using PCA-like methods.  It 
+defines surrogate variables that can be added to your model to account 
+for systematic trends that don't map to known experiment factors.  This
+can improve you power to detect changes due to factors of interest.
+
+Here we simply check for surrogate variables but capture them in a fork of 
+the main DGEobj.  To actually use the surrogate variables in the model,
+you should rename "dgeObj_sva" in the SVA chunk to "dgeObj".  The SV columns
+will be added to the design table and available for including in the formula.  
+
+
+```{r checkForSV, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+
+#are there SVs to capture?
+log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
+n.sv <- sva::num.sv(log2cpm, designMatrix, method="leek")
+
+#in this case No SVs are indicated (n.sv = 0)
+
+# we'll run SVA anyway but don't save them in our main dgeObj
+
+dgeObj_SVA <- runSVA(dgeObj, designMatrixName=designMatrixName, n.sv=1)
+
+# Notice two new items have been added to the degobj: the svobj and a new designmatrix including the specified number of SVs as new columns.
+kable(inventory(dgeObj_SVA))
+
+```
+
+
+If n.sv is >0, the runSVA function adds the following changes: 
+1. Adds a column for each SV to the design table 
+2. Saves the svobj from the SVA analysis
+3. Creates a new design matrix with the sv columns and adds a "_sva" suffix to the designMatrix name 
+
+You can use the new design matrix to incorporate the SVs in your analysis.   
+
+\newpage
+
+## Data Exploration: Variance Partition Analysis   
+
+Run variance partition analysis with and without the surrogate variables to
+assess the proportion of variance attributable to each experimental factor.
+
+JRT Note: variance partition analysis is not part of a DGE.Tools function.  It's
+a very useful tool, but this chunk doesn't demonstrate any DGE.Tools
+functionality per se.  Consider dropping this chunk
+
+```{r VariancePartition,  eval=FALSE}
+#Note: This seems to complete, then bombs the R session.
+
+#use multiple cores (optional)
+# Define how many cpus to allocate to variance partition analysis
+cpus <- parallel::detectCores(logical=FALSE)
+cl <- parallel::makeCluster(cpus)
+doParallel::registerDoParallel(cl)
+
+# Define one or more formulas for variance partitioning to evaluate
+  varPartFormulas <- list(
+    Pretreatment_Cmpd = "~ ReplicateGroup"
+  )
+
+log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+
+for (i in 1:length(varPartFormulas)) {
+  vpRunTime <- capture.output(
+    varPart <- fitExtractVarPartModel( log2cpm, as.formula(varPartFormulas[[i]]), dgeObj$design )
+  )
+  # sort variables (i.e. columns) by median fraction of variance explained
+  vp <- sortCols( varPart )
+  # violin plot of contribution of each variable to total variance
+  vpPlot <- plotVarPart( vp ) + labs(caption = varPartFormulas[[i]])
+  
+  if (is.null(names(varPartFormulas))) {
+    filePrefix <- str_c("Plot", i)
+  } else {
+    filePrefix <- names(varPartFormulas)[i]
+  }
+  # Next line, printing the plot, is crashing R
+  print(vpPlot)
+  ggsave(filename=file.path(outputPath, str_c(filePrefix, "_VarPartPlot.png")), plot=vpPlot)
+}
+
+```
+
+## Data Exploration: Multi-Dimensional Scaling
+
+Principal Component Analysis is a subset of Multi-Dimensional Scaling that uses
+correlation as a distance metric.  The limma mdsPlot function yields similar
+results as PCA in terms of spatial separation.  However, the limma mds analysis
+uses an intensity-based distance metric.  Thus, since we perform MDS on log2cpm
+data, the units of the plot are also in log2cpm units.  So the scale of an MDS
+plot is more human relevant than correlation-based distance metrics.
+
+
+```{r MDSplot, echo=TRUE, warning=FALSE, message=FALSE, fig.width=5, fig.height=3.5}
+
+mdsColorBy <- "ReplicateGroup" #A_Design_ColumnName
+mdsShapeBy <- "DiseaseStatus" #A_Design_ColumnName
+mdsDims <- c(1,2) # which dimensions to plot
+top <- Inf  #sometimes useful to set to ~ signature size; see ?limma::plotMDS.
+
+
+#use color and shape with labels and labelSize
+# See ?ggplotMDS for more options
+m <- DGE.Tools2::ggplotMDS(dgeObj, colorBy = dgeObj$design[[mdsColorBy]], 
+                           shapeBy = dgeObj$design[[mdsShapeBy]], 
+                           symSize =5,
+                           labels=NULL,
+                           labelSize=3,
+                           dim.plot=mdsDims, 
+                           top = top
+)
+
+# ggplotMDS returns a list of 2.  Item 1 is the gggplot; Item 2 is the data object
+# returned by limma::plotMDS
+print(m[[1]])
+ggsave(filename= file.path(outputPath, "MDSplot.PNG"), plot=m[[1]])
+
+
+# Now let's plot the amount of variance explained by each component
+results <- MDS_var_explained(m[[2]])
+# results is a list of 3 items:
+#   1) Var Explained bar plot
+#   2) Cumulative variance explained
+#   3) The dataframe used for the plot
+
+print(results[[1]])
+ggsave(filename=file.path(outputPath, "varExplained.PNG"), plot=results[[1]])
+
+print(results[[2]])
+ggsave(filename=file.path(outputPath, "cumVarExplained.PNG"), plot=results[[2]])
+
+```
+
+\newpage  
+
+## tSNE  :  Just an example.  No new DGEtools capabilities showcased here; consider droppping.
+
+tSNE is a method to represent all variability in an experiment as a two dimensional plot.  The axes are not labeled with a scale because the scale is non-linear and not directly interpretable. 
+
+```{r tSNE,  eval=TRUE}
+
+tsneColorBy <- "ReplicateGroup" #A_Design_ColumnName
+tsneShapeBy <- "DiseaseStatus" #A_Design_ColumnName
+perplexity <- 15  #need to try various values; start from highest value that doesn't fail and work down.
+
+
+log2cpm <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+set.seed(8675309)  # Jenny, I've got your number
+
+tsne <- Rtsne::Rtsne(t(log2cpm), pca=FALSE, perplexity=perplexity,
+                     check_duplicates=FALSE, max_iter=5000, verbose=FALSE)
+
+#add metadata to the tsne data structure for plotting
+#tsneDF <- data.frame(tsne$Y, species=irisUnique$Species)
+tsneDF <- data.frame(tsne$Y, colorBy=dgeObj$design[[tsneColorBy]], 
+                     shapeBy=dgeObj$design[[tsneShapeBy]])
+tsneDF[tsneColorBy] <- tsneDF$colorBy
+tsneDF[tsneShapeBy] <- tsneDF$shapeBy
+
+
+#without Labels
+tsnePlot <- ggplot(tsneDF, aes_string(x="X1", y="X2", color=tsneColorBy, shape=tsneShapeBy )) + 
+  # geom_polygon(data=createPolygons(tsneDF), aes(fill=ReplicateGroup), alpha = 0.2)+
+  geom_point(size = 5) +
+  theme_bw() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  ggtitle("tSNE Analysis") +
+  labs(caption = str_c("Perplexity = ", perplexity))
+printAndSave(tsnePlot, file.path(outputPath, "tSNE_Log2CPM.png"))
+
+
+```
+
+\newpage
+
+## Run Voom and fit the model (lmfit)  
+
+To invoke duplicateCorrelation method, assign a blocking variable to the dupCor variable in the config chunk.  
+
+```{r runVoom, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE, fig.height=3.5}
+### Use duplicateCorrelation when subjects have been sampled more than once even
+### if under different conditions (e.g. treated, untreated) Pass a vector (usually
+### a design column) representing the subject ID.
+dupcorBlock <- dgeObj$design$AnimalNum    # set to NULL to disable duplicate correlation
+
+if (is.null(dupcorBlock)) {
+  dgeObj <- runVoom(dgeObj, designMatrixName)
+} else {
+  dgeObj <- runVoom(dgeObj, designMatrixName,
+                           dupcorBlock = dupcorBlock)
+}
+# note: qualityWeights = TRUE,  runEBayes = TRUE and robust = TRUE are the defaults.
+
+```
+
+
+
+
+The Mean-variance trend nicely shows the heteroscedasticity typical of RNA-Seq
+data (variance dependent on intensity).
+
+If you notice a downward hook on the left end of this distribution, it means you
+have not applied a sufficiently stringent low intensity filter.  
+
+
+```{r snapshot2, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+# Let's save a snapshot of the DGEobj at this point
+saveRDS (dgeObj, file.path(outputPath, "dgeobj.RDS"))
+
+# dgeObj <- readRDS(file.path(outputPath, "dgeobj.RDS"))
+
+```
+
+\newpage
+
+## Run contrasts  
+
+Function runContrasts takes a named list of contrasts (see config chunk).  
+
+
+```{r runContrasts, echo=TRUE, warning=FALSE, message=FALSE}
+# Name the design matrix to be used
+designMatrixName <- "ReplicateGroupDesign"
+
+# Print the available column names for constructing contrasts:
+print(colnames(dgeObj$ReplicateGroupDesign))
+
+##  Define the named contrasts from design matrix column names
+contrastList  <- list(BDL_vs_Sham = "ReplicateGroupBDL - ReplicateGroupSham",
+                      EXT1024_vs_BDL = "ReplicateGroupBDL_EXT.1024  - ReplicateGroupBDL",
+                      Nint_vs_BDL = "ReplicateGroupBDL_Nint - ReplicateGroupBDL",
+                        Sora_vs_BDL = "ReplicateGroupBDL_Sora - ReplicateGroupBDL"
+)
+
+dgeObj <- runContrasts(dgeObj, 
+                       designMatrixName=designMatrixName, 
+                       contrastList=contrastList, 
+                       Qvalue=TRUE,
+                       IHW = TRUE)
+```
+
+
+\scriptsize
+
+`r knitr::kable(inventory(dgeObj))`  
+
+\normalsize  
+
+After runContrasts, the topTable dataframes are present in the DGEobj and the DGEobj is complete.
+
+## Alternative FDR scores  
+
+topTable provides a BH FDR value (adj.P.Val).  You can also add other optional 
+FDR measures to the topTable output using the Qvalue and IHW arguments.  
+
+Qvalue = TRUE adds "qvalue" and "qvalue.lfdr" columns to the topTable output.  
+
+IHW = TRUE adds columns "ihw.adj_pvalue" and "ihw.weight".
+
+Browse the vignettes for the qvalue and IHW packages for more details on these 
+alternative FDR measures. 
+
+## Save and Validate DGEobj
+
+Save the completed DGEobj to an RDS file composed of the project name.  Then test the .RDS file
+using the checkDGEobj function which certifies the DGEobj structure and annotation as suitable
+for loading in GECO.
+
+Any issues with the DGEobj will be listed below:  
+
+
+```{r SaveRDS, eval=TRUE}
+
+filename <- str_c(projectName, ".RDS")
+saveRDS (dgeObj, file.path(outputPath, filename))
+
+```
+
+\newpage
+
+# DGE Results Analysis     
+
+## Inspect pvalue histograms   
+
+Pvalue histograms can reveal problems with your model.  [David Robinson has a good
+webpage describing how to interpret p-value histograms](http://varianceexplained.org/statistics/interpreting-pvalue-histogram/).
+
+```{r pvalueHistograms, echo=TRUE, warning=FALSE, message=FALSE, fig.height=3}
+
+# We need to collect a pvalue column from each topTable dataframe
+listOfTopTable <- getType(dgeObj, "topTable")
+MyPvalMatrix <- DGE.Tools2::extractCol(listOfTopTable, colName="P.Value")
+plotPvalHist (MyPvalMatrix, facetFontSize=8)
+
+```
+
+\newpage
+
+## Count Significant differential genes  
+
+**Table 1:** No fold change threshold; p < 0.01, FDR thresholds = 0.1
+
+```{r sigGenes, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+# We need a list of the topTable dataframes.  
+listOfTopTable <- getType(dgeObj, "topTable")
+knitr::kable(DGE.Tools2::summarizeSigCounts(listOfTopTable))
+
+```
+
+**Table 2:** fold change threshold = 1.5; p < 0.01, FDR thresholds = 0.1
+
+```{r sigGenes_FCthreshold, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+# We need a list of the topTable dataframes.  
+listOfTopTable <- getType(dgeObj, "topTable")
+knitr::kable(DGE.Tools2::summarizeSigCounts(listOfTopTable, fcThreshold = 1.5))
+
+```
+
+\newpage
+
+##  Run a Power Analysis  
+
+Interpretation of DGE data is improved by an understanding of the proportion of
+true positives detected as well as the degree of false postives expected.
+Traditional power analysis is unbiased with regard to intensity.  However, we
+know from experience that a 2X change in a high intensity gene is more reliable
+that a 2X change in a gene near the detection limit.  The rnapower takes the
+intensity level into consideration in estimating power in RNA-Seq data.  
+
+The depth argument in this process refers to raw counts and the default levels
+of 10, 100, 1000 correspond roughly to detection limit, middle low expression
+and median expression levels.  You'll see that estimated power increases with
+increasing intensity level.
+
+```{r runPower, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE, fig.height=6, fig.width=7}
+
+counts <- getItem(dgeObj, "counts")
+designMatrix <- getItem(dgeObj, "ReplicateGroupDesign")
+
+pwr <- runPower(counts, designMatrix)
+# result is a list of objects depending on the return argument
+# Default objects returned:
+#    PowerData: the dataframe generated
+#    ROC:  ggplot ROC curve
+#    NvP:  plots emphasizing the relationship of N to power
+print(pwr$ROC)
+ggsave(filename=file.path(outputPath, "power_ROC.PNG"), plot=pwr$ROC)
+print(pwr$NvP)
+ggsave(filename=file.path(outputPath, "power_NvP.PNG"), plot=pwr$Nvp)
+
+# printAndSave(pwr$ROC, file.path(outputPath, "power_ROC.PNG"), printFontSize = 9)
+# printAndSave(pwr$NvP, file.path(outputPath, "power_NvP.PNG"))
+
+```
+
+\newpage
+
+# Wrapup and other documentation
+
+This completes the DGE calculations. 
+
+The __[training slides](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/DGE_Tools_Training_Mar2019.pptx)__ are available.  
+
+See the __[DGE.Tools Plot Gallery pdf](https://biogit.pri.bms.com/thompj27/DGE.Tools2/blob/master/vignettes/DGE.ToolsPlotGallery.pdf)__ for additional data exploration plots.
+
+See browseVignettes("DGEobj") for  detailed documentation on the DGEobj datastructure and associated functions.  
+
+See browseVignettes("variancePartition") for instructions on evaluating the
+variance contribution of experiment factors to inform formula selection. 
+
+Install the latest stable versions of the DGEobj, DGE.Tools2 and JRTutil packages from __[BRAN](http://kraken.pri.bms.com/biohtml/nositeminder/BRAN/)__ using install.packages. See the __[BRAN webpage](http://kraken.pri.bms.com/biohtml/nositeminder/BRAN/)__ 
+for instructions in adding the BRAN repository to your repos list.  
+
+Install the dev version of these packages from the respective Biogit repos
+and inspect the commit messages to see what's new.  
+
+\newpage
+
+# Session Info
+
+***Time required to process this report:*** *`r format(Sys.time() - startTime)`* 
+
+**R Session Info**
+
+```{r SessionInfo}
+sessionInfo()
+```
+
