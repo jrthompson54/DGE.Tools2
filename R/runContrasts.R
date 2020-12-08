@@ -92,12 +92,12 @@ runContrasts <- function(dgeObj, designMatrixName,
 
   #need to retrieve designMatrix
   designMatrix <- try({getItem(dgeObj, designMatrixName)}, silent=TRUE)
-  if (class(designMatrix) == "try-error")
+  if ("try-error" %in% class(designMatrix))
     stop(paste("Couldn't find", designMatrixName, "in dgeObj.", sep=" "))
 
   fitName <- paste(designMatrixName, "_fit", sep="")
   fit <- try((getItem(dgeObj, fitName)), silent=TRUE)
-  if (class(fit) == "try-error") {
+  if ("try-error" %in% class(fit)) {
     stop(paste(fitName, "not found in dgeObj", sep=" "))
   }
 
