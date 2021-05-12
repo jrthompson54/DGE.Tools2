@@ -1,4 +1,4 @@
-# DGE.Tools2: RNA-Seq Analysis Workflow Package
+# DGE.Tools2: RNA-Seq Analysis Workflow Package (deprecated: See DGEobj, DGEobj.utils and DGEobj.plots)
 
 DGE.Tools2 is a suite of functions to facilitate and standardize RNA-Seq DGE analysis.  DGE.Tools relies on the DGEobj data structure to store DGE data and analysis results.  
 
